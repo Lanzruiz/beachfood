@@ -1,0 +1,58 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+.pageInner {
+    padding-left: 240px;
+    height: 100%;
+    overflow-y: auto;
+    transition: 0.15s all ease;
+}
+
+.app-wrapper {
+    width: 100%;
+}
+
+.main-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.App {
+    padding: 24px;
+}
+
+.theFromControl {
+    margin: 0!important;
+}
+
+.gac {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    outline: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-width: 1px;
+    font: inherit;
+    font-size: 14px;
+    display: block;
+    box-sizing: content-box;
+    padding: 10px 0;
+    background: none;
+    vertical-align: middle;
+    border-bottom-color: #999;
+}
+
+@media only screen and (max-width: 960px) {
+    /* For mobile phones: */
+
+    .pageInner {
+        padding-left: 0;
+        transition: 0.15s all ease;
+    }
+}
