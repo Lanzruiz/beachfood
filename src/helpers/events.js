@@ -7,7 +7,8 @@ export function saveEvent(evt) {
     return ref.child(`events/`)
         .push({
             address : evt.address,
-            evdatetime : evt.evdatetime,
+            evstartdatetime : evt.evstartdatetime,
+            evenddatetime : evt.evenddatetime,
             description : evt.description,
             image : evt.image,
             lat : evt.lat,

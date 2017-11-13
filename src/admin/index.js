@@ -18,8 +18,8 @@ import MenuIcon from 'material-ui-icons/Menu';
 
 import Login from "./Login";
 import Dashboard from "./Dashboard";
-import Events from "./events";
-import AllEvents from "./events/AllEvents";
+import AddEvents from "./events/AddEvents";
+import ListEvents from "./events/ListEvents";
 
 
 import HomeIcon from 'material-ui-icons/Home';
@@ -46,12 +46,12 @@ const routes = [
         main: () => <Dashboard/>
     },
     { path: '/events',
-        sidebar: () => <div>Events</div>,
-        main: () => <Events/>
+        sidebar: () => <div>Add Events</div>,
+        main: () => <AddEvents/>
     },
     { path: '/allevents',
         sidebar: () => <div>All Events</div>,
-        main: () => <AllEvents/>
+        main: () => <ListEvents/>
     }
 
 ]
