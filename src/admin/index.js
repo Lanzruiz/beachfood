@@ -1,6 +1,7 @@
 /**
  * Created by BOSS on 11/4/2017.
  */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -18,13 +19,11 @@ import MenuIcon from 'material-ui-icons/Menu';
 
 import Login from "./Login";
 import Dashboard from "./Dashboard";
-import AddEvents from "./events/AddEvents";
-import ListEvents from "./events/ListEvents";
+import Events from './events'
 
 
 import HomeIcon from 'material-ui-icons/Home';
 import EventIcon from 'material-ui-icons/Event';
-import EventNote from 'material-ui-icons/EventNote';
 
 import PowerSettingsNew from 'material-ui-icons/PowerSettingsNew';
 import {
@@ -40,20 +39,21 @@ function logout() {
 }
 
 const routes = [
-    { path: '/',
+    {
+        path: '/',
         exact: true,
+        menuName: 'Home',
+        menuIcon: <HomeIcon />,
         sidebar: () => <div>Dashboard</div>,
         main: () => <Dashboard/>
     },
-    { path: '/events',
-        sidebar: () => <div>Add Events</div>,
-        main: () => <AddEvents/>
-    },
-    { path: '/allevents',
-        sidebar: () => <div>All Events</div>,
-        main: () => <ListEvents/>
+    {
+        path: '/events',
+        menuName: 'Events',
+        menuIcon: <EventIcon />,
+        sidebar: () => <div>Events</div>,
+        main: () => <Events/>
     }
-
 ]
 
 const drawerWidth = 240;
@@ -121,47 +121,30 @@ class Frontend extends React.Component {
         const drawer = (
             <div>
                 <div className={classes.drawerHeader}  style={{
-                    position: 'relative'
+                    alignItems: 'center',
+                    display: 'flex',
+                    justifyContent: 'center',
                 }}>
                     <h1 style={{
-                        margin: 0,
-                        position: 'absolute',
-                        left: '30%',
-                        top: '20%'
+                        margin: 0
                     }}>{conf.sitename}</h1>
                 </div>
                 <Divider />
                 <List>
-                    <Link to="/" style={{
+                    {routes.map((route, index) => (
+                        // Render more <Route>s with the same paths as
+                        // above, but different components this time.
+                    <Link key={index} to={route.path} style={{
                         textDecoration: 'none'
-                    }}>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <HomeIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Dashboard" />
-                        </ListItem>
-                    </Link>
-                    <Link to="/events" style={{
-                        textDecoration: 'none'
-                    }}>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <EventIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Add Event" />
-                        </ListItem>
-                    </Link>
-                    <Link to="/allevents" style={{
-                        textDecoration: 'none'
-                    }}>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <EventNote />
-                            </ListItemIcon>
-                            <ListItemText primary="All Events" />
-                        </ListItem>
-                    </Link>
+                        }}>
+                            <ListItem button>
+                                <ListItemIcon>
+                                    {route.menuIcon}
+                                </ListItemIcon>
+                                <ListItemText primary={route.menuName} />
+                            </ListItem>
+                        </Link>
+                    ))}
 
                 </List>
             </div>

@@ -9,6 +9,8 @@ import RegisterForm from './RegisterForm';
 import SwipeableViews from 'react-swipeable-views';
 import AppBar from 'material-ui/AppBar';
 
+import config from '../config'
+
 const styles = theme => ({
     root: {
         display: 'flex',
@@ -58,7 +60,7 @@ class Login extends React.Component {
                           direction='row'
                           justify='center'
                           alignItems='center'>
-                        <h1>Drynx</h1>
+                        <h1>{config.sitename}</h1>
                     </Grid>
                     <Grid item lg={4} xs={12}>
                     </Grid>

@@ -14,16 +14,15 @@ import Paper from 'material-ui/Paper';
 import Avatar from 'material-ui/Avatar';
 import Divider from 'material-ui/Divider';
 import Tooltip from 'material-ui/Tooltip';
+import { CircularProgress } from 'material-ui/Progress';
 
 import {
-    BrowserRouter as Router,
-    Route,
     Link
 } from 'react-router-dom'
 
 import swal from 'sweetalert';
 
-import { eventsref, eventsStoreref } from '../../FB'
+import { eventsref } from '../../FB'
 
 const styles = theme => ({
     root: {
@@ -46,7 +45,8 @@ const styles = theme => ({
 class AllEvents extends React.Component {
     state = {
         evtData: [],
-        currentEvent: null
+        currentEvent: null,
+        loadingData: false,
     };
 
 
@@ -56,22 +56,35 @@ class AllEvents extends React.Component {
 
     getAllevtData = () => {
         var _ths = this;
+
         eventsref.on('value', function(snapshot) {
+            let theEventData = [];
+
+            _ths.setState({
+                loadingData: true,
+            })
+
             snapshot.forEach(function(eventItem) {
                 var childKey = eventItem.key;
                 var childData = eventItem.val();
                 childData['key'] = childKey;
-                var theImfile = eventsStoreref.child(childData.image);
-
-                theImfile.getDownloadURL().then(function(url) {
-                    childData['imagepath'] = url;
-                });
-
-                _ths.setState({
-                    evtData: [childData]
-                })
+                // var theImfile = eventsStoreref.child(childData.image);
+                //
+                // theImfile.getDownloadURL().then(function(url) {
+                //     childData['imagepath'] = url;
+                // });
+                theEventData.push(childData)
             });
-        });
+            _ths.setState({
+                evtData: theEventData
+            })
+        }).bind(this);
+        setTimeout(() => {
+            this.setState({
+                loadingData: false,
+            })
+        }, 3000)
+
     }
 
     askDeleteConfirm(key) {
@@ -84,13 +97,8 @@ class AllEvents extends React.Component {
             dangerMode: true,
         }).then((willDelete) => {
             if (willDelete) {
-                swal("Okey! The event has been deleted!", {
-                    icon: "success",
-                }).then(() => {
-                    _ths.getAllevtData()
-                    eventsref.child(key).remove();
-                });
-
+                _ths.getAllevtData()
+                eventsref.child(key).remove();
             }
         });
     };
@@ -102,52 +110,61 @@ class AllEvents extends React.Component {
         return (
             <div className="App">
                 <Grid container spacing={24}>
+
+                    <Grid item xs={6}>
+                        {/*<Button href={`/orders/23`} color="primary" className={classes.button}>*/}
+                        {/*<Save className={props.classes.leftIcon} />*/}
+                        {/*<span>Save</span>*/}
+                        {/*</Button>*/}
+                    </Grid>
+                    <Grid item xs={6} className="pageToolbarRight">
+                        <Link to={`/events/addnew`} className='linkBtn primary'>
+                        <span>
+                            <EditIcon />
+                            Add New
+                        </span>
+                        </Link>
+                    </Grid>
                     <Grid item xs={12}>
                         <Paper className={classes.paper}>
-                            <List>
-                                {
-                                    (this.state.evtData.length > 0) ?
-                                    this.state.evtData.map((value, i) => (
-                                        <div
-                                            key={i}>
-                                            <ListItem
-                                                dense
-                                                className={classes.listItem}>
-                                                <Avatar alt="Remy Sharp" src={value.imagepath} />
-                                                <ListItemText primary={`${value.name}`} />
-                                                <ListItemSecondaryAction>
-                                                    <Tooltip id="tooltip-icon" title="Edit" placement="left">
-                                                        <Link to={`/editevent/${value.key}`} aria-label="Edit">
-                                                            <EditIcon />
-                                                        </Link>
-                                                    </Tooltip>
 
-                                                    <Tooltip id="tooltip-icon" title="Delete" placement="left">
-                                                        <IconButton aria-label="Delete"
-                                                        onClick={() => {
-                                                            this.askDeleteConfirm(value.key)
-                                                        }}>
-                                                            <DeleteIcon />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                </ListItemSecondaryAction>
-                                            </ListItem>
-                                            <Divider inset />
-                                        </div>
-                                    )) :
-                                    <ListItem
-                                        dense
-                                        className={classes.listItem}>
-                                        <ListItemText
-                                            style={{
-                                                textAlign: 'center',
-                                                fontsize: 25,
-                                                fontWeight: 'bold'
-                                            }}
-                                            primary="There are no event found" />
-                                    </ListItem>
-                                }
-                            </List>
+                            {
+                                (this.state.loadingData) ?
+                                    <div  style={{justifyContent: 'center', alignItems: 'center'}}>
+                                        <CircularProgress className={classes.progress} />
+                                    </div> :
+                                    <List>
+                                        {
+                                            this.state.evtData.map((value, i) => (
+                                                <div
+                                                    key={i}>
+                                                    <ListItem
+                                                        dense
+                                                        className={classes.listItem}>
+                                                        <ListItemText primary={`${value.name}`} />
+                                                        <ListItemSecondaryAction>
+                                                            <Tooltip id="tooltip-icon" title="Edit" placement="left">
+                                                                <Link to={`/events/edit/${value.key}`} style={{color: '#757575'}} aria-label="Edit">
+                                                                    <EditIcon />
+                                                                </Link>
+                                                            </Tooltip>
+
+                                                            <Tooltip id="tooltip-icon" title="Delete" placement="left">
+                                                                <IconButton aria-label="Delete"
+                                                                            onClick={() => {
+                                                                                this.askDeleteConfirm(value.key)
+                                                                            }}>
+                                                                    <DeleteIcon />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        </ListItemSecondaryAction>
+                                                    </ListItem>
+                                                    <Divider inset />
+                                                </div>
+                                            ))
+                                        }
+                                    </List>
+                            }
                         </Paper>
 
                     </Grid>
