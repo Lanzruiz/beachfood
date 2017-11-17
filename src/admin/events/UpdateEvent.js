@@ -26,6 +26,8 @@ import { DateTimePicker } from 'material-ui-pickers'
 import { eventsStoreref, Storageref, eventsref } from '../../FB'
 import { updateEvent } from '../../helpers/events'
 
+import ImageLoader from '../ImageLoader'
+
 
 import stylesm from '../../App.css'
 
@@ -75,9 +77,15 @@ class UpdateEvent extends React.Component {
         this.state = {
             name: '',
             description: '',
+            evstartdatetime : new Date(),
+            evenddatetime : new Date(),
             evtImg: '',
             evtImgName: '',
             evtImgtype: '',
+            evtImgpreview: '',
+            evtImgprev: '',
+            ifImgChanged: false,
+            image: '',
             address: '',
             icon: '',
             phone: '',
@@ -85,76 +93,40 @@ class UpdateEvent extends React.Component {
             lng: 0,
             state: '',
             zip: 0,
-            evtImgpreview: '',
-            image: '',
-            startDateTime: new Date(),
-            endDateTime: new Date(),
-            isloading: false,
-            hasImgonfb: false,
-            isloadingimg: false,
-            issuccess: false,
         }
     }
 
     componentDidMount(){
         var _ths = this;
         var element = document.querySelector('#address');
-        if (this.props.match.params.evid){
-            _ths.setState({
-                isloadingimg: true
-            })
-            eventsref.child(`${this.props.match.params.evid}/`).on('value', (snap) => {
-                snap.forEach(function (childSnap) {
-                    //val[childSnap.key] = childSnap.val();
-                    _ths.setState({ [childSnap.key]: childSnap.val() });
 
-                    // if (childSnap.key === 'image'){
-                    //     Storageref.child('events/'+childSnap.val()).getDownloadURL().then(function(url) {
-                    //         _ths.setState({
-                    //             evtImgpreview: childSnap.val()
-                    //         })
-                    //     })
-                    //
-                    // }
+        eventsref.child(`${this.props.match.params.evid}/`).on('value', (snap) => {
+            snap.forEach(function (childSnap) {
+                _ths.setState({ [childSnap.key]: childSnap.val() });
+                if (childSnap.key === 'image'){
 
-                });
+                    setTimeout(() => {
+
+                        if (childSnap.val() !== ''){
+                            Storageref.child('events/'+childSnap.val()).getDownloadURL().then(function(url) {
+                                _ths.setState({
+                                    evtImgprev: url
+                                })
+                            })
+                            eventsStoreref.child(`${_ths.state.image}`).getMetadata().then(function(metadata) {
+                                _ths.setState({
+                                    evtImg: metadata.name,
+                                    evtImgName: metadata.name
+                                })
+                            })
+                        }
+
+                    }, 2000)
+
+                }
 
             });
-            setTimeout(() => {
-                eventsStoreref.child(`${this.state.image}`).getDownloadURL().then(function(url) {
-                    _ths.setState({
-                        hasImgonfb: true,
-                        evtImgpreview: url
-                    })
-
-                    _ths.setState({
-                        isloadingimg: false
-                    })
-                }).catch(function(error) {
-                    _ths.setState({
-                        hasImgonfb: false,
-                        evtImgpreview: '',
-                        isloadingimg: false
-                    })
-                })
-
-                eventsStoreref.child(`${this.state.image}`).getMetadata().then(function(metadata) {
-                    _ths.setState({
-                        evtImg: metadata.name,
-                        evtImgName: metadata.name
-                    })
-                }).catch(function(error) {
-                    _ths.setState({
-                        hasImgonfb: false,
-                        isloadingimg: false
-                    })
-                })
-
-            }, 3000)
-        }
-
-
-        //var mapcontent = document.querySelector('#map');
+        });
 
         var autocomplete = new window.google.maps.places.Autocomplete(element);
         autocomplete.addListener('place_changed', function() {
@@ -182,6 +154,7 @@ class UpdateEvent extends React.Component {
                 }
             }
         });
+
     }
 
     handlePlaces = prop => event =>{
@@ -193,50 +166,44 @@ class UpdateEvent extends React.Component {
     };
 
     handlestartDateTimeChange = dateTime => {
-        this.setState({ startDateTime: dateTime })
+        this.setState({ evstartdatetime: dateTime })
     }
 
     handleendDateTimeChange = dateTime => {
-        this.setState({ endDateTime: dateTime })
+        this.setState({ evenddatetime: dateTime })
     }
 
     _handleImageChange(e) {
         e.preventDefault();
-
+        var _ths = this;
         let reader = new FileReader();
         let file = e.target.files[0];
 
         reader.onloadend = () => {
-            this.setState({
+            _ths.setState({
                 evtImg: file,
                 evtImgName: file.name,
                 evtImgtype: file.type,
-                hasImgonfb: true,
-                isloadingimg: false,
-                evtImgpreview: reader.result
+                evtImgpreview: reader.result,
+                ifImgChanged: true,
             });
         }
 
         reader.readAsDataURL(file)
     }
 
-    saveEvent(){
-
+    updateTheEvent(){
         var _ths = this;
         var theFileid = this.makeid();
         var filenamearr = this.state.evtImgName.split('.');
 
-        this.setState({
-            isloading: true,
-            issuccess: false,
-        })
         updateEvent({
             evid: this.props.match.params.evid,
             address : this.state.address,
             description : this.state.description,
-            evstartdatetime : this.state.startDateTime.toLocaleString(),
-            evenddatetime : this.state.endDateTime.toLocaleString(),
-            image : (this.state.evtImgName) ? this.state.evtImgName : theFileid+'.'+filenamearr[1],
+            evstartdatetime : this.state.evstartdatetime,
+            evenddatetime : this.state.evenddatetime,
+            image : (this.state.ifImgChanged) ? theFileid+'.'+filenamearr[1] : this.state.evtImgName,
             lat : this.state.lat,
             lng : this.state.lng,
             name : this.state.name,
@@ -244,7 +211,7 @@ class UpdateEvent extends React.Component {
             zip : this.state.zip
         })
 
-        if (this.state.evtImg !== '' && !this.state.hasImgonfb){
+        if (this.state.ifImgChanged){
             var uploadTask = Storageref.child('events/'+theFileid+'.'+filenamearr[1]).put(this.state.evtImg);
 
             uploadTask.on('state_changed', function(snapshot){
@@ -267,9 +234,10 @@ class UpdateEvent extends React.Component {
                 console.log('Filed');
             }, function() {
                 var downloadURL = uploadTask.snapshot.downloadURL;
-                console.log(downloadURL);
+                console.log(uploadTask.snapshot);
             });
         }
+
     }
 
     makeid = () => {
@@ -284,8 +252,6 @@ class UpdateEvent extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const isupdateBTN = (this.props.match.params.evid) ? 'Update' : 'Save';
-        const isupdated = (this.props.match.params.evid) ? 'Updated' : 'Saved';
         const buttonClassname = classNames({
             [classes.buttonSuccess]: this.state.issuccess,
         });
@@ -306,7 +272,7 @@ class UpdateEvent extends React.Component {
                             className={buttonClassname}
                             disabled={this.state.isloading} raised dense color="primary"
                             onClick={() => {
-                                this.saveEvent()
+                                this.updateTheEvent()
                             }}>
                             {
                                 this.state.isloading ? <CircularProgress size={24} className={classes.buttonProgress} /> :
@@ -314,7 +280,7 @@ class UpdateEvent extends React.Component {
                                         <Save className={classes.leftIcon} />
                             }
                             {
-                                this.state.issuccess ? `Event ${isupdated}` : `${isupdateBTN} Event`
+                                this.state.issuccess ? `Event Updated` : `Update Event`
                             }
                         </Button>
                     </Grid>
@@ -353,7 +319,7 @@ class UpdateEvent extends React.Component {
                                         style={{
                                             width: '100%',
                                         }}
-                                        value={this.state.startDateTime}
+                                        value={this.state.evstartdatetime}
                                         returnMoment={false}
                                         format="MMMM Do YYYY, h:mm:ss a"
                                         onChange={this.handlestartDateTimeChange}
@@ -371,7 +337,7 @@ class UpdateEvent extends React.Component {
                                         style={{
                                             width: '100%',
                                         }}
-                                        value={this.state.endDateTime}
+                                        value={this.state.evenddatetime}
                                         returnMoment={false}
                                         format="MMMM Do YYYY, h:mm:ss a"
                                         onChange={this.handleendDateTimeChange}
@@ -391,11 +357,14 @@ class UpdateEvent extends React.Component {
 
                             <FormControl fullWidth className={stylesm.theFromControl} style={{justifyContent: 'center', alignItems: 'center'}}>
                                 {
-                                    this.state.hasImgonfb ?
-                                    this.state.isloadingimg ?
-                                        <CircularProgress className={classes.progress} /> :
-                                        <Avatar src={this.state.evtImgpreview} className={classes.avatar} /> :
-                                        <div>{`No image found`}</div>
+                                    this.state.evtImgpreview &&
+                                    <ImageLoader
+                                        src={this.state.evtImgpreview}
+                                        className={classes.avatar}
+                                        placeholder="Loading">
+                                        <CircularProgress className={classes.progress} />
+                                    </ImageLoader>
+
                                 }
                             </FormControl>
 
@@ -438,6 +407,25 @@ class UpdateEvent extends React.Component {
                                     </CardContent>
                                 </Card>
                             </FormControl>
+                            <Typography type="title" gutterBottom style={{marginTop: 30}}>
+                                Previous Image
+                            </Typography>
+                            <FormControl fullWidth className={stylesm.theFromControl} style={{justifyContent: 'center', alignItems: 'center'}}>
+                                {
+                                    (this.state.evtImgprev && this.state.evtImgprev !== '') ?
+                                    <ImageLoader
+                                        src={this.state.evtImgprev}
+                                        className={classes.avatar}
+                                        placeholder="Loading">
+                                        <CircularProgress className={classes.progress} />
+                                    </ImageLoader> :
+                                        <Typography>
+                                            Image Loading
+                                        </Typography>
+
+                                }
+                            </FormControl>
+
                         </Paper>
                     </Grid>
                 </Grid>
