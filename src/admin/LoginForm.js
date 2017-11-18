@@ -72,7 +72,7 @@ class LoginForm extends React.Component {
                     'photoURL': user.photoURL,
                 });
                 window.location.assign('/')
-
+                this.setState(setErrorMsg(null))
                 // default constants
                 // reactLocalStorage.setObject('user', {
                 //     'uid': user.uid,

@@ -105,6 +105,10 @@ body {
     display: flex;
 }
 
+.pac-container {
+    z-index: 99999999!important;
+}
+
 @media only screen and (max-width: 960px) {
     /* For mobile phones: */
 

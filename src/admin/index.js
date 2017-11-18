@@ -20,6 +20,7 @@ import MenuIcon from 'material-ui-icons/Menu';
 import Login from "./Login";
 import Dashboard from "./Dashboard";
 import Events from './events'
+import Users from './users'
 
 
 import HomeIcon from 'material-ui-icons/Home';

@@ -69,7 +69,7 @@ const styles = theme => ({
     },
 });
 
-
+var moment = require('moment');
 class UpdateEvent extends React.Component {
 
     constructor(props){
@@ -103,6 +103,19 @@ class UpdateEvent extends React.Component {
         eventsref.child(`${this.props.match.params.evid}/`).on('value', (snap) => {
             snap.forEach(function (childSnap) {
                 _ths.setState({ [childSnap.key]: childSnap.val() });
+
+                if (childSnap.key === 'evstartdatetime'){
+                    _ths.setState({
+                        evstartdatetime: childSnap.val().toLocaleString()
+                    })
+                }
+
+                if (childSnap.key === 'evenddatetime'){
+                    _ths.setState({
+                        evenddatetime: childSnap.val().toLocaleString()
+                    })
+                }
+
                 if (childSnap.key === 'image'){
 
                     setTimeout(() => {
@@ -112,17 +125,24 @@ class UpdateEvent extends React.Component {
                                 _ths.setState({
                                     evtImgprev: url
                                 })
+                            }).catch((err) => {
+                                _ths.setState({
+                                    evtImgprev: ''
+                                })
                             })
                             eventsStoreref.child(`${_ths.state.image}`).getMetadata().then(function(metadata) {
                                 _ths.setState({
                                     evtImg: metadata.name,
                                     evtImgName: metadata.name
                                 })
+                            }).catch((err) => {
+                                _ths.setState({
+                                    evtImg: '',
+                                    evtImgName: ''
+                                })
                             })
                         }
-
                     }, 2000)
-
                 }
 
             });
@@ -420,7 +440,7 @@ class UpdateEvent extends React.Component {
                                         <CircularProgress className={classes.progress} />
                                     </ImageLoader> :
                                         <Typography>
-                                            Image Loading
+                                            Image not found
                                         </Typography>
 
                                 }

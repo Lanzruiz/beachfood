@@ -66,13 +66,13 @@ class RegisterForm extends React.Component {
     handleSubmit = () => {
         auth(this.state.email, this.state.password)
             .then((user) => {
-                console.log(user);
                 reactLocalStorage.set('isloggedin', true);
                 reactLocalStorage.set('uid', user.uid);
                 reactLocalStorage.setObject('user', {
                     'displayName': user.displayName,
                     'photoURL': user.photoURL,
                 });
+                this.setState(setErrorMsg({error: null}))
                 this.setState(setSuccessMsg('You have successfully registered. Please wait we will redirect you to the dashboard.'))
 
                 setTimeout(function () {
@@ -150,7 +150,7 @@ class RegisterForm extends React.Component {
                         onClick={() => {
                             this.handleSubmit()
                         }}>
-                    Sign in
+                    Sign Up
                 </Button>
 
             </div>
