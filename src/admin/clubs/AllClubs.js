@@ -19,8 +19,10 @@ import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import Save from 'material-ui-icons/Save';
 import CheckIcon from 'material-ui-icons/Check';
+import EditIcon from 'material-ui-icons/Edit';
 import Input, { InputLabel } from 'material-ui/Input';
 import { FormControl } from 'material-ui/Form';
+import TextField from 'material-ui/TextField';
 
 import { CircularProgress } from 'material-ui/Progress';
 import Divider from 'material-ui/Divider';
@@ -29,6 +31,7 @@ import Tooltip from 'material-ui/Tooltip';
 import { clubssref } from '../../FB'
 import stylesm from '../../App.css'
 import swal from 'sweetalert';
+import { saveClub, updateClub } from '../../helpers/clubs'
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
@@ -42,6 +45,7 @@ const styles = theme => ({
     },
     button: {
         margin: theme.spacing.unit,
+        float: 'right'
     },
     leftIcon: {
         marginRight: theme.spacing.unit,
@@ -59,11 +63,10 @@ const styles = theme => ({
         color: '#FAFAFA',
     },
     buttonSuccess: {
-        backgroundColor: 'transparent',
+        backgroundColor: '#3ebd08',
         '&:hover': {
-            backgroundColor: 'transparent',
-        },
-        float: 'right'
+            backgroundColor: '#41bc08',
+        }
     },
 });
 
@@ -75,13 +78,25 @@ class AllClubs extends React.Component {
             open: false,
             loadingData: false,
             clubData: [],
+            clubName: '',
             place: '',
+            clubDesc: '',
+            clubimage: '',
+            icon: '',
+            phone: '',
+            lat: '',
+            lng: '',
+            city: '',
+            zip: '',
+            clubstate: '',
+            isloading: false,
+            issuccess: false,
         }
     }
 
     componentDidMount(){
         var _ths = this;
-
+        _ths.theGoolgePlaces()
         clubssref.on('value', function(snapshot) {
             let theclubData = [];
             _ths.setState({
@@ -90,7 +105,6 @@ class AllClubs extends React.Component {
             snapshot.forEach(function(eventItem) {
                 var childKey = eventItem.key;
                 var childData = eventItem.val();
-                console.log(childData);
                 childData['key'] = childKey;
                 if (!childData.info){
                     theclubData.push(childData)
@@ -111,9 +125,14 @@ class AllClubs extends React.Component {
         var autocomplete = new window.google.maps.places.Autocomplete(element);
         return autocomplete.addListener('place_changed', function() {
             var place = autocomplete.getPlace();
+            console.log(place);
+            var pImg = place.photos[0].getUrl({
+                'maxWidth': 1600
+            });
             _ths.setState({
-                address: place.formatted_address,
+                place: place.formatted_address,
                 icon: place.icon,
+                clubimage: pImg,
                 phone: place.international_phone_number,
                 lat: place.geometry.location.lat(),
                 lng: place.geometry.location.lng(),
@@ -128,13 +147,60 @@ class AllClubs extends React.Component {
                     }
                     if (place.address_components[i].types[j] === "administrative_area_level_1") {
                         _ths.setState({
-                            state: place.address_components[i].long_name
+                            city: place.address_components[i].long_name
+                        })
+                    }
+                    if (place.address_components[i].types[j] === "administrative_area_level_2") {
+                        _ths.setState({
+                            clubstate: place.address_components[i].long_name
                         })
                     }
 
                 }
             }
         })
+    }
+
+    savetheClub(){
+
+        var _ths = this;
+        if (this.state.clubName !== ''){
+            _ths.setState({
+                isloading: true,
+            })
+            setTimeout(() => {
+                saveClub({
+                    address : this.state.place,
+                    city : this.state.city,
+                    description : this.state.clubDesc,
+                    image : this.state.clubimage,
+                    lat : this.state.lat,
+                    lng : this.state.lng,
+                    name : this.state.clubName,
+                    clubstate : this.state.clubstate,
+                    clzip : this.state.zip
+                }).then((club) => {
+                    _ths.setState({
+                        address : '',
+                        city : '',
+                        description : '',
+                        image : '',
+                        lat : '',
+                        lng : '',
+                        name : '',
+                        clubstate : '',
+                        clzip : '',
+                        isloading: false,
+                        issuccess: true,
+                    })
+                })
+                setTimeout(() => {
+                    _ths.setState({
+                        issuccess: false,
+                    })
+                }, 1000)
+            }, 1000)
+        }
     }
 
     askDeleteConfirm(key) {
@@ -153,7 +219,7 @@ class AllClubs extends React.Component {
     };
 
     handlePlaces = prop => event =>{
-        this.setState({ address: event.target.value });
+        this.setState({ place: event.target.value });
     }
 
     handleChange = prop => event => {
@@ -168,25 +234,55 @@ class AllClubs extends React.Component {
         return (
             <div className="App">
                 <Grid container spacing={24}>
-                    <Grid item xs={6}>
-                        <FormControl fullWidth className={stylesm.theFromControl}>
-                            <InputLabel htmlFor="evtVenue">Place</InputLabel>
-                            <Input
-                                ref={(place) => { this.addr = place; }}
-                                id="place"
-                                value={this.state.place}
-                                onChange={this.handlePlaces('place')}
-                            />
-                        </FormControl>
+
+                    <Grid item xs={12} lg={8}>
+
+                        <Grid container>
+                            <Grid item xs={12} lg={6}>
+                                <FormControl fullWidth className={stylesm.theFromControl}>
+                                    <InputLabel htmlFor="clubName">Club Name</InputLabel>
+                                    <Input
+                                        id="clubName"
+                                        value={this.state.clubName}
+                                        onChange={this.handleChange('clubName')}
+                                    />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={12} lg={6}>
+                                <FormControl fullWidth className={stylesm.theFromControl}>
+                                    <InputLabel htmlFor="address">Place</InputLabel>
+                                    <Input
+                                        ref={(place) => { this.addr = place; }}
+                                        id="address"
+                                        value={this.state.place}
+                                        onChange={this.handlePlaces('place')}
+                                    />
+                                </FormControl>
+                            </Grid>
+                        </Grid>
+                        <Grid item xs={12} lg={12}>
+                            <FormControl fullWidth className={stylesm.theFromControl}>
+                                <TextField
+                                    id="clubDesc"
+                                    label="Club Description"
+                                    multiline
+                                    rows="4"
+                                    value={this.state.clubDesc}
+                                    onChange={this.handleChange('clubDesc')}
+                                    margin="normal"
+                                />
+                            </FormControl>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={6}>
+
+                    <Grid item xs={12} lg={4}>
                         <Button raised
-                            color="primary"
-                            className={buttonClassname}
-                            disabled={this.state.isloading}
-                            onClick={() => {
-                                this.updateUserInfo()
-                            }}>
+                                color="primary"
+                                className={buttonClassname}
+                                disabled={this.state.isloading}
+                                onClick={() => {
+                                    this.savetheClub()
+                                }}>
                             {
                                 this.state.isloading ? <CircularProgress size={24} className={classes.buttonProgress} /> :
                                     this.state.issuccess ? <CheckIcon  className={classes.leftIcon}/> :
@@ -197,6 +293,7 @@ class AllClubs extends React.Component {
                             }
                         </Button>
                     </Grid>
+
                     <Grid item xs={12}>
                         <Paper className={classes.paper}>
                             {
@@ -212,14 +309,23 @@ class AllClubs extends React.Component {
                                                             className={classes.listItem}>
                                                             <ListItemText primary={`${value.address}`} secondary={`City: ${value.city}`} />
                                                             <ListItemSecondaryAction>
+                                                                <Tooltip id="tooltip-icon" title="Edit" placement="left">
+                                                                    <IconButton aria-label="Edit"
+                                                                        onClick={() => {
+                                                                            this.updateclub(value.key)
+                                                                        }}>
+                                                                        <EditIcon />
+                                                                    </IconButton>
+                                                                </Tooltip>
                                                                 <Tooltip id="tooltip-icon" title="Delete" placement="left">
                                                                     <IconButton aria-label="Delete"
-                                                                                onClick={() => {
-                                                                                    this.askDeleteConfirm(value.key)
-                                                                                }}>
+                                                                        onClick={() => {
+                                                                            this.askDeleteConfirm(value.key)
+                                                                        }}>
                                                                         <DeleteIcon />
                                                                     </IconButton>
                                                                 </Tooltip>
+
                                                             </ListItemSecondaryAction>
                                                         </ListItem>
                                                         <Divider inset />
