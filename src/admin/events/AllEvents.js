@@ -12,13 +12,7 @@ import EditIcon from 'material-ui-icons/Edit';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
 
-import Dialog, {
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    withMobileDialog,
-} from 'material-ui/Dialog';
+import Dialog from 'material-ui/Dialog';
 import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Slide from 'material-ui/transitions/Slide';
@@ -27,9 +21,7 @@ import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import { FormControl } from 'material-ui/Form';
-import MenuItem from 'material-ui/Menu/MenuItem';
 import Input, { InputLabel } from 'material-ui/Input';
-import { CircularProgress } from 'material-ui/Progress';
 import Save from 'material-ui-icons/Save';
 import CheckIcon from 'material-ui-icons/Check';
 import swal from 'sweetalert';
@@ -37,6 +29,7 @@ import { DateTimePicker } from 'material-ui-pickers'
 import Card, { CardHeader, CardContent } from 'material-ui/Card';
 
 import Avatar from 'material-ui/Avatar';
+import { CircularProgress } from 'material-ui/Progress';
 import Divider from 'material-ui/Divider';
 import Tooltip from 'material-ui/Tooltip';
 
@@ -413,7 +406,7 @@ class AllEvents extends React.Component {
                                     display: 'flex'
                                 }}>
                                 <Grid container style={{width: '100%', margin: 0}}>
-                                    <Grid item xs={7}>
+                                    <Grid item xs={12} lg={7}>
                                         <FormControl fullWidth className={stylesm.theFromControl}>
                                             <InputLabel htmlFor="evtName">Event Name</InputLabel>
                                             <Input
@@ -484,7 +477,7 @@ class AllEvents extends React.Component {
                                             <Avatar src={this.state.evtImgpreview} className={classes.avatar} />
                                         </FormControl>
                                     </Grid>
-                                    <Grid item xs={5}>
+                                    <Grid item xs={12} lg={5}>
                                         <Typography type="title" gutterBottom>
                                             Venue
                                         </Typography>

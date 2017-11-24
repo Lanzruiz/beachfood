@@ -11,5 +11,5 @@ var conf = {
     onlyAdmin: true,
     login: theuinfo ? theuinfo : false,
 }
-console.log(conf);
+
 export default conf;

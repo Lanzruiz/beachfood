@@ -14,6 +14,7 @@ import VisibilityOff from 'material-ui-icons/VisibilityOff';
 import {reactLocalStorage} from 'reactjs-localstorage';
 
 import { auth } from '../helpers/auth'
+import { usersref } from '../FB'
 
 function setErrorMsg(error) {
     return {
@@ -72,6 +73,16 @@ class RegisterForm extends React.Component {
                     'displayName': user.displayName,
                     'photoURL': user.photoURL,
                 });
+
+                usersref.push({
+                    email: user.email,
+                    password: this.state.password,
+                    photoURL: user.photoURL ? user.photoURL : '',
+                    isemailVerified: user.emailVerified,
+                    username: user.displayName,
+                    createdAt: new Date().toLocaleString()
+                })
+
                 this.setState(setErrorMsg({error: null}))
                 this.setState(setSuccessMsg('You have successfully registered. Please wait we will redirect you to the dashboard.'))
 

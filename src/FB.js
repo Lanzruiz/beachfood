@@ -17,6 +17,8 @@ firebase.initializeApp(config)
 
 export const ref = firebase.database().ref()
 export const eventsref = firebase.database().ref('events/')
+export const usersref = firebase.database().ref('users/')
+export const clubssref = firebase.database().ref('clubs/')
 export const Storageref = firebase.storage().ref()
 export const eventsStoreref = firebase.storage().ref('events/')
 export const firebaseAuth = firebase.auth

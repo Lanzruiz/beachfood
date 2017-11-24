@@ -21,10 +21,12 @@ import Login from "./Login";
 import Dashboard from "./Dashboard";
 import Events from './events'
 import Users from './users'
+import AllClubs from './clubs'
 
 
 import HomeIcon from 'material-ui-icons/Home';
 import EventIcon from 'material-ui-icons/Event';
+import AccountIcon from 'material-ui-icons/AccountBox';
 
 import PowerSettingsNew from 'material-ui-icons/PowerSettingsNew';
 import {
@@ -54,6 +56,20 @@ const routes = [
         menuIcon: <EventIcon />,
         sidebar: () => <div>Events</div>,
         main: () => <Events/>
+    },
+    {
+        path: '/users',
+        menuName: 'Users',
+        menuIcon: <AccountIcon />,
+        sidebar: () => <div>Users</div>,
+        main: () => <Users/>
+    },
+    {
+        path: '/clubs',
+        menuName: 'Clubs',
+        menuIcon: <AccountIcon />,
+        sidebar: () => <div>Clubs</div>,
+        main: () => <AllClubs/>
     }
 ]
 
