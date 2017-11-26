@@ -23,16 +23,17 @@ import EditIcon from 'material-ui-icons/Edit';
 import Input, { InputLabel } from 'material-ui/Input';
 import { FormControl } from 'material-ui/Form';
 import TextField from 'material-ui/TextField';
+import { LinearProgress } from 'material-ui/Progress';
 
 import { CircularProgress } from 'material-ui/Progress';
 import Divider from 'material-ui/Divider';
 import Tooltip from 'material-ui/Tooltip';
 
-import { clubssref } from '../../FB'
+import { clubssref, clubStoreref } from '../../FB'
 import stylesm from '../../App.css'
 import swal from 'sweetalert';
 import { saveClub, updateClub } from '../../helpers/clubs'
-
+var i2b = require("imageurl-base64");
 function Transition(props) {
     return <Slide direction="up" {...props} />;
 }
@@ -77,9 +78,11 @@ class AllClubs extends React.Component {
         this.state = {
             open: false,
             loadingData: false,
+            isSingle: false,
+            isSingleID: '',
             clubData: [],
             clubName: '',
-            place: '',
+            address: '',
             clubDesc: '',
             clubimage: '',
             icon: '',
@@ -91,6 +94,8 @@ class AllClubs extends React.Component {
             clubstate: '',
             isloading: false,
             issuccess: false,
+            isPlaceChanged: false,
+            uploadProgress: 0
         }
     }
 
@@ -125,18 +130,33 @@ class AllClubs extends React.Component {
         var autocomplete = new window.google.maps.places.Autocomplete(element);
         return autocomplete.addListener('place_changed', function() {
             var place = autocomplete.getPlace();
-            console.log(place);
-            var pImg = place.photos[0].getUrl({
-                'maxWidth': 1600
-            });
-            _ths.setState({
-                place: place.formatted_address,
-                icon: place.icon,
-                clubimage: pImg,
-                phone: place.international_phone_number,
-                lat: place.geometry.location.lat(),
-                lng: place.geometry.location.lng(),
-            })
+
+            if (place.photos){
+                var pImg = place.photos[0].getUrl({
+                    'maxWidth': 1600
+                });
+                _ths.setState({
+                    address: place.formatted_address,
+                    icon: place.icon,
+                    clubimage: pImg ? pImg : '',
+                    phone: place.international_phone_number,
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng(),
+                    isPlaceChanged: true
+                })
+            }
+            else {
+                _ths.setState({
+                    address: place.formatted_address,
+                    icon: place.icon,
+                    clubimage: pImg ? pImg : '',
+                    phone: place.international_phone_number,
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng(),
+                    isPlaceChanged: false
+                })
+            }
+
 
             for (var i = 0; i < place.address_components.length; i++) {
                 for (var j = 0; j < place.address_components[i].types.length; j++) {
@@ -168,39 +188,278 @@ class AllClubs extends React.Component {
             _ths.setState({
                 isloading: true,
             })
+
+            var imageName = `${this.makeid()}.png`;
+
+            //console.log(this.state.dimage);
+
             setTimeout(() => {
                 saveClub({
-                    address : this.state.place,
+                    address : this.state.address,
                     city : this.state.city,
                     description : this.state.clubDesc,
-                    image : this.state.clubimage,
+                    image : imageName,
                     lat : this.state.lat,
                     lng : this.state.lng,
                     name : this.state.clubName,
                     clubstate : this.state.clubstate,
                     clzip : this.state.zip
                 }).then((club) => {
-                    _ths.setState({
-                        address : '',
-                        city : '',
-                        description : '',
-                        image : '',
-                        lat : '',
-                        lng : '',
-                        name : '',
-                        clubstate : '',
-                        clzip : '',
-                        isloading: false,
-                        issuccess: true,
+
+                    this.toDataURL(this.state.clubimage)
+                    .then((response) => response)
+                    .then((data) => {
+                        var thencB64img = data.replace(/^data:image\/(png|jpg);base64,/, "")
+                        var blob = _ths.b64toBlob(thencB64img, 'image/png');
+                        let uploadTask = clubStoreref.child(imageName).put(blob);
+
+                        uploadTask.on('state_changed', function(snapshot){
+                            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            _ths.setState({
+                                uploadProgress :progress
+                            });
+                            console.log(progress);
+                            //console.log(snapshot.state);
+                        }, function(error) {
+                            console.log('Filed');
+                        }, function() {
+                            _ths.setState({
+                                isSingle: false,
+                                isSingleID: '',
+                                clubName: '',
+                                address: '',
+                                clubDesc: '',
+                                clubimage: '',
+                                icon: '',
+                                phone: '',
+                                lat: '',
+                                lng: '',
+                                city: '',
+                                zip: '',
+                                clubstate: '',
+                                isPlaceChanged: false,
+                                isloading: false
+                            })
+                            setTimeout(() => {
+                                _ths.setState({
+                                    issuccess: false,
+                                })
+                            }, 2000)
+                            //var downloadURL = uploadTask.snapshot.downloadURL;
+                            //console.log(downloadURL);
+                        });
+
                     })
                 })
-                setTimeout(() => {
-                    _ths.setState({
-                        issuccess: false,
-                    })
-                }, 1000)
+
             }, 1000)
         }
+    }
+
+    toDataURL(url) {
+        var _ths = this;
+
+        return new Promise((resolve, reject) => {
+            var img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.onload = function() {
+                var canvas = document.createElement('CANVAS');
+                var ctx = canvas.getContext('2d');
+                var dataURL;
+                canvas.height = this.height;
+                canvas.width = this.width;
+                ctx.drawImage(this, 0, 0);
+                dataURL = canvas.toDataURL("image/png");
+                resolve(dataURL)
+                reject('error')
+                canvas = null;
+            };
+            img.src = url;
+        })
+    }
+
+    b64toBlob(b64Data, contentType, sliceSize) {
+        contentType = contentType || '';
+        sliceSize = sliceSize || 512;
+
+        var byteCharacters = atob(b64Data);
+        var byteArrays = [];
+
+        for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+            var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+            var byteNumbers = new Array(slice.length);
+            for (var i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            var byteArray = new Uint8Array(byteNumbers);
+
+            byteArrays.push(byteArray);
+        }
+
+        var blob = new Blob(byteArrays, {type: contentType});
+        return blob;
+    }
+
+    editClub(key){
+        var _ths = this;
+
+        _ths.setState({
+            isSingleID: key,
+            isSingle: true
+        })
+
+        var thref = clubssref.child(key);
+
+        thref.on('value', (snap) => {
+            snap.forEach((club) => {
+                _ths.setState({ [club.key]: club.val() });
+                if (club.key === 'name' ){
+                    _ths.setState({
+                        clubName: club.val()
+                    });
+                }
+                if (club.key === 'description' ){
+                    _ths.setState({
+                        clubDesc: club.val()
+                    });
+                }
+                if (club.key === 'image' ){
+                    _ths.setState({
+                        clubimage: club.val()
+                    });
+                }
+                if (club.key === 'state' ){
+                    _ths.setState({
+                        clubstate: club.val()
+                    });
+                }
+
+            })
+        })
+    }
+
+
+    updatetheClub(){
+
+        var _ths = this;
+        if (this.state.clubName !== ''){
+            _ths.setState({
+                isloading: true,
+            })
+
+            var imageName = _ths.state.isPlaceChanged ? `${this.makeid()}.png` : _ths.state.clubimage;
+
+            //console.log(this.state.dimage);
+
+            updateClub({
+                thkey: this.state.isSingleID,
+                address : this.state.address,
+                city : this.state.city,
+                description : this.state.clubDesc,
+                image : imageName,
+                lat : this.state.lat,
+                lng : this.state.lng,
+                name : this.state.clubName,
+                clubstate : this.state.clubstate,
+                clzip : this.state.zip
+            }).then((club) => {
+                if (_ths.state.isPlaceChanged) {
+                    _ths.toDataURL(this.state.clubimage)
+                        .then((response) => response)
+                        .then((data) => {
+                            console.log('in');
+                            var thencB64img = data.replace(/^data:image\/(png|jpg);base64,/, "")
+                            var blob = _ths.b64toBlob(thencB64img, 'image/png');
+                            let uploadTask = clubStoreref.child(imageName).put(blob);
+
+                            uploadTask.on('state_changed', function(snapshot){
+                                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                _ths.setState({
+                                    uploadProgress :progress
+                                });
+                                console.log(progress);
+
+                                //console.log(snapshot.state);
+                            }, function(error) {
+                                console.log('Filed');
+                            }, function() {
+                                _ths.setState({
+                                    isSingle: false,
+                                    isSingleID: '',
+                                    clubName: '',
+                                    address: '',
+                                    clubDesc: '',
+                                    clubimage: '',
+                                    icon: '',
+                                    phone: '',
+                                    lat: '',
+                                    lng: '',
+                                    city: '',
+                                    zip: '',
+                                    clubstate: '',
+                                    isPlaceChanged: false,
+                                    isloading: false
+                                })
+                                setTimeout(() => {
+                                    _ths.setState({
+                                        issuccess: false,
+                                    })
+                                }, 2000)
+                                //var downloadURL = uploadTask.snapshot.downloadURL;
+                                //console.log(downloadURL);
+                            });
+
+                        })
+                }
+                else {
+                    setTimeout(() => {
+                        _ths.setState({
+                            isSingle: false,
+                            isSingleID: '',
+                            clubName: '',
+                            address: '',
+                            clubDesc: '',
+                            clubimage: '',
+                            icon: '',
+                            phone: '',
+                            lat: '',
+                            lng: '',
+                            city: '',
+                            zip: '',
+                            clubstate: '',
+                            isPlaceChanged: false,
+                            isloading: false,
+                            issuccess: false,
+                        })
+                    }, 2000)
+                }
+
+
+            })
+        }
+    }
+
+    cancelEdit(){
+        this.setState({
+            isSingle: false,
+            isSingleID: '',
+            clubName: '',
+            address: '',
+            clubDesc: '',
+            clubimage: '',
+            icon: '',
+            phone: '',
+            lat: '',
+            lng: '',
+            city: '',
+            zip: '',
+            clubstate: '',
+            isPlaceChanged: false,
+            isloading: false,
+            issuccess: false,
+        })
     }
 
     askDeleteConfirm(key) {
@@ -218,8 +477,18 @@ class AllClubs extends React.Component {
         });
     };
 
+    makeid = () => {
+        var text = "";
+        var possible = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+        for (var i = 0; i < 12; i++)
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    }
+
     handlePlaces = prop => event =>{
-        this.setState({ place: event.target.value });
+        this.setState({ address: event.target.value });
     }
 
     handleChange = prop => event => {
@@ -231,6 +500,7 @@ class AllClubs extends React.Component {
         const buttonClassname = classNames({
             [classes.buttonSuccess]: this.state.issuccess,
         });
+
         return (
             <div className="App">
                 <Grid container spacing={24}>
@@ -252,10 +522,10 @@ class AllClubs extends React.Component {
                                 <FormControl fullWidth className={stylesm.theFromControl}>
                                     <InputLabel htmlFor="address">Place</InputLabel>
                                     <Input
-                                        ref={(place) => { this.addr = place; }}
+                                        ref={(address) => { this.addr = address; }}
                                         id="address"
-                                        value={this.state.place}
-                                        onChange={this.handlePlaces('place')}
+                                        value={this.state.address}
+                                        onChange={this.handlePlaces('address')}
                                     />
                                 </FormControl>
                             </Grid>
@@ -275,27 +545,61 @@ class AllClubs extends React.Component {
                         </Grid>
                     </Grid>
 
-                    <Grid item xs={12} lg={4}>
-                        <Button raised
-                                color="primary"
-                                className={buttonClassname}
-                                disabled={this.state.isloading}
-                                onClick={() => {
-                                    this.savetheClub()
-                                }}>
-                            {
-                                this.state.isloading ? <CircularProgress size={24} className={classes.buttonProgress} /> :
-                                    this.state.issuccess ? <CheckIcon  className={classes.leftIcon}/> :
-                                        <Save className={classes.leftIcon} />
-                            }
-                            {
-                                this.state.issuccess ? 'Club Added' : 'Add Club'
-                            }
-                        </Button>
-                    </Grid>
+                    {
+                        this.state.isSingle ?
+                            <Grid item container xs={12} lg={4}>
+
+                                <Grid item xs={12} lg={6}>
+                                    <Button raised
+                                            color="primary"
+                                            disabled={this.state.isloading}
+                                            onClick={() => {
+                                                this.updatetheClub()
+                                            }}>
+                                        {
+                                            this.state.isloading ? <CircularProgress size={24} className={classes.buttonProgress} /> :
+                                                this.state.issuccess ? <CheckIcon  className={classes.leftIcon}/> :
+                                                    <Save className={classes.leftIcon} />
+                                        }
+                                        {
+                                            this.state.issuccess ? 'Updated' : 'Update'
+                                        }
+                                    </Button>
+                                </Grid>
+                                <Grid item xs={12} lg={6}>
+                                    <Button raised
+                                            color="primary"
+                                            onClick={() => {
+                                                this.cancelEdit()
+                                            }}>
+                                        Cancel
+                                    </Button>
+                                </Grid>
+                            </Grid> :
+                            <Grid item xs={12} lg={4}>
+                                <Button raised
+                                        color="primary"
+                                        disabled={this.state.isloading}
+                                        onClick={() => {
+                                            this.savetheClub()
+                                        }}>
+                                    {
+                                        this.state.isloading ? <CircularProgress size={24} className={classes.buttonProgress} /> :
+                                            this.state.issuccess ? <CheckIcon  className={classes.leftIcon}/> :
+                                                <Save className={classes.leftIcon} />
+                                    }
+                                    {
+                                        this.state.issuccess ? 'Club Added' : 'Add Club'
+                                    }
+                                </Button>
+                            </Grid>
+
+                    }
+
 
                     <Grid item xs={12}>
                         <Paper className={classes.paper}>
+                            <LinearProgress mode="determinate" value={this.state.uploadProgress} />
                             {
                                 (this.state.clubData.length > 0) ?
                                     <List>
@@ -307,12 +611,12 @@ class AllClubs extends React.Component {
                                                         <ListItem
                                                             dense
                                                             className={classes.listItem}>
-                                                            <ListItemText primary={`${value.address}`} secondary={`City: ${value.city}`} />
+                                                            <ListItemText primary={`${value.name}`} secondary={`City: ${value.city}`} />
                                                             <ListItemSecondaryAction>
                                                                 <Tooltip id="tooltip-icon" title="Edit" placement="left">
                                                                     <IconButton aria-label="Edit"
                                                                         onClick={() => {
-                                                                            this.updateclub(value.key)
+                                                                            this.editClub(value.key)
                                                                         }}>
                                                                         <EditIcon />
                                                                     </IconButton>

@@ -20,7 +20,7 @@ export function saveClub(club) {
 }
 
 export function updateClub(club) {
-    return ref.child(`clubs/${club.key}`)
+    return ref.child(`clubs/${club.thkey}`)
         .set({
             address : club.address,
             city : club.city,

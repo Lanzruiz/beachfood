@@ -20,5 +20,6 @@ export const eventsref = firebase.database().ref('events/')
 export const usersref = firebase.database().ref('users/')
 export const clubssref = firebase.database().ref('clubs/')
 export const Storageref = firebase.storage().ref()
+export const clubStoreref = firebase.storage().ref('club_image/')
 export const eventsStoreref = firebase.storage().ref('events/')
 export const firebaseAuth = firebase.auth
