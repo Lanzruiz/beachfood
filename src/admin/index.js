@@ -22,6 +22,7 @@ import Dashboard from "./Dashboard";
 import Events from './events'
 import Users from './users'
 import AllClubs from './clubs'
+import AllDrinks from './drinks'
 
 
 import HomeIcon from 'material-ui-icons/Home';
@@ -70,6 +71,13 @@ const routes = [
         menuIcon: <AccountIcon />,
         sidebar: () => <div>Clubs</div>,
         main: () => <AllClubs/>
+    },
+    {
+        path: '/drinks',
+        menuName: 'Drinks',
+        menuIcon: <AccountIcon />,
+        sidebar: () => <div>Drinks</div>,
+        main: () => <AllDrinks/>
     }
 ]
 
