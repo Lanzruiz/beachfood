@@ -23,11 +23,16 @@ import Events from './events'
 import Users from './users'
 import AllClubs from './clubs'
 import AllDrinks from './drinks'
+import Subscriptions from './subscriptions'
 
 
 import HomeIcon from 'material-ui-icons/Home';
 import EventIcon from 'material-ui-icons/Event';
 import AccountIcon from 'material-ui-icons/AccountBox';
+import Contacts from 'material-ui-icons/Contacts';
+import Weekend from 'material-ui-icons/Weekend';
+import LocalBar from 'material-ui-icons/LocalBar';
+import PersonPin from 'material-ui-icons/PersonPin';
 
 import PowerSettingsNew from 'material-ui-icons/PowerSettingsNew';
 import {
@@ -61,23 +66,30 @@ const routes = [
     {
         path: '/users',
         menuName: 'Users',
-        menuIcon: <AccountIcon />,
+        menuIcon: <Contacts />,
         sidebar: () => <div>Users</div>,
         main: () => <Users/>
     },
     {
         path: '/clubs',
         menuName: 'Clubs',
-        menuIcon: <AccountIcon />,
+        menuIcon: <Weekend />,
         sidebar: () => <div>Clubs</div>,
         main: () => <AllClubs/>
     },
     {
         path: '/drinks',
         menuName: 'Drinks',
-        menuIcon: <AccountIcon />,
+        menuIcon: <LocalBar />,
         sidebar: () => <div>Drinks</div>,
         main: () => <AllDrinks/>
+    },
+    {
+        path: '/subscriptions',
+        menuName: 'Subscriptions',
+        menuIcon: <PersonPin />,
+        sidebar: () => <div>Subscriptions</div>,
+        main: () => <Subscriptions />
     }
 ]
 

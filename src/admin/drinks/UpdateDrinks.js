@@ -78,9 +78,10 @@ class UpdateDrinks extends React.Component {
             drinksImgtype: '',
             drinksImgpreview: '',
             prevImg: '',
+            ifImgChanged: false,
             drinkPrice: '',
             checked: [],
-            isFree: true,
+            isFree: false,
             selectedclubid: '',
             isloading: false,
             issuccess: false,
@@ -191,62 +192,51 @@ class UpdateDrinks extends React.Component {
         var theFileid = this.makeid();
         var filenamearr = this.state.drinksImgName.split('.');
 
-        drinksref.child(`${this.state.selectedclubid}`).set({
+        // console.log(`${_ths.props.match.params.clubid}/${_ths.props.match.params.drinkid}/isFreeDrinks/`);
+        // drinksref.child(`${_ths.props.match.params.clubid}/${_ths.props.match.params.drinkid}/isFreeDrinks/`).set(_ths.state.isFree)
+        drinksref.child(`${_ths.props.match.params.clubid}/${_ths.props.match.params.drinkid}`).set({
             name : _ths.state.drinksName,
             whatsinit : _ths.state.whatsinit,
             description : _ths.state.drinksDesc,
-            image : theFileid+'.'+filenamearr[1],
+            image : (this.state.ifImgChanged) ? theFileid+'.'+filenamearr[1] : this.state.drinksImgName,
             isFreeDrinks : _ths.state.isFree,
             price : _ths.state.drinkPrice
-        }).then((data) => {
-            if (this.state.drinksImg !== ''){
-                var uploadTask = Storageref.child('club_image/'+theFileid+'.'+filenamearr[1]).put(this.state.drinksImg);
-
-                uploadTask.on('state_changed', function(snapshot){
-                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-
-                    if (progress === 100){
-                        _ths.setState({
-                            isloading: false,
-                            isdrinksAdded: true,
-                        })
-                        setTimeout(() => {
-                            _ths.setState({
-                                loadingData: false,
-                                drinksName: '',
-                                whatsinit: '',
-                                drinksDesc: '',
-                                drinksPrice: '',
-                                drinksImg: '',
-                                drinksImgName: '',
-                                drinksImgtype: '',
-                                drinksImgpreview: '',
-                                selectedclubid: '',
-                                drinkPrice: '',
-                                isFree: false,
-                                isSingle: false,
-                                isSingleID: '',
-                                isloading: false,
-                                issuccess: false,
-                                isPlaceChanged: false,
-                                uploadProgress: 0,
-                                issavingdrinks: false,
-                                isdrinksAdded: false
-                            })
-
-                            _ths.handleRequestClose()
-                        }, 3000)
-                    }
-
-                    console.log(snapshot.state);
-                }, function(error) {
-                    console.log('Filed');
-                }, function() {
-                    var downloadURL = uploadTask.snapshot.downloadURL;
-                    console.log(downloadURL);
-                });
-            }
         })
+
+        // if (this.state.ifImgChanged){
+        //     var uploadTask = Storageref.child('club_image/'+theFileid+'.'+filenamearr[1]).put(this.state.drinksImg);
+        //
+        //     uploadTask.on('state_changed', function(snapshot){
+        //         var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        //
+        //         if (progress === 100){
+        //             _ths.setState({
+        //                 isloading: false,
+        //                 isdrinksAdded: true,
+        //             })
+        //             setTimeout(() => {
+        //                 _ths.setState({
+        //                     loadingData: false,
+        //                     isloading: false,
+        //                     issuccess: false,
+        //                     uploadProgress: 0,
+        //                     issavingdrinks: false,
+        //                     isdrinksAdded: false,
+        //                     ifImgChanged: false
+        //                 })
+        //
+        //                 _ths.handleRequestClose()
+        //             }, 3000)
+        //         }
+        //
+        //         console.log(snapshot.state);
+        //     }, function(error) {
+        //         console.log('Filed');
+        //     }, function() {
+        //         var downloadURL = uploadTask.snapshot.downloadURL;
+        //         console.log(downloadURL);
+        //     });
+        // }
 
     }
 
@@ -261,7 +251,8 @@ class UpdateDrinks extends React.Component {
                 drinksImg: file,
                 drinksImgName: file.name,
                 drinksImgtype: file.type,
-                drinksImgpreview: reader.result
+                drinksImgpreview: reader.result,
+                ifImgChanged: true
             });
         }
 
@@ -301,9 +292,6 @@ class UpdateDrinks extends React.Component {
 
         if (currentIndex === -1) {
             newChecked.push(value);
-            _ths.setState({
-                isFree: false
-            })
         } else {
             newChecked.splice(currentIndex, 1);
             _ths.setState({
