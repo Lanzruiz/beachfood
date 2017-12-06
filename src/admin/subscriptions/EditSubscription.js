@@ -1,5 +1,5 @@
 /**
- * Created by BOSS on 12/5/2017.
+ * Created by BOSS on 12/6/2017.
  */
 import React, { Component } from 'react'
 import classNames from 'classnames';
@@ -113,6 +113,9 @@ class AllSubscriptions extends Component {
                 var childkey = subs.key;
                 var childdata = subs.val();
                 childdata['key'] = childkey;
+                // usersref.child(childdata.user_id).on('value', (usnp) => {
+                //     childdata['userInf'] = usnp.val();
+                // })
                 subsdata.push(childdata)
             })
             _ths.setState({
@@ -367,7 +370,7 @@ class AllSubscriptions extends Component {
                                                             <ListItemSecondaryAction>
                                                                 <Tooltip id="tooltip-icon" title="Edit" placement="left">
                                                                     <Tooltip id="tooltip-icon" placement="left">
-                                                                        <Link to={`/subscriptions/edit/${value.key}`} style={{color: '#757575'}} aria-label="Edit">
+                                                                        <Link to={`/subscription/edit/${value.key}`} style={{color: '#757575'}} aria-label="Edit">
                                                                             <EditIcon />
                                                                         </Link>
                                                                     </Tooltip>
