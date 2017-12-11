@@ -95,6 +95,10 @@ body {
     background-color: #ff4081;
 }
 
+.succesmsg div * {
+    background-color: #41bc08;
+}
+
 .pageToolbarLeft {
     justify-content: flex-start;
     display: flex;

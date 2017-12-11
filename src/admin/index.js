@@ -24,6 +24,7 @@ import Users from './users'
 import AllClubs from './clubs'
 import AllDrinks from './drinks'
 import Subscriptions from './subscriptions'
+import Cities from './cities'
 
 
 import HomeIcon from 'material-ui-icons/Home';
@@ -33,6 +34,7 @@ import Contacts from 'material-ui-icons/Contacts';
 import Weekend from 'material-ui-icons/Weekend';
 import LocalBar from 'material-ui-icons/LocalBar';
 import PersonPin from 'material-ui-icons/PersonPin';
+import LocationCity from 'material-ui-icons/LocationCity';
 
 import PowerSettingsNew from 'material-ui-icons/PowerSettingsNew';
 import {
@@ -90,6 +92,13 @@ const routes = [
         menuIcon: <PersonPin />,
         sidebar: () => <div>Subscriptions</div>,
         main: () => <Subscriptions />
+    },
+    {
+        path: '/cities',
+        menuName: 'Cities',
+        menuIcon: <LocationCity />,
+        sidebar: () => <div>Cities</div>,
+        main: () => <Cities />
     }
 ]
 

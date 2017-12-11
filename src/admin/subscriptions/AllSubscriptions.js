@@ -27,8 +27,6 @@ import TextField from 'material-ui/TextField';
 import { FormControl } from 'material-ui/Form';
 import Input, { InputLabel } from 'material-ui/Input';
 import { DatePicker } from 'material-ui-pickers';
-import Avatar from 'material-ui/Avatar';
-import Card, { CardHeader, CardContent } from 'material-ui/Card';
 import MenuItem from 'material-ui/Menu/MenuItem';
 import swal from 'sweetalert';
 
@@ -41,7 +39,7 @@ import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 import Divider from 'material-ui/Divider';
 import Tooltip from 'material-ui/Tooltip';
-import { subscriptionref, usersref, subsref } from '../../FB'
+import { subscriptionref, subsref } from '../../FB'
 
 import stylesm from '../../App.css'
 
@@ -126,8 +124,6 @@ class AllSubscriptions extends Component {
 
         var _ths = this;
 
-        console.log(this.state);
-
         _ths.setState({
             isloading: true,
             issuccess: true
@@ -153,7 +149,6 @@ class AllSubscriptions extends Component {
     handleModalOpen(){
         this.setState({ open: true });
     };
-
 
     handleModalClose() {
         this.setState({ open: false });
