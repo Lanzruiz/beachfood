@@ -25,6 +25,12 @@ import AllClubs from './clubs'
 import AllDrinks from './drinks'
 import Subscriptions from './subscriptions'
 import Cities from './cities'
+import UserSubscription from './user_subscription'
+import UserGiftDrynx from './user_gift'
+import UserFreeDrinks from './user_drinks'
+import ContactUs from './contact_us'
+import FAQ from './faq'
+import Pages from './pages'
 
 
 import HomeIcon from 'material-ui-icons/Home';
@@ -99,6 +105,48 @@ const routes = [
         menuIcon: <LocationCity />,
         sidebar: () => <div>Cities</div>,
         main: () => <Cities />
+    },
+    {
+      path: '/user-subscription',
+      menuName: 'User Subscription',
+      menuIcon: <Contacts />,
+      sidebar: () => <div>User Subscription</div>,
+      main: () => <UserSubscription />
+    },
+    {
+      path: '/user-gifts',
+      menuName: 'User Gift Drynx',
+      menuIcon: <Contacts />,
+      sidebar: () => <div>User Gift Drynx</div>,
+      main: () => <UserGiftDrynx />
+    },
+    {
+      path: '/user-drinks',
+      menuName: 'User Free Drinks',
+      menuIcon: <Contacts />,
+      sidebar: () => <div>User Free Drinks</div>,
+      main: () => <UserFreeDrinks />
+    },
+    {
+      path: '/contact-us',
+      menuName: 'Contact Us',
+      menuIcon: <PersonPin />,
+      sidebar: () => <div>Contact Us</div>,
+      main: () => <ContactUs />
+    },
+    {
+      path: '/faq',
+      menuName: 'FAQ',
+      menuIcon: <PersonPin />,
+      sidebar: () => <div>FAQ</div>,
+      main: () => <FAQ />
+    },
+    {
+      path: '/pages',
+      menuName: 'Pages',
+      menuIcon: <PersonPin />,
+      sidebar: () => <div>Pages</div>,
+      main: () => <Pages />
     }
 ]
 
