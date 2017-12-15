@@ -31,6 +31,7 @@ import UserFreeDrinks from './user_drinks'
 import ContactUs from './contact_us'
 import FAQ from './faq'
 import Pages from './pages'
+import UserReferral from './user_referral'
 
 
 import HomeIcon from 'material-ui-icons/Home';
@@ -147,6 +148,13 @@ const routes = [
       menuIcon: <PersonPin />,
       sidebar: () => <div>Pages</div>,
       main: () => <Pages />
+    },
+    {
+      path: '/user-referral',
+      menuName: 'Referral',
+      menuIcon: <PersonPin />,
+      sidebar: () => <div>Referral</div>,
+      main: () => <UserReferral />
     }
 ]
 
