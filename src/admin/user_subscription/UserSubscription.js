@@ -2,6 +2,7 @@
  * Created by Thomas Woodfin on 12/13/2017.
  */
  import React from 'react'
+  import matchSorter from 'match-sorter'
  import classNames from 'classnames';
  import PropTypes from 'prop-types';
  import { withStyles } from 'material-ui/styles';
@@ -111,17 +112,24 @@ class UserSubscription extends React.Component {
           <div>
             <ReactTable
               data={this.state.userSubscriptionData}
+              filterable
               columns={[
                 {
                   Header: "Name",
                   columns: [
                     {
                       Header: "First Name",
-                      accessor: "firstname"
+                      accessor: "firstname",
+                      filterMethod: (filter, rows) =>
+                            matchSorter(rows, filter.value, { keys: ["firstname"] }),
+                      filterAll: true
                     },
                     {
                       Header: "Last Name",
                       id: "lastName",
+                      filterMethod: (filter, rows) =>
+                            matchSorter(rows, filter.value, { keys: ["lastName"] }),
+                      filterAll: true,
                       accessor: d => d.lastname
                     }
                   ]
@@ -131,32 +139,46 @@ class UserSubscription extends React.Component {
                   columns: [
                     {
                       Header: "Subscription Type",
-                      accessor: "type"
+                      accessor: "type",
+                      filterMethod: (filter, rows) =>
+                            matchSorter(rows, filter.value, { keys: ["type"] }),
+                      filterAll: true
                     },
                     {
                       Header: "Date Start",
-                      accessor: "date_start"
+                      accessor: "date_start",
+                      filterable: false
                     },
                     {
                       Header: "Expiration Date",
-                      accessor: "date_end"
+                      accessor: "date_end",
+                      filterable: false
                     },
                     {
                       Header: "Amount",
-                      accessor: "amount"
+                      accessor: "amount",
+                      filterMethod: (filter, rows) =>
+                            matchSorter(rows, filter.value, { keys: ["amount"] }),
+                      filterAll: true
                     },
                     {
                       Header: "Free Drinks",
-                      accessor: "freeDrinks"
+                      accessor: "freeDrinks",
+                      filterable: false
+
                     },
                     {
                       Header: "Payment Method",
-                      accessor: "paymentMethod"
+                      accessor: "paymentMethod",
+                      filterMethod: (filter, rows) =>
+                            matchSorter(rows, filter.value, { keys: ["paymentMethod"] }),
+                      filterAll: true
                     },
 
                     {
                       Header: "Transaction ID",
-                      accessor: "transactionID"
+                      accessor: "transactionID",
+                      filterable: false
                     }
                   ]
                 }

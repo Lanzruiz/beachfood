@@ -2,6 +2,7 @@
  * Created by Thomas Woodfin on 12/13/2017.
  */
  import React from 'react'
+  import matchSorter from 'match-sorter'
  import classNames from 'classnames';
  import PropTypes from 'prop-types';
  import { withStyles } from 'material-ui/styles';
@@ -59,7 +60,7 @@ class UserGiftDrynx extends React.Component {
                 loadingData: true
             })
           }
-          
+
           snapshot.forEach(function(subscriptionItem) {
               var totalSavings = 0;
                //console.log(subscriptionItem.val());
@@ -142,30 +143,42 @@ class UserGiftDrynx extends React.Component {
       <div>
         <ReactTable
           data={this.state.userDrinkData}
+          filterable
           columns={[
             {
               Header: "User Information",
               columns: [
                 {
                   Header: "First Name",
-                  accessor: "firstname"
+                  accessor: "firstname",
+                  filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ["firstname"] }),
+                  filterAll: true
                 },
                 {
                   Header: "Last Name",
                   id: "lastName",
-                  accessor: d => d.lastname
+                  accessor: d => d.lastname,
+                  filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ["lastName"] }),
+                  filterAll: true
                 },
                 {
                   Header: "Email Address",
-                  accessor: "email"
+                  accessor: "email",
+                  filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ["email"] }),
+                  filterAll: true
                 },
                 {
                   Header: "Free Drinks Consumed",
-                  accessor: "drinkCount"
+                  accessor: "drinkCount",
+                  filterable: false
                 },
                 {
                   Header: "Total Savings",
-                  accessor: "totalSavings"
+                  accessor: "totalSavings",
+                  filterable: false
                 }
               ]
             }

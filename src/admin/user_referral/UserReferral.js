@@ -2,6 +2,7 @@
  * Created by Thomas Woodfin on 12/15/2017.
  */
  import React from 'react'
+ import matchSorter from 'match-sorter'
  import classNames from 'classnames';
  import PropTypes from 'prop-types';
  import { withStyles } from 'material-ui/styles';
@@ -124,26 +125,37 @@ class UserReferral extends React.Component {
       <div>
         <ReactTable
           data={this.state.userReferralData}
+          filterable
           columns={[
             {
               Header: "User Referral",
               columns: [
                 {
                   Header: "First Name",
-                  accessor: "firstname"
+                  accessor: "firstname",
+                  filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ["firstname"] }),
+                  filterAll: true
                 },
                 {
                   Header: "Last Name",
                   id: "lastName",
-                  accessor: d => d.lastname
+                  accessor: d => d.lastname,
+                  filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ["lastName"] }),
+                  filterAll: true
                 },
                 {
                   Header: "Email Address",
-                  accessor: "email"
+                  accessor: "email",
+                  filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ["email"] }),
+                  filterAll: true
                 },
                 {
                   Header: "Referral Count",
-                  accessor: "referralCount"
+                  accessor: "referralCount",
+                  filterable: false
                 },
               ]
             }
@@ -151,7 +163,7 @@ class UserReferral extends React.Component {
           defaultPageSize={15}
           className="-striped -highlight"
           SubComponent = {row =>  {
-             console.log(row.original);
+            
               return (
                 <div style={{padding: "20px"}}>
                 <ReactTable

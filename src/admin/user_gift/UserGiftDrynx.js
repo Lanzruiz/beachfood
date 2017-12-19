@@ -2,6 +2,7 @@
  * Created by Thomas Woodfin on 12/13/2017.
  */
  import React from 'react'
+  import matchSorter from 'match-sorter'
  import classNames from 'classnames';
  import PropTypes from 'prop-types';
  import { withStyles } from 'material-ui/styles';
@@ -118,26 +119,37 @@ class UserGiftDrynx extends React.Component {
       <div>
         <ReactTable
           data={this.state.userGiftData}
+          filterable
           columns={[
             {
               Header: "Drynx Gift",
               columns: [
                 {
                   Header: "First Name",
-                  accessor: "firstname"
+                  accessor: "firstname",
+                  filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ["firstname"] }),
+                  filterAll: true
                 },
                 {
                   Header: "Last Name",
                   id: "lastName",
-                  accessor: d => d.lastname
+                  accessor: d => d.lastname,
+                  filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ["lastName"] }),
+                  filterAll: true
                 },
                 {
                   Header: "Email Address",
-                  accessor: "email"
+                  accessor: "email",
+                  filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ["email"] }),
+                  filterAll: true
                 },
                 {
                   Header: "Gift Drynx Count",
-                  accessor: "giftCount"
+                  accessor: "giftCount",
+                  filterable: false
                 },
               ]
             }

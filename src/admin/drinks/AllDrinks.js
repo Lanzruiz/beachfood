@@ -2,6 +2,8 @@
  * Created by BOSS on 11/17/2017.
  */
 import React from 'react'
+import ReactTable from "react-table";
+import matchSorter from 'match-sorter'
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -115,6 +117,7 @@ class AllDrinks extends React.Component {
     componentDidMount(){
         var _ths = this;
         let theclubData = [];
+
         _ths.setState({
             loadingData: true
         })
@@ -133,25 +136,60 @@ class AllDrinks extends React.Component {
             })
         }).bind(this);
 
-        drinksref.on('value', function(snapshot) {
-            let thedrinksData = [];
-            snapshot.forEach(function(drinks) {
-                var childKey = drinks.key;
-                var childData = drinks.val();
-                drinksref.child(childKey).on('value', function(chl) {
-                    chl.forEach((clItem) => {
-                        var tnchild = clItem.val();
-                        tnchild['key'] = childKey;
-                        tnchild['idkey'] = clItem.key;
-                        thedrinksData.push(tnchild)
+        var count = 0;
+        var theDrinksData = [];
+        clubssref.once('value', function(snapshot) {
+
+            var totalCount = snapshot.numChildren();
+            snapshot.forEach(function(clubItem) {
+              var childKey = clubItem.key;
+              var childData = clubItem.val();
+                  var drinkData = [];
+                  //search for drinks
+                  drinksref.child(clubItem.key).once('value', function(drinkSnapshot) {
+
+                     drinkSnapshot.forEach(function(drinkItem) {
+                        var drinkRec = drinkItem.val();
+
+                         drinkData.push({key: drinkItem.key, name: drinkRec.name, price: drinkRec.price, isFree: drinkRec.isFreeDrinks,
+                                         description: drinkRec.description, whatsinit: drinkRec.whatsinit, clubID: childKey});
+
+                     });
+                  });
+
+                  theDrinksData.push({key: childKey, name: childData.name, city: childData.city, state: childData.state, drinkList: drinkData});
+                  //console.log(theDrinksData);
+                  count = count + 1;
+
+                  if (totalCount == count) {
+                    _ths.setState({
+                        drinksData: theDrinksData,
+                        loadingData: false
                     })
-                })
+                  }
+
             });
-            _ths.setState({
-                drinksData: thedrinksData,
-                loadingData: false
-            })
-        }).bind(this);
+        });
+
+        // drinksref.on('value', function(snapshot) {
+        //     let thedrinksData = [];
+        //     snapshot.forEach(function(drinks) {
+        //         var childKey = drinks.key;
+        //         var childData = drinks.val();
+        //         drinksref.child(childKey).on('value', function(chl) {
+        //             chl.forEach((clItem) => {
+        //                 var tnchild = clItem.val();
+        //                 tnchild['key'] = childKey;
+        //                 tnchild['idkey'] = clItem.key;
+        //                 thedrinksData.push(tnchild)
+        //             })
+        //         })
+        //     });
+        //     _ths.setState({
+        //         drinksData: thedrinksData,
+        //         loadingData: false
+        //     })
+        // }).bind(this);
 
     }
 
@@ -468,53 +506,106 @@ class AllDrinks extends React.Component {
                     <Grid item xs={12}>
                         <Paper className={classes.paper}>
                             <LinearProgress mode="determinate" value={this.state.uploadProgress} />
-                            {
-                                (this.state.loadingData) ?
-                                    <div style={{
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center'
-                                    }}>
-                                        <CircularProgress className={classes.progress}/>
-                                    </div>
-                                    :
-                                    <List>
-                                        {
-                                            (this.state.drinksData.length > 0) ?
-                                                this.state.drinksData.map((value, i) => (
-                                                    <div
-                                                        key={i}>
-                                                        <ListItem
-                                                            dense
-                                                            className={classes.listItem}>
-                                                            <ListItemText primary={`${value.name}`} secondary={`Price: ${value.price}\n Free: ${value.isFreeDrinks ? 'Yes' : 'No'}`} />
-                                                            <ListItemSecondaryAction>
-                                                                <Tooltip id="tooltip-icon" title="Edit" placement="left">
-                                                                    <Tooltip id="tooltip-icon" placement="left">
-                                                                        <Link to={`/drinks/edit/${value.key}/${value.idkey}`} style={{color: '#757575'}} aria-label="Edit">
-                                                                            <EditIcon />
-                                                                        </Link>
-                                                                    </Tooltip>
-                                                                </Tooltip>
-                                                                <Tooltip id="tooltip-icon" title="Delete" placement="left">
-                                                                    <IconButton aria-label="Delete"
-                                                                                onClick={() => {
-                                                                                    this.askDeleteConfirm(value.key)
-                                                                                }}>
-                                                                        <DeleteIcon />
-                                                                    </IconButton>
-                                                                </Tooltip>
 
-                                                            </ListItemSecondaryAction>
-                                                        </ListItem>
-                                                        <Divider inset />
-                                                    </div>
-                                                ))
-                                                :
-                                                <Typography type="headline" gutterBottom>There are no drinks found</Typography>
-                                        }
-                                    </List>
-                            }
+                            <ReactTable
+                              filterable
+                              data={this.state.drinksData}
+                              columns={[
+                                {
+                                  Header: "Club Information",
+                                  columns: [
+                                    {
+                                      Header: "Name",
+                                      accessor: "name",
+                                      filterMethod: (filter, rows) =>
+                                            matchSorter(rows, filter.value, { keys: ["name"] }),
+                                      filterAll: true
+                                    },
+                                    {
+                                      Header: "City",
+                                      accessor: "city",
+                                      filterMethod: (filter, rows) =>
+                                            matchSorter(rows, filter.value, { keys: ["city"] }),
+                                      filterAll: true
+                                    },
+                                    {
+                                      Header: "State",
+                                      accessor: "state",
+                                      filterMethod: (filter, rows) =>
+                                            matchSorter(rows, filter.value, { keys: ["state"] }),
+                                      filterAll: true
+                                    }
+                                  ]
+                                }
+                              ]}
+                              defaultPageSize={15}
+                              className="-striped -highlight"
+                              SubComponent = {row =>  {
+                                  return (
+                                    <div style={{padding: "20px"}}>
+                                    <ReactTable
+                                      data={row.original.drinkList}
+                                      columns={
+                                        [
+                                          {
+                                            Header: "Drink Details",
+                                            columns: [
+                                              {
+                                                Header: "Name",
+                                                accessor: "name"
+                                              },
+                                              {
+                                                Header: "Price",
+                                                accessor: "price"
+                                              },
+                                              {
+                                                Header: "Action",
+                                                accessor: "key",
+                                                filterable: false,
+                                                Cell: row => (
+
+                                                    <div>
+
+                                                        <Link to={'/drinks/edit/'+row.original.clubID+"/"+row.value} style={{color: '#757575'}} aria-label="Edit">
+                                                            <EditIcon />
+                                                        </Link>
+
+                                                      <IconButton aria-label="Delete"
+                                                                  onClick={() => {
+                                                                      this.askDeleteConfirm(row.value)
+                                                                  }}>
+                                                          <DeleteIcon />
+                                                      </IconButton>
+                                                  </div>
+                                                )
+                                              }
+                                            ]
+                                          }]
+                                      }
+                                      defaultPageSize={row.original.drinkList.length}
+                                      showPagination={false}
+
+                                      SubComponent = {row =>  {
+                                        var divStyle = {
+                                            background: "#eee",
+                                            padding: "20px",
+                                            margin: "20px"
+                                          };
+                                          return (
+
+                                            <div style={divStyle}>
+                                              <p><strong>Whats In It:</strong> {row.original.whatsinit}</p>
+                                              <p><strong>Description:</strong> {row.original.description}</p>
+                                              </div>
+
+                                          );
+                                      }}
+
+                                    />
+                                    </div>
+                                  );
+                              }}
+                            />
                         </Paper>
                     </Grid>
                 </Grid>

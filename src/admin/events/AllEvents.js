@@ -2,6 +2,7 @@
  * Created by BOSS on 11/11/2017.
  */
 import React from 'react';
+import ReactTable from "react-table";
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -40,6 +41,7 @@ import {
 import { eventsref, Storageref, eventsStoreref } from '../../FB'
 import { saveEvent } from '../../helpers/events'
 import stylesm from '../../App.css'
+import matchSorter from 'match-sorter'
 
 const styles = theme => ({
     root: {
@@ -521,43 +523,68 @@ class AllEvents extends React.Component {
                     <Grid item xs={12}>
                         <Paper className={classes.paper}>
 
-                            {
-                                (this.state.loadingData) ?
-                                    <div  style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                        <CircularProgress className={classes.progress} />
-                                    </div> :
-                                    <List>
-                                        {
-                                            this.state.evtData.map((value, i) => (
-                                                <div
-                                                    key={i}>
-                                                    <ListItem
-                                                        dense
-                                                        className={classes.listItem}>
-                                                        <ListItemText primary={`${value.name}`} />
-                                                        <ListItemSecondaryAction>
-                                                            <Tooltip id="tooltip-icon" title="Edit" placement="left">
-                                                                <Link to={`/events/edit/${value.key}`} style={{color: '#757575'}} aria-label="Edit">
-                                                                    <EditIcon />
-                                                                </Link>
-                                                            </Tooltip>
+                            <ReactTable
+                              filterable
+                              data={this.state.evtData}
+                              columns={[
+                                {
+                                  Header: "Events",
+                                  columns: [
+                                    {
+                                      Header: "Name",
+                                      accessor: "name",
+                                      filterMethod: (filter, rows) =>
+                                            matchSorter(rows, filter.value, { keys: ["name"] }),
+                                      filterAll: true
 
-                                                            <Tooltip id="tooltip-icon" title="Delete" placement="left">
-                                                                <IconButton aria-label="Delete"
-                                                                            onClick={() => {
-                                                                                this.askDeleteConfirm(value.key)
-                                                                            }}>
-                                                                    <DeleteIcon />
-                                                                </IconButton>
-                                                            </Tooltip>
-                                                        </ListItemSecondaryAction>
-                                                    </ListItem>
-                                                    <Divider inset />
-                                                </div>
-                                            ))
-                                        }
-                                    </List>
-                            }
+                                    },
+                                    {
+                                      Header: "Start Date",
+                                      accessor: "evstartdatetime",
+                                      filterable: false,
+                                    },
+                                    {
+                                      Header: "End Date",
+                                      accessor: "evenddatetime",
+                                      filterable: false,
+                                    },
+                                    {
+                                      Header: "Action",
+                                      accessor: "key",
+                                      filterable: false,
+                                      Cell: row => (
+                                        <div>
+                                            <Link to={`/events/edit/`+row.value} style={{color: '#757575'}} aria-label="Edit">
+                                                <EditIcon />
+                                            </Link>
+
+                                            <IconButton aria-label="Delete"
+                                                        onClick={() => {
+                                                            this.askDeleteConfirm(row.value)
+                                                        }}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </div>
+                                      )
+                                    }
+                                  ]
+                                }
+                              ]}
+                              defaultPageSize={15}
+                              className="-striped -highlight"
+                              SubComponent = {row =>  {
+                                var divStyle = {
+                                    background: "#eee",
+                                    padding: "20px",
+                                    margin: "20px"
+                                  };
+                                  return (
+
+                                    <div style={divStyle}>Address: {row.original.address} {row.original.state} {row.original.zip}</div>
+
+                                  );
+                              }}
+                            />
                         </Paper>
 
                     </Grid>

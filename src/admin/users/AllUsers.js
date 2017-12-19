@@ -2,6 +2,7 @@
  * Created by BOSS on 11/17/2017.
  */
 import React from 'react'
+import ReactTable from "react-table";
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -38,6 +39,10 @@ import { usersref } from '../../FB'
 import { updateUsers } from '../../helpers/users'
 import stylesm from '../../App.css'
 import swal from 'sweetalert';
+import {
+    Link
+} from 'react-router-dom'
+import matchSorter from 'match-sorter'
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
@@ -116,6 +121,7 @@ class AllUsers extends React.Component {
                 var childKey = eventItem.key;
                 var childData = eventItem.val();
                 childData['key'] = childKey;
+
                 if (!childData.info){
                     theUserData.push(childData)
                 }
@@ -270,48 +276,83 @@ class AllUsers extends React.Component {
                     </Grid>
                     <Grid item xs={12}>
                         <Paper className={classes.paper}>
-                            {
-                                (this.state.loadingData) ?
-                                    <div  style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                        <CircularProgress className={classes.progress} />
-                                    </div> :
-                                    <List>
-                                        {
-                                            (this.state.userData.length > 0) ?
-                                            this.state.userData.map((value, i) => (
-                                                <div
-                                                    key={i}>
-                                                    <ListItem
-                                                        dense
-                                                        className={classes.listItem}>
-                                                        <ListItemText primary={`${value.email}`} secondary={`${value.createdAt}`} />
-                                                        <ListItemSecondaryAction>
-                                                            <Tooltip id="tooltip-icon" title="Edit" placement="left">
-                                                                <IconButton aria-label="Edit"
-                                                                            onClick={() => {
-                                                                                this.handleModalOpen(value.key)
-                                                                            }}>
-                                                                    <EditIcon />
-                                                                </IconButton>
-                                                            </Tooltip>
-                                                            <Tooltip id="tooltip-icon" title="Delete" placement="left">
-                                                                <IconButton aria-label="Delete"
-                                                                            onClick={() => {
-                                                                                this.askDeleteConfirm(value.key)
-                                                                            }}>
-                                                                    <DeleteIcon />
-                                                                </IconButton>
-                                                            </Tooltip>
-                                                        </ListItemSecondaryAction>
-                                                    </ListItem>
-                                                    <Divider inset />
-                                                </div>
-                                            ))
-                                            :
-                                            <Typography type="headline" gutterBottom>There are no user found</Typography>
-                                        }
-                                    </List>
-                            }
+
+                            <ReactTable
+                            filterable
+                              data={this.state.userData}
+                              columns={[
+                                {
+                                  Header: "User Information",
+                                  columns: [
+                                    {
+                                      Header: "Firstname",
+                                      accessor: "firstname",
+                                      filterMethod: (filter, rows) =>
+                                            matchSorter(rows, filter.value, { keys: ["firstname"] }),
+                                      filterAll: true
+
+                                    },
+                                    {
+                                      Header: "Lastname",
+                                      accessor: "lastname",
+                                      filterMethod: (filter, rows) =>
+                                            matchSorter(rows, filter.value, { keys: ["lastname"] }),
+                                      filterAll: true
+                                    },
+                                    {
+                                      Header: "Email",
+                                      accessor: "email",
+                                      filterMethod: (filter, rows) =>
+                                            matchSorter(rows, filter.value, { keys: ["email"] }),
+                                      filterAll: true
+
+                                    },
+                                    {
+                                      Header: "Action",
+                                      accessor: "key",
+                                      filterable: false,
+                                      Cell: row => (
+                                        <div>
+                                        <IconButton aria-label="Edit"
+                                                    onClick={() => {
+                                                        this.handleModalOpen(row.value)
+                                                    }}>
+                                            <EditIcon />
+                                        </IconButton>
+
+                                            <IconButton aria-label="Delete"
+                                                        onClick={() => {
+                                                            this.askDeleteConfirm(row.value)
+                                                        }}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </div>
+                                      )
+                                    }
+                                  ]
+                                }
+                              ]}
+                              defaultPageSize={15}
+                              className="-striped -highlight"
+                              SubComponent = {row =>  {
+                                var divStyle = {
+                                    background: "#eee",
+                                    padding: "20px",
+                                    margin: "20px"
+                                  };
+                                  return (
+
+                                    <div style={divStyle}>
+                                        <p>Birthday: {row.original.birthday}</p>
+                                        <p>User Code: {row.original.user_code}</p>
+                                        <p>createdAt: {row.original.createdAt}</p>
+                                        </div>
+
+
+                                  );
+                              }}
+                            />
+
                         </Paper>
                     </Grid>
                 </Grid>

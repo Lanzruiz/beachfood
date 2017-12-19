@@ -1,7 +1,8 @@
 /**
  * Created by BOSS on 11/17/2017.
  */
-import React from 'react'
+import React from 'react';
+import ReactTable from "react-table";
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -33,6 +34,11 @@ import { clubssref, clubStoreref } from '../../FB'
 import stylesm from '../../App.css'
 import swal from 'sweetalert';
 import { saveClub, updateClub } from '../../helpers/clubs'
+import {
+    Link
+} from 'react-router-dom'
+import matchSorter from 'match-sorter'
+
 var i2b = require("imageurl-base64");
 function Transition(props) {
     return <Slide direction="up" {...props} />;
@@ -600,49 +606,78 @@ class AllClubs extends React.Component {
                     <Grid item xs={12}>
                         <Paper className={classes.paper}>
                             <LinearProgress mode="determinate" value={this.state.uploadProgress} />
-                            {
-                                (this.state.clubData.length > 0) ?
-                                    <List>
-                                        {
-                                            (this.state.clubData) ?
-                                                this.state.clubData.map((value, i) => (
-                                                    <div
-                                                        key={i}>
-                                                        <ListItem
-                                                            dense
-                                                            className={classes.listItem}>
-                                                            <ListItemText primary={`${value.name}`} secondary={`City: ${value.city}`} />
-                                                            <ListItemSecondaryAction>
-                                                                <Tooltip id="tooltip-icon" title="Edit" placement="left">
-                                                                    <IconButton aria-label="Edit"
-                                                                        onClick={() => {
-                                                                            this.editClub(value.key)
-                                                                        }}>
-                                                                        <EditIcon />
-                                                                    </IconButton>
-                                                                </Tooltip>
-                                                                <Tooltip id="tooltip-icon" title="Delete" placement="left">
-                                                                    <IconButton aria-label="Delete"
-                                                                        onClick={() => {
-                                                                            this.askDeleteConfirm(value.key)
-                                                                        }}>
-                                                                        <DeleteIcon />
-                                                                    </IconButton>
-                                                                </Tooltip>
 
-                                                            </ListItemSecondaryAction>
-                                                        </ListItem>
-                                                        <Divider inset />
-                                                    </div>
-                                                ))
-                                                :
-                                                <Typography type="headline" gutterBottom>There are no club found</Typography>
-                                        }
-                                    </List> :
-                                    <div  style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                        <CircularProgress className={classes.progress} />
-                                    </div>
-                            }
+                            <ReactTable
+                              filterable
+                              data={this.state.clubData}
+                              columns={[
+                                {
+                                  Header: "Club Information",
+                                  columns: [
+                                    {
+                                      Header: "Name",
+                                      accessor: "name",
+                                      filterMethod: (filter, rows) =>
+                                            matchSorter(rows, filter.value, { keys: ["name"] }),
+                                      filterAll: true
+                                    },
+                                    {
+                                      Header: "City",
+                                      accessor: "city",
+                                      filterMethod: (filter, rows) =>
+                                            matchSorter(rows, filter.value, { keys: ["city"] }),
+                                      filterAll: true
+                                    },
+                                    {
+                                      Header: "State",
+                                      accessor: "state",
+                                      filterMethod: (filter, rows) =>
+                                            matchSorter(rows, filter.value, { keys: ["state"] }),
+                                      filterAll: true
+                                    },
+                                    {
+                                      Header: "Action",
+                                      accessor: "key",
+                                      filterable: false,
+                                      Cell: row => (
+                                        <div>
+                                              <IconButton aria-label="Edit"
+                                                  onClick={() => {
+                                                      this.editClub(row.value)
+                                                  }}>
+                                                  <EditIcon />
+                                              </IconButton>
+
+                                            <IconButton aria-label="Delete"
+                                                        onClick={() => {
+                                                            this.askDeleteConfirm(row.value)
+                                                        }}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </div>
+                                      )
+                                    }
+                                  ]
+                                }
+                              ]}
+                              defaultPageSize={15}
+                              className="-striped -highlight"
+                              SubComponent = {row =>  {
+                                var divStyle = {
+                                    background: "#eee",
+                                    padding: "20px",
+                                    margin: "20px"
+                                  };
+                                  return (
+
+                                    <div style={divStyle}>
+                                      <p>Address: {row.original.address} {row.original.city} {row.original.state} {row.original.zip}</p>
+                                      <p>Description: {row.original.description}</p>
+                                      </div>
+
+                                  );
+                              }}
+                            />
                         </Paper>
                     </Grid>
                 </Grid>

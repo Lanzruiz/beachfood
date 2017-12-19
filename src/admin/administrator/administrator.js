@@ -1,12 +1,11 @@
 /**
- * Created by Thomas Woodfin on 12/13/2017.
+ * Created by Thomas Woodfin on 12/19/2017.
  */
  import React from 'react'
- import matchSorter from 'match-sorter'
  import classNames from 'classnames';
  import PropTypes from 'prop-types';
  import { withStyles } from 'material-ui/styles';
- import { cityRef } from '../../FB'
+ import { usersref } from '../../FB'
  import { updateUsers } from '../../helpers/users'
  import stylesm from '../../App.css'
  import ReactTable from "react-table";
@@ -68,13 +67,13 @@ const styles = theme => ({
 });
 
 
-class AllCity extends React.Component {
+class Administrator extends React.Component {
 
   constructor(props){
       super(props)
       this.state = {
           loadingData: false,
-          cityData: []
+          AdministratorData: []
       }
   }
 
@@ -83,31 +82,38 @@ class AllCity extends React.Component {
   componentDidMount(){
       var _ths = this;
 
-     this.loadCityData();
+     this.loadAdministratorData();
 
   }
 
-  loadCityData() {
+  loadAdministratorData() {
     var _ths = this;
-    let theCityData = [];
+    let theAdministratorData = [];
+    let user_type = "admin";
 
-     cityRef.once('value', function(snapshot) {
+     usersref.orderByChild('user_type').equalTo(user_type).once('value', function (snapshot) {
+  
+       if(!snapshot.exists()) {
+         _ths.setState({
+             AdministratorData: theAdministratorData,
+             loadingData: true
+         })
+       }
 
          var totalCount = snapshot.numChildren();
          var counter = 0;
 
 
-         snapshot.forEach(function(subscriptionItem) {
-           let cityRec = subscriptionItem.val();
-
-            theCityData .push({key: subscriptionItem.key, name: cityRec.name, city_status: cityRec.status})
+         snapshot.forEach(function(userItem) {
+           let adminRec = userItem.val();
+            theAdministratorData .push({key: userItem.key, firstname: adminRec.firstname, lastname: adminRec.lastname, email: adminRec.email, uid: adminRec.userid})
             counter = counter + 1;
          });
 
 
          if (totalCount == counter) {
            _ths.setState({
-               cityData: theCityData,
+               AdministratorData: theAdministratorData,
                loadingData: true
            })
          }
@@ -133,7 +139,7 @@ class AllCity extends React.Component {
       var _ths = this;
       swal({
           title: "Are you sure?",
-          text: "Once deleted, you will not be able to recover this city!",
+          text: "Once deleted, you will not be able to recover this administrator!",
           icon: "warning",
           buttons: true,
           dangerMode: true,
@@ -142,8 +148,8 @@ class AllCity extends React.Component {
               _ths.setState({
                   loadingData: false
               })
-              cityRef.child(key).remove();
-              this.loadCityData();
+              usersref.child(key).remove();
+              this.loadAdministratorData();
           }
       });
   };
@@ -175,8 +181,8 @@ class AllCity extends React.Component {
       <Grid container spacing={24}>
       <Grid item xs={12} className="pageToolbarRight">
           <div style={{margin: "20px"}}>
-              <Link to={`/cities/create`} style={{color: '#FFFFFF', background: '#3f51b5', padding: "10px", margin: "10px"}} aria-label="Add City">
-                  Add City
+              <Link to={`/administrator/create`} style={{color: '#FFFFFF', background: '#3f51b5', padding: "10px", margin: "10px"}} aria-label="Add FAQ">
+                  Add Administrator
               </Link>
           </div>
 
@@ -184,26 +190,29 @@ class AllCity extends React.Component {
       </Grid>
 
         <ReactTable
-          data={this.state.cityData}
-          filterable
+          data={this.state.AdministratorData}
           columns={[
             {
-              Header: "City",
+              Header: "Administrator",
               columns: [
                 {
-                  Header: "Name",
-                  accessor: "name",
-                  filterMethod: (filter, rows) =>
-                        matchSorter(rows, filter.value, { keys: ["name"] }),
-                  filterAll: true
+                  Header: "First name",
+                  accessor: "firstname"
+                },
+                {
+                  Header: "Last name",
+                  accessor: "lastname"
+                },
+                {
+                  Header: "Email",
+                  accessor: "email"
                 },
                 {
                   Header: "Action",
                   accessor: "key",
-                  filterable: false,
                   Cell: row => (
                     <div>
-                        <Link to={`/cities/edit/`+row.value} style={{color: '#757575'}} aria-label="Edit">
+                        <Link to={`/administrator/edit/`+row.value} style={{color: '#757575'}} aria-label="Edit">
                             <EditIcon />
                         </Link>
 
@@ -237,8 +246,8 @@ class AllCity extends React.Component {
 }
 
 
-AllCity.propTypes = {
+Administrator.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(AllCity);
+export default withStyles(styles)(Administrator);

@@ -32,6 +32,7 @@ import ContactUs from './contact_us'
 import FAQ from './faq'
 import Pages from './pages'
 import UserReferral from './user_referral'
+import Administrator from './administrator'
 
 
 import HomeIcon from 'material-ui-icons/Home';
@@ -42,6 +43,12 @@ import Weekend from 'material-ui-icons/Weekend';
 import LocalBar from 'material-ui-icons/LocalBar';
 import PersonPin from 'material-ui-icons/PersonPin';
 import LocationCity from 'material-ui-icons/LocationCity';
+import GiftCard from 'material-ui-icons/CardGiftcard';
+import Referrals from 'material-ui-icons/Group';
+import PagesIcon from 'material-ui-icons/Pages';
+import QuestionAnswer from 'material-ui-icons/QuestionAnswer';
+import ContactIcon from 'material-ui-icons/Contacts';
+import LockIcon from 'material-ui-icons/Lock';
 
 import PowerSettingsNew from 'material-ui-icons/PowerSettingsNew';
 import {
@@ -64,6 +71,13 @@ const routes = [
         menuIcon: <HomeIcon />,
         sidebar: () => <div>Dashboard</div>,
         main: () => <Dashboard/>
+    },
+    {
+        path: '/administrator',
+        menuName: 'Administrator',
+        menuIcon: <LockIcon />,
+        sidebar: () => <div>Administrator</div>,
+        main: () => <Administrator/>
     },
     {
         path: '/events',
@@ -94,13 +108,6 @@ const routes = [
         main: () => <AllDrinks/>
     },
     {
-        path: '/subscriptions',
-        menuName: 'Subscriptions',
-        menuIcon: <PersonPin />,
-        sidebar: () => <div>Subscriptions</div>,
-        main: () => <Subscriptions />
-    },
-    {
         path: '/cities',
         menuName: 'Cities',
         menuIcon: <LocationCity />,
@@ -117,45 +124,48 @@ const routes = [
     {
       path: '/user-gifts',
       menuName: 'User Gift Drynx',
-      menuIcon: <Contacts />,
+      menuIcon: <GiftCard />,
       sidebar: () => <div>User Gift Drynx</div>,
       main: () => <UserGiftDrynx />
     },
     {
       path: '/user-drinks',
       menuName: 'User Free Drinks',
-      menuIcon: <Contacts />,
+      menuIcon: <LocalBar />,
       sidebar: () => <div>User Free Drinks</div>,
       main: () => <UserFreeDrinks />
     },
     {
-      path: '/contact-us',
-      menuName: 'Contact Us',
-      menuIcon: <PersonPin />,
-      sidebar: () => <div>Contact Us</div>,
-      main: () => <ContactUs />
-    },
-    {
-      path: '/faq',
-      menuName: 'FAQ',
-      menuIcon: <PersonPin />,
-      sidebar: () => <div>FAQ</div>,
-      main: () => <FAQ />
+      path: '/user-referral',
+      menuName: 'User Referrals',
+      menuIcon: <Referrals />,
+      sidebar: () => <div>User Referral</div>,
+      main: () => <UserReferral />
     },
     {
       path: '/pages',
       menuName: 'Pages',
-      menuIcon: <PersonPin />,
+      menuIcon: <PagesIcon />,
       sidebar: () => <div>Pages</div>,
       main: () => <Pages />
     },
     {
-      path: '/user-referral',
-      menuName: 'Referral',
-      menuIcon: <PersonPin />,
-      sidebar: () => <div>Referral</div>,
-      main: () => <UserReferral />
+      path: '/faq',
+      menuName: 'FAQ',
+      menuIcon: <QuestionAnswer />,
+      sidebar: () => <div>FAQ</div>,
+      main: () => <FAQ />
+    },
+    {
+      path: '/contact-us',
+      menuName: 'Contact Us',
+      menuIcon: <ContactIcon />,
+      sidebar: () => <div>Contact Us</div>,
+      main: () => <ContactUs />
     }
+
+
+
 ]
 
 const drawerWidth = 240;

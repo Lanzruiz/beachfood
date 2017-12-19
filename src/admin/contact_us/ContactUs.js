@@ -2,6 +2,7 @@
  * Created by Thomas Woodfin on 12/13/2017.
  */
  import React from 'react'
+import matchSorter from 'match-sorter'
  import classNames from 'classnames';
  import PropTypes from 'prop-types';
  import { withStyles } from 'material-ui/styles';
@@ -88,21 +89,31 @@ class ContactUs extends React.Component {
       <div>
         <ReactTable
           data={this.state.ContactUsData}
+          filterable
           columns={[
             {
               Header: "Contact Us",
               columns: [
                 {
                   Header: "Name",
-                  accessor: "name"
+                  accessor: "name",
+                  filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ["name"] }),
+                  filterAll: true
                 },
                 {
                   Header: "Email",
-                  accessor: "email"
+                  accessor: "email",
+                  filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ["email"] }),
+                  filterAll: true
                 },
                 {
                   Header: "Subject",
-                  accessor: "subject"
+                  accessor: "subject",
+                  filterMethod: (filter, rows) =>
+                        matchSorter(rows, filter.value, { keys: ["subject"] }),
+                  filterAll: true
                 }
               ]
             }

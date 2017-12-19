@@ -2,6 +2,7 @@
  * Created by BOSS on 11/17/2017.
  */
 import React from 'react'
+import ReactTable from "react-table";
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
