@@ -1,11 +1,11 @@
 /**
- * Created by Thomas Woodfin on 12/19/2017.
+ * Created by Thomas Woodfin on 12/20/2017.
  */
  import React from 'react'
  import classNames from 'classnames';
  import PropTypes from 'prop-types';
  import { withStyles } from 'material-ui/styles';
- import { administratorRef, firebaseAuth } from '../../FB'
+ import { clubOwnerRef, firebaseAuth } from '../../FB'
  import { updateUsers } from '../../helpers/users'
  import stylesm from '../../App.css'
  import ReactTable from "react-table";
@@ -67,13 +67,13 @@ const styles = theme => ({
 });
 
 
-class Administrator extends React.Component {
+class ClubOwner extends React.Component {
 
   constructor(props){
       super(props)
       this.state = {
           loadingData: false,
-          AdministratorData: []
+          ClubOwnerData: []
       }
   }
 
@@ -82,20 +82,20 @@ class Administrator extends React.Component {
   componentDidMount(){
       var _ths = this;
 
-     this.loadAdministratorData();
+     this.loadClubOwnerData();
 
   }
 
-  loadAdministratorData() {
+  loadClubOwnerData() {
     var _ths = this;
-    let theAdministratorData = [];
-    let user_type = "admin";
+    let theClubOwnerData = [];
+    let user_type = "club_owner";
 
-     administratorRef.orderByChild('user_type').equalTo(user_type).once('value', function (snapshot) {
+     clubOwnerRef.orderByChild('user_type').equalTo(user_type).once('value', function (snapshot) {
 
        if(!snapshot.exists()) {
          _ths.setState({
-             AdministratorData: theAdministratorData,
+             ClubOwnerData: theClubOwnerData,
              loadingData: true
          })
        }
@@ -105,15 +105,15 @@ class Administrator extends React.Component {
 
 
          snapshot.forEach(function(userItem) {
-           let adminRec = userItem.val();
-            theAdministratorData .push({key: userItem.key, firstname: adminRec.firstname, lastname: adminRec.lastname, email: adminRec.email, uid: adminRec.userid})
+           let clubRec = userItem.val();
+            theClubOwnerData .push({key: userItem.key, firstname: clubRec.firstname, lastname: clubRec.lastname, email: clubRec.email, uid: clubRec.userid})
             counter = counter + 1;
          });
 
 
          if (totalCount == counter) {
            _ths.setState({
-               AdministratorData: theAdministratorData,
+               ClubOwnerData: theClubOwnerData,
                loadingData: true
            })
          }
@@ -139,15 +139,13 @@ class Administrator extends React.Component {
       var _ths = this;
       swal({
           title: "Are you sure?",
-          text: "Once deleted, you will not be able to recover this administrator!",
+          text: "Once deleted, you will not be able to recover this club owner!",
           icon: "warning",
           buttons: true,
           dangerMode: true,
       }).then((willDelete) => {
           if (willDelete) {
-
-
-              administratorRef.child(key).once('value', function(snapshot) {
+              clubOwnerRef.child(key).once('value', function(snapshot) {
                  let userRec = snapshot.val();
                  let email = userRec.email;
                  let password = userRec.password;
@@ -155,18 +153,18 @@ class Administrator extends React.Component {
                   //authenticate user
                   firebaseAuth.signInWithEmailAndPassword(email,password).then(function(user) {
                       user.delete();
-                      administratorRef.child(key).remove();
+                      clubOwnerRef.child(key).remove();
 
                       _ths.setState({
                           loadingData: false
                       })
 
-                      _ths.loadAdministratorData();
+                      _ths.loadClubOwnerData();
                   }).catch(function(error) {
                         _ths.setState({
                             loadingData: false
                         });
-                        _ths.loadAdministratorData();
+                        _ths.loadClubOwnerData();
                   });
 
               });
@@ -203,8 +201,8 @@ class Administrator extends React.Component {
       <Grid container spacing={24}>
       <Grid item xs={12} className="pageToolbarRight">
           <div style={{margin: "20px"}}>
-              <Link to={`/administrator/create`} style={{color: '#FFFFFF', background: '#3f51b5', padding: "10px", margin: "10px"}} aria-label="Add FAQ">
-                  Add Administrator
+              <Link to={`/club_owner/create`} style={{color: '#FFFFFF', background: '#3f51b5', padding: "10px", margin: "10px"}} aria-label="Add FAQ">
+                  Add Club Owner
               </Link>
           </div>
 
@@ -212,10 +210,10 @@ class Administrator extends React.Component {
       </Grid>
 
         <ReactTable
-          data={this.state.AdministratorData}
+          data={this.state.ClubOwnerData}
           columns={[
             {
-              Header: "Administrator",
+              Header: "Club Owner",
               columns: [
                 {
                   Header: "First name",
@@ -234,7 +232,7 @@ class Administrator extends React.Component {
                   accessor: "key",
                   Cell: row => (
                     <div>
-                        <Link to={`/administrator/edit/`+row.value} style={{color: '#757575'}} aria-label="Edit">
+                        <Link to={`/club_owner/edit/`+row.value} style={{color: '#757575'}} aria-label="Edit">
                             <EditIcon />
                         </Link>
 
@@ -268,8 +266,8 @@ class Administrator extends React.Component {
 }
 
 
-Administrator.propTypes = {
+ClubOwner.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Administrator);
+export default withStyles(styles)(ClubOwner);

@@ -184,64 +184,83 @@ class AllEvents extends React.Component {
             isloading: true,
             issuccess: false,
         })
-        saveEvent({
-            address : this.state.address,
-            description : this.state.evtDesc,
-            evstartdatetime : this.state.startDateTime.toLocaleString(),
-            evenddatetime : this.state.endDateTime.toLocaleString(),
-            image : theFileid+'.'+filenamearr[1],
-            lat : this.state.lat,
-            lng : this.state.lng,
-            name : this.state.evtName,
-            state : this.state.state,
-            zip : this.state.zip
-        }).then((data) => {
-            if (this.state.evtImg !== ''){
-                var uploadTask = Storageref.child('events/'+theFileid+'.'+filenamearr[1]).put(this.state.evtImg);
 
-                uploadTask.on('state_changed', function(snapshot){
-                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        var isError = false;
+        if (this.state.evtName == "") {
+           isError = true;
+           swal ( "Oops" ,  "Please enter your event name!" ,  "error" );
+           this.setState({
+               isloading: false
+           })
+        }
 
-                    if (progress === 100){
-                        _ths.setState({
-                            isloading: false,
-                            issuccess: true,
-                        })
-                        setTimeout(() => {
-                            _ths.setState({
-                                loadingData: false,
-                                evtName: '',
-                                evtDesc: '',
-                                evtImg: '',
-                                evtImgName: '',
-                                evtImgtype: '',
-                                address: '',
-                                icon: '',
-                                phone: '',
-                                lat: 0,
-                                lng: 0,
-                                state: '',
-                                zip: 0,
-                                startDateTime: new Date(),
-                                endDateTime: new Date(),
-                                evtImgpreview: '',
-                                issuccess: false,
-                            })
-                            document.querySelector('#evtImg').value = '';
-                            _ths.addr.value = "";
-                            _ths.handleModalClose()
-                        }, 3000)
-                    }
+        if(isError == false) {
+          saveEvent({
+              address : this.state.address,
+              description : this.state.evtDesc,
+              evstartdatetime : this.state.startDateTime.toLocaleString(),
+              evenddatetime : this.state.endDateTime.toLocaleString(),
+              image : theFileid+'.'+filenamearr[1],
+              lat : this.state.lat,
+              lng : this.state.lng,
+              name : this.state.evtName,
+              state : this.state.state,
+              zip : this.state.zip
+          }).then((data) => {
+              if (this.state.evtImg !== ''){
+                  var uploadTask = Storageref.child('events/'+theFileid+'.'+filenamearr[1]).put(this.state.evtImg);
 
-                    console.log(snapshot.state);
-                }, function(error) {
-                    console.log('Filed');
-                }, function() {
-                    var downloadURL = uploadTask.snapshot.downloadURL;
-                    console.log(downloadURL);
-                });
-            }
-        })
+                  uploadTask.on('state_changed', function(snapshot){
+                      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+                      if (progress === 100){
+                          _ths.setState({
+                              isloading: false,
+                              issuccess: true,
+                          })
+                          setTimeout(() => {
+                              _ths.setState({
+                                  loadingData: false,
+                                  evtName: '',
+                                  evtDesc: '',
+                                  evtImg: '',
+                                  evtImgName: '',
+                                  evtImgtype: '',
+                                  address: '',
+                                  icon: '',
+                                  phone: '',
+                                  lat: 0,
+                                  lng: 0,
+                                  state: '',
+                                  zip: 0,
+                                  startDateTime: new Date(),
+                                  endDateTime: new Date(),
+                                  evtImgpreview: '',
+                                  issuccess: false,
+                              })
+                              document.querySelector('#evtImg').value = '';
+                              _ths.addr.value = "";
+                              _ths.handleModalClose()
+                          }, 3000)
+                      }
+
+                      console.log(snapshot.state);
+                  }, function(error) {
+                      console.log('Filed');
+                  }, function() {
+                      var downloadURL = uploadTask.snapshot.downloadURL;
+                      console.log(downloadURL);
+                  });
+              } else {
+                _ths.setState({
+                    isloading: false,
+                    issuccess: true,
+                })
+              }
+          })
+        }
+
+
     }
 
     handleModalOpen(){
@@ -358,6 +377,15 @@ class AllEvents extends React.Component {
         const buttonClassname = classNames({
             [classes.buttonSuccess]: this.state.issuccess,
         });
+
+        if(this.state.issuccess == true) {
+          swal ( "Success" ,  "Club Owner successfully saved!" ,  "success" );
+            var _ths = this;
+            _ths.setState({
+                issuccess: false
+            })
+        }
+
         return (
             <div className="App">
                 <Grid container spacing={24}>

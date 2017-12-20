@@ -22,6 +22,7 @@ import KeyboardBackspace from 'material-ui-icons/KeyboardBackspace';
 import Switch from 'material-ui/Switch';
 import { DateTimePicker } from 'material-ui-pickers'
 
+import swal from 'sweetalert';
 import { cityRef } from '../../FB'
 import { saveEvent } from '../../helpers/events'
 
@@ -73,7 +74,7 @@ class CityNew extends React.Component {
         super(props)
         this.state = {
             name: '',
-            state: '',
+            status: false,
             checked: false,
             isloading: false,
             issuccess: false,
@@ -139,6 +140,14 @@ class CityNew extends React.Component {
         const buttonClassname = classNames({
             [classes.buttonSuccess]: this.state.issuccess,
         });
+
+        if(this.state.issuccess == true) {
+          swal ( "Success" ,  "City successfully saved!" ,  "success" );
+            var _ths = this;
+            _ths.setState({
+                issuccess: false
+            })
+        }
         return (
             <div className="App">
                 <Grid container spacing={24}>

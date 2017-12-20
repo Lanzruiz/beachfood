@@ -20,7 +20,7 @@ import CheckIcon from 'material-ui-icons/Check';
 import KeyboardBackspace from 'material-ui-icons/KeyboardBackspace';
 
 import { DateTimePicker } from 'material-ui-pickers'
-
+import swal from 'sweetalert';
 import { faqRef } from '../../FB'
 import { saveEvent } from '../../helpers/events'
 
@@ -122,6 +122,15 @@ class FAQNew extends React.Component {
         const buttonClassname = classNames({
             [classes.buttonSuccess]: this.state.issuccess,
         });
+
+        if(this.state.issuccess == true) {
+          swal ( "Success" ,  "FAQ successfully saved!" ,  "success" );
+            var _ths = this;
+            _ths.setState({
+                issuccess: false
+            })
+        }
+
         return (
             <div className="App">
                 <Grid container spacing={24}>

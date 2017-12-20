@@ -5,7 +5,6 @@ import Paper from 'material-ui/Paper';
 import Grid from 'material-ui/Grid';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import LoginForm from './LoginForm';
-import RegisterForm from './RegisterForm';
 import SwipeableViews from 'react-swipeable-views';
 import AppBar from 'material-ui/AppBar';
 
@@ -86,7 +85,7 @@ class Login extends React.Component {
                                 <TabContainer dir={theme.direction}>
                                     <LoginForm />
                                 </TabContainer>
-                                
+
                             </SwipeableViews>
 
                         </Paper>

@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Grid from 'material-ui/Grid';
-
+import swal from 'sweetalert';
 import TextField from 'material-ui/TextField';
 import Input, { InputLabel } from 'material-ui/Input';
 import Button from 'material-ui/Button';
@@ -139,6 +139,14 @@ class PagesUpdate extends React.Component {
 
       if(this.state.isFAQLoaded == false) {
          return "Loading...";
+      }
+
+      if(this.state.issuccess == true) {
+        swal ( "Success" ,  "Pages successfully saved!" ,  "success" );
+          var _ths = this;
+          _ths.setState({
+              issuccess: false
+          })
       }
 
         const { classes } = this.props;

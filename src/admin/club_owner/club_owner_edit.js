@@ -20,7 +20,7 @@ import KeyboardBackspace from 'material-ui-icons/KeyboardBackspace';
 
 import { DateTimePicker } from 'material-ui-pickers'
 
-import { administratorRef, firebaseAuth } from '../../FB'
+import { clubOwnerRef, firebaseAuth } from '../../FB'
 import { saveEvent } from '../../helpers/events'
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import Visibility from 'material-ui-icons/Visibility';
@@ -69,7 +69,7 @@ const styles = theme => ({
 });
 
 
-class UpdateAdministrator extends React.Component {
+class UpdateClubOwner extends React.Component {
 
     constructor(props){
         super(props)
@@ -110,18 +110,18 @@ class UpdateAdministrator extends React.Component {
     componentDidMount(){
         var _ths = this;
 
-        var adminID = this.props.match.params.adminid;
+        var clubID = this.props.match.params.clubid;
 
-        administratorRef.child(adminID).once('value', function(snapshot) {
-            let adminRec = snapshot.val();
+        clubOwnerRef.child(clubID).once('value', function(snapshot) {
+            let clubRec = snapshot.val();
             _ths.setState({
-               firstname: adminRec.firstname,
-               lastname: adminRec.lastname,
-               email: adminRec.email,
-               userid: adminRec.userid,
-               origEmail: adminRec.email,
-               origPassword: adminRec.password,
-               userKey: adminID
+               firstname: clubRec.firstname,
+               lastname: clubRec.lastname,
+               email: clubRec.email,
+               userid: clubRec.userid,
+               origEmail: clubRec.email,
+               origPassword: clubRec.password,
+               userKey: clubID
             })
         });
 
@@ -130,7 +130,7 @@ class UpdateAdministrator extends React.Component {
 
 
 
-    saveAdministrator(){
+    saveClubOwner(){
 
         var _ths = this;
 
@@ -205,7 +205,7 @@ class UpdateAdministrator extends React.Component {
                               email: _ths.state.email
                           }
                           console.log(_ths.state.userKey);
-                          administratorRef.child(_ths.state.userKey).update(value);
+                          clubOwnerRef.child(_ths.state.userKey).update(value);
                         } else {
                          var value = {
                               firstname: _ths.state.firstname,
@@ -213,7 +213,7 @@ class UpdateAdministrator extends React.Component {
                               email: _ths.state.email,
                               password: _ths.state.password
                           }
-                          administratorRef.child(_ths.state.userKey).update(value);
+                          clubOwnerRef.child(_ths.state.userKey).update(value);
                         }
 
 
@@ -277,7 +277,7 @@ class UpdateAdministrator extends React.Component {
         }
 
         if(this.state.issuccess == true) {
-          swal ( "Success" ,  "Administrator successfully saved!" ,  "success" );
+          swal ( "Success" ,  "Club Owner successfully saved!" ,  "success" );
             var _ths = this;
             _ths.setState({
                 issuccess: false
@@ -288,7 +288,7 @@ class UpdateAdministrator extends React.Component {
             <div className="App">
                 <Grid container spacing={24}>
                     <Grid item xs={6}>
-                        <Link to={`/administrator`} className='linkBtn primary'>
+                        <Link to={`/club_owner`} className='linkBtn primary'>
                         <span>
                             <KeyboardBackspace />
                             Back
@@ -300,7 +300,7 @@ class UpdateAdministrator extends React.Component {
                             className={buttonClassname}
                             disabled={this.state.isloading} raised dense color="primary"
                             onClick={() => {
-                                this.saveAdministrator()
+                                this.saveClubOwner()
                             }}>
                             {
                                 this.state.isloading ? <CircularProgress size={24} className={classes.buttonProgress} /> :
@@ -308,7 +308,7 @@ class UpdateAdministrator extends React.Component {
                                         <Save className={classes.leftIcon} />
                             }
                             {
-                                this.state.issuccess ? `Administrator Saved` : `Save Administrator`
+                                this.state.issuccess ? `Club Owner Saved` : `Save Club Owner`
                             }
                         </Button>
                     </Grid>
@@ -381,8 +381,8 @@ class UpdateAdministrator extends React.Component {
     }
 }
 
-UpdateAdministrator.propTypes = {
+UpdateClubOwner.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(UpdateAdministrator);
+export default withStyles(styles)(UpdateClubOwner);

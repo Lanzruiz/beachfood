@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Grid from 'material-ui/Grid';
-
+import swal from 'sweetalert';
 import TextField from 'material-ui/TextField';
 import Checkbox from 'material-ui/Checkbox';
 import Input, { InputLabel } from 'material-ui/Input';
@@ -174,6 +174,13 @@ class CityUpdate extends React.Component {
             [classes.buttonSuccess]: this.state.issuccess,
         });
 
+        if(this.state.issuccess == true) {
+          swal ( "Success" ,  "Administrator successfully saved!" ,  "success" );
+            var _ths = this;
+            _ths.setState({
+                issuccess: false
+            })
+        }
 
 
         return (

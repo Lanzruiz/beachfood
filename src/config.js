@@ -9,6 +9,7 @@ var theuinfo = reactLocalStorage.get('isloggedin');
 var conf = {
     sitename: 'Drynx',
     onlyAdmin: true,
+    onlyClubs: true,
     login: theuinfo ? theuinfo : false,
 }
 

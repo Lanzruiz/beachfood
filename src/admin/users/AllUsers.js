@@ -92,6 +92,7 @@ class AllUsers extends React.Component {
             email: '',
             password: '',
             username: '',
+            issuccess: false,
             showPassword: false
         }
     }
@@ -140,6 +141,12 @@ class AllUsers extends React.Component {
             password: this.state.password,
             username: this.state.username
         })
+
+        this.setState({
+           issuccess: true
+        });
+
+
     }
 
     askDeleteConfirm(key) {
@@ -180,6 +187,15 @@ class AllUsers extends React.Component {
         const buttonClassname = classNames({
             [classes.buttonSuccess]: this.state.issuccess,
         });
+
+        if(this.state.issuccess == true) {
+          swal ( "Success" ,  "Users successfully saved!" ,  "success" );
+            var _ths = this;
+            _ths.setState({
+                issuccess: false
+            })
+        }
+
         return (
             <div className="App">
                 <Grid container spacing={24}>
@@ -313,12 +329,10 @@ class AllUsers extends React.Component {
                                       filterable: false,
                                       Cell: row => (
                                         <div>
-                                        <IconButton aria-label="Edit"
-                                                    onClick={() => {
-                                                        this.handleModalOpen(row.value)
-                                                    }}>
+                                        <Link to={`/users/edit/`+row.value} style={{color: '#757575'}} aria-label="Edit">
                                             <EditIcon />
-                                        </IconButton>
+                                        </Link>
+                                        
 
                                             <IconButton aria-label="Delete"
                                                         onClick={() => {

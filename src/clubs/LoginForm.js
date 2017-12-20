@@ -1,7 +1,6 @@
 /**
  * Created by BOSS on 11/4/2017.
  */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -118,7 +117,7 @@ class LoginForm extends React.Component {
                     }
                 </FormControl>
                 <FormControl fullWidth className={classes.formControl}>
-                    <InputLabel htmlFor="amount">Email</InputLabel>
+                    <InputLabel htmlFor="amount">Email 123</InputLabel>
                     <Input
                         id="email"
                         onChange={(event) => {

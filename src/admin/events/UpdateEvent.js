@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Grid from 'material-ui/Grid';
-
+import swal from 'sweetalert';
 import TextField from 'material-ui/TextField';
 import Input, { InputLabel } from 'material-ui/Input';
 import Button from 'material-ui/Button';
@@ -217,46 +217,65 @@ class UpdateEvent extends React.Component {
         var theFileid = this.makeid();
         var filenamearr = this.state.evtImgName.split('.');
 
-        updateEvent({
-            evid: this.props.match.params.evid,
-            address : this.state.address,
-            description : this.state.description,
-            evstartdatetime : this.state.evstartdatetime,
-            evenddatetime : this.state.evenddatetime,
-            image : (this.state.ifImgChanged) ? theFileid+'.'+filenamearr[1] : this.state.evtImgName,
-            lat : this.state.lat,
-            lng : this.state.lng,
-            name : this.state.name,
-            state : this.state.state,
-            zip : this.state.zip
-        })
-
-        if (this.state.ifImgChanged){
-            var uploadTask = Storageref.child('events/'+theFileid+'.'+filenamearr[1]).put(this.state.evtImg);
-
-            uploadTask.on('state_changed', function(snapshot){
-                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-
-                if (progress === 100){
-                    _ths.setState({
-                        isloading: false,
-                        issuccess: true,
-                    })
-                    setTimeout(() => {
-                        _ths.setState({
-                            issuccess: false,
-                        })
-                    }, 3000)
-                }
-
-                console.log(snapshot.state);
-            }, function(error) {
-                console.log('Filed');
-            }, function() {
-                var downloadURL = uploadTask.snapshot.downloadURL;
-                console.log(uploadTask.snapshot);
-            });
+        var isError = false;
+        if (this.state.name == "") {
+           isError = true;
+           swal ( "Oops" ,  "Please enter your event name!" ,  "error" );
+           this.setState({
+               isloading: false
+           })
         }
+
+        if(isError == false) {
+          updateEvent({
+              evid: this.props.match.params.evid,
+              address : this.state.address,
+              description : this.state.description,
+              evstartdatetime : this.state.evstartdatetime,
+              evenddatetime : this.state.evenddatetime,
+              image : (this.state.ifImgChanged) ? theFileid+'.'+filenamearr[1] : this.state.evtImgName,
+              lat : this.state.lat,
+              lng : this.state.lng,
+              name : this.state.name,
+              state : this.state.state,
+              zip : this.state.zip
+          })
+
+          if (this.state.ifImgChanged){
+              var uploadTask = Storageref.child('events/'+theFileid+'.'+filenamearr[1]).put(this.state.evtImg);
+
+              uploadTask.on('state_changed', function(snapshot){
+                  var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+                  if (progress === 100){
+                      _ths.setState({
+                          isloading: false,
+                          issuccess: true,
+                      })
+                      setTimeout(() => {
+                          _ths.setState({
+                              issuccess: false,
+                          })
+                      }, 3000)
+                  }
+
+                  console.log(snapshot.state);
+              }, function(error) {
+                  console.log('Filed');
+              }, function() {
+                  var downloadURL = uploadTask.snapshot.downloadURL;
+                  console.log(uploadTask.snapshot);
+              });
+          } else {
+            _ths.setState({
+                isloading: false,
+                issuccess: true,
+            })
+          }
+        }
+
+
+
 
     }
 
@@ -275,6 +294,14 @@ class UpdateEvent extends React.Component {
         const buttonClassname = classNames({
             [classes.buttonSuccess]: this.state.issuccess,
         });
+
+        if(this.state.issuccess == true) {
+          swal ( "Success" ,  "Club Owner successfully saved!" ,  "success" );
+            var _ths = this;
+            _ths.setState({
+                issuccess: false
+            })
+        }
 
         return (
             <div className="App">

@@ -507,6 +507,15 @@ class AllClubs extends React.Component {
             [classes.buttonSuccess]: this.state.issuccess,
         });
 
+
+        if(this.state.issuccess == true) {
+          swal ( "Success" ,  "Club successfully saved!" ,  "success" );
+            var _ths = this;
+            _ths.setState({
+                issuccess: false
+            })
+        }
+
         return (
             <div className="App">
                 <Grid container spacing={24}>

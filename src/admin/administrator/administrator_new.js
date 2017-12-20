@@ -20,7 +20,7 @@ import KeyboardBackspace from 'material-ui-icons/KeyboardBackspace';
 
 import { DateTimePicker } from 'material-ui-pickers'
 
-import { usersref, firebaseAuth } from '../../FB'
+import { administratorRef, firebaseAuth } from '../../FB'
 import { saveEvent } from '../../helpers/events'
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import Visibility from 'material-ui-icons/Visibility';
@@ -153,10 +153,11 @@ class NewAdministrator extends React.Component {
                          lastname: _ths.state.lastname,
                          email: _ths.state.email,
                          userid: user.uid,
+                         password: _ths.state.password,
                          user_type: "admin",
                      }
 
-                     usersref.push(value);
+                     administratorRef.push(value);
 
                      _ths.setState({
                          firstname: '',
@@ -203,7 +204,19 @@ class NewAdministrator extends React.Component {
         if(this.state.emailError == true) {
           var _ths = this;
           swal ( "Oops" ,  "Email address already in used!" ,  "error" );
+          _ths.setState({
+              emailError: false
+          })
         }
+
+        if(this.state.issuccess == true) {
+          swal ( "Success" ,  "Administrator successfully saved!" ,  "success" );
+            var _ths = this;
+            _ths.setState({
+                issuccess: false
+            })
+        }
+
         return (
             <div className="App">
                 <Grid container spacing={24}>
