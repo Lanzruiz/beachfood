@@ -67,7 +67,7 @@ function logout() {
 
 const routes = [
     {
-        path: '/',
+        path: '/drynx_admin',
         exact: true,
         menuName: 'Home',
         menuIcon: <HomeIcon />,

@@ -1,5 +1,5 @@
 /**
- * Created by BOSS on 11/4/2017.
+ * Created by Thomas Woodfin on 12/21/2017.
  */
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -11,7 +11,7 @@ import { FormControl } from 'material-ui/Form';
 import Visibility from 'material-ui-icons/Visibility';
 import VisibilityOff from 'material-ui-icons/VisibilityOff';
 import {reactLocalStorage} from 'reactjs-localstorage';
- import { administratorRef } from '../FB'
+ import { clubOwnerRef } from '../FB'
 
 import { login, resetPassword } from '../helpers/auth'
 
@@ -69,16 +69,16 @@ class LoginForm extends React.Component {
             .then((user) => {
                 console.log(user.uid);
                 //check if userid is valid
-                administratorRef.orderByChild('userid').equalTo(user.uid).once('child_added', function (snapshot) {
+                clubOwnerRef.orderByChild('userid').equalTo(user.uid).once('child_added', function (snapshot) {
                   console.log(snapshot.val());
                     if(snapshot.exists()) {
-                      reactLocalStorage.set('isloggedin', true);
+                      reactLocalStorage.set('isloggedinClub', true);
                       reactLocalStorage.set('uid', user.uid);
                       reactLocalStorage.setObject('user', {
                           'displayName': user.displayName,
                           'photoURL': user.photoURL,
                       });
-                      window.location.assign('/');
+                      window.location.assign('/drynx_club');
                       _ths.setState(setErrorMsg(null));
                     } else {
                       console.log("Invalid access");
@@ -117,7 +117,7 @@ class LoginForm extends React.Component {
                     }
                 </FormControl>
                 <FormControl fullWidth className={classes.formControl}>
-                    <InputLabel htmlFor="amount">Email 123</InputLabel>
+                    <InputLabel htmlFor="amount">Email</InputLabel>
                     <Input
                         id="email"
                         onChange={(event) => {

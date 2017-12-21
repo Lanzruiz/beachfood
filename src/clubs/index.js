@@ -1,5 +1,5 @@
 /**
- * Created by BOSS on 11/4/2017.
+ * Created by Thomas Woodfin on 12/21/2017.
  */
 
 import React from 'react';
@@ -16,11 +16,13 @@ import IconButton from 'material-ui/IconButton';
 import Hidden from 'material-ui/Hidden';
 import Divider from 'material-ui/Divider';
 import MenuIcon from 'material-ui-icons/Menu';
+import SettingsIcon from 'material-ui-icons/Settings';
 
 import Login from "./Login";
 import Dashboard from "./Dashboard";
 
-//import AllDrinks from './drinks'
+import Settings from './settings'
+import ClubsRouter from './club'
 //import Subscriptions from './subscriptions'
 
 
@@ -45,10 +47,34 @@ function logout() {
 
 const routes = [
     {
-        path: '/',
+        path: '/drynx_club',
         exact: true,
         menuName: 'Home',
         menuIcon: <HomeIcon />,
+        sidebar: () => <div>Dashboard</div>,
+        main: () => <Dashboard/>
+    },
+    {
+        path: '/drynx_club/settings',
+        exact: true,
+        menuName: 'Settings',
+        menuIcon: <SettingsIcon />,
+        sidebar: () => <div>Settings</div>,
+        main: () => <Settings/>
+    },
+    {
+        path: '/drynx_club/clubs',
+        exact: true,
+        menuName: 'Clubs',
+        menuIcon: <Weekend />,
+        sidebar: () => <div>Clubs</div>,
+        main: () => <ClubsRouter/>
+    },
+    {
+        path: '/drynx_club/drinks',
+        exact: true,
+        menuName: 'Drinks',
+        menuIcon: <LocalBar />,
         sidebar: () => <div>Dashboard</div>,
         main: () => <Dashboard/>
     }
@@ -118,7 +144,7 @@ class Clubs extends React.Component {
 
     render() {
         const { classes, theme } = this.props;
-        
+
         const drawer = (
             <div>
                 <div className={classes.drawerHeader}  style={{
@@ -151,7 +177,7 @@ class Clubs extends React.Component {
             </div>
         );
 
-        if (!conf.login){
+        if (!conf.loginClub){
             return (
                 <Login/>
             )
