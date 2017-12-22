@@ -1,5 +1,5 @@
 /**
- * Created by BOSS on 12/4/2017.
+ * Created by Thomas Woodfin on 12/22/2017.
  */
 
 import React from 'react'
@@ -20,7 +20,7 @@ import TextField from 'material-ui/TextField';
 import { CircularProgress } from 'material-ui/Progress';
 import Switch from 'material-ui/Switch';
 import KeyboardBackspace from 'material-ui-icons/KeyboardBackspace';
-import { clubssref, drinksref, Storageref } from '../../FB'
+import { clubssref, drinksref, Storageref, firebaseAuth } from '../../FB'
 
 import swal from 'sweetalert';
 import MenuItem from 'material-ui/Menu/MenuItem';
@@ -97,7 +97,15 @@ class UpdateDrinks extends React.Component {
         _ths.setState({
             loadingData: true
         })
-        clubssref.on('value', function(snapshot) {
+
+        console.log("This is a test");
+
+
+
+        var userID = firebaseAuth.currentUser.uid;
+
+        clubssref.orderByChild('ownerID').equalTo(userID).once('value', function (snapshot) {
+        //clubssref.on('value', function(snapshot) {
 
             snapshot.forEach(function(eventItem) {
                 var childKey = eventItem.key;
@@ -117,7 +125,7 @@ class UpdateDrinks extends React.Component {
             _ths.setState({
                 clubData: theclubData
             })
-        }).bind(this);
+        });
 
         drinksref.child(`${_ths.props.match.params.clubid}/${_ths.props.match.params.drinkid}/`).on('value', function(snapshot) {
             let thedrinksData = [];
@@ -134,17 +142,26 @@ class UpdateDrinks extends React.Component {
 
                 if ( childKey === 'image'){
 
-                    Storageref.child('Drinks/'+childData).getDownloadURL().then(function(url) {
-
+                    Storageref.child('club_image/'+childData).getDownloadURL().then(function(url) {
                         _ths.setState({
-                            drinksImgpreview: url
+                            prevImg: url
                         })
                     }).catch((err) => {
                         _ths.setState({
-                            drinksImgpreview: ''
+                            prevImg: ''
                         })
                     })
-
+                    Storageref.child('club_image/'+childData).getMetadata().then(function(metadata) {
+                        _ths.setState({
+                            drinksImg: metadata.name,
+                            drinksImgName: metadata.name
+                        })
+                    }).catch((err) => {
+                        _ths.setState({
+                            drinksImg: '',
+                            drinksImgName: ''
+                        })
+                    })
                 }
 
                 if ( childKey === 'name'){
@@ -183,68 +200,51 @@ class UpdateDrinks extends React.Component {
         var theFileid = this.makeid();
         var filenamearr = this.state.drinksImgName.split('.');
 
+        // console.log(`${_ths.props.match.params.clubid}/${_ths.props.match.params.drinkid}/isFreeDrinks/`);
+        // drinksref.child(`${_ths.props.match.params.clubid}/${_ths.props.match.params.drinkid}/isFreeDrinks/`).set(_ths.state.isFree)
+        drinksref.child(`${_ths.props.match.params.clubid}/${_ths.props.match.params.drinkid}`).set({
+            name : _ths.state.drinksName,
+            whatsinit : _ths.state.whatsinit,
+            description : _ths.state.drinksDesc,
+            image : (this.state.ifImgChanged) ? theFileid+'.'+filenamearr[1] : this.state.drinksImgName,
+            isFreeDrinks : _ths.state.isFree,
+            price : _ths.state.drinkPrice
+        })
 
-        var imageName = "";
-        var value = {};
-         if (this.state.drinksImg !== ''){
-           var filenamearr = this.state.drinksImgName.split('.');
-           var theFileid = this.makeid();
-           imageName = theFileid+'.'+filenamearr[1];
-           value = {
-               name : _ths.state.drinksName,
-               whatsinit : _ths.state.whatsinit,
-               description : _ths.state.drinksDesc,
-               image : imageName,
-               isFreeDrinks : _ths.state.isFree,
-               price : _ths.state.drinkPrice
-           };
-         } else {
-           imageName = "";
-           value = {
-               name : _ths.state.drinksName,
-               whatsinit : _ths.state.whatsinit,
-               description : _ths.state.drinksDesc,
-               isFreeDrinks : _ths.state.isFree,
-               price : _ths.state.drinkPrice
-           }
-         }
-
-
-
-        drinksref.child(`${_ths.props.match.params.clubid}/${_ths.props.match.params.drinkid}`).update(value).then((club) => {
-            if (this.state.drinksImg !== "") {
-                  var uploadTask = Storageref.child('Drinks/'+theFileid+'.'+filenamearr[1]).put(this.state.drinksImg);
-
-                  uploadTask.on('state_changed', function(snapshot){
-                      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-
-                      if (progress === 100){
-                          _ths.setState({
-                              isloading: false,
-                              issuccess: true
-                          })
-
-                          _ths.handleRequestClose()
-
-                      }
-
-                      console.log(snapshot.state);
-                  }, function(error) {
-                      console.log('Filed');
-                  }, function() {
-                      var downloadURL = uploadTask.snapshot.downloadURL;
-                      console.log(downloadURL);
-                  });
-            } else {
-              _ths.setState({
-                  isloading: false,
-                  issuccess: true
-              })
-              _ths.handleRequestClose()
-            }
-        });
-
-
+        // if (this.state.ifImgChanged){
+        //     var uploadTask = Storageref.child('club_image/'+theFileid+'.'+filenamearr[1]).put(this.state.drinksImg);
+        //
+        //     uploadTask.on('state_changed', function(snapshot){
+        //         var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        //
+        //         if (progress === 100){
+        //             _ths.setState({
+        //                 isloading: false,
+        //                 isdrinksAdded: true,
+        //             })
+        //             setTimeout(() => {
+        //                 _ths.setState({
+        //                     loadingData: false,
+        //                     isloading: false,
+        //                     issuccess: false,
+        //                     uploadProgress: 0,
+        //                     issavingdrinks: false,
+        //                     isdrinksAdded: false,
+        //                     ifImgChanged: false
+        //                 })
+        //
+        //                 _ths.handleRequestClose()
+        //             }, 3000)
+        //         }
+        //
+        //         console.log(snapshot.state);
+        //     }, function(error) {
+        //         console.log('Filed');
+        //     }, function() {
+        //         var downloadURL = uploadTask.snapshot.downloadURL;
+        //         console.log(downloadURL);
+        //     });
+        // }
 
     }
 
@@ -329,14 +329,6 @@ class UpdateDrinks extends React.Component {
         const buttonClassname = classNames({
             [classes.buttonSuccess]: this.state.isclubAdded,
         });
-
-        if(this.state.issuccess == true) {
-          swal ( "Success" ,  "Drinks successfully saved!" ,  "success" );
-            var _ths = this;
-            _ths.setState({
-                issuccess: false
-            })
-        }
 
         return (
             <div className="App">

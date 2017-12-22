@@ -1,5 +1,5 @@
 /**
- * Created by BOSS on 11/17/2017.
+ * Created by Thomas Woodfin on 12/22/2017.
  */
 import React from 'react'
 import ReactTable from "react-table";
@@ -39,7 +39,7 @@ import { CircularProgress } from 'material-ui/Progress';
 import Divider from 'material-ui/Divider';
 import Tooltip from 'material-ui/Tooltip';
 import Switch from 'material-ui/Switch';
-import { clubssref, drinksref, Storageref } from '../../FB'
+import { clubssref, drinksref, Storageref, firebaseAuth } from '../../FB'
 
 import swal from 'sweetalert';
 import MenuItem from 'material-ui/Menu/MenuItem';
@@ -110,24 +110,54 @@ class AllDrinks extends React.Component {
             isPlaceChanged: false,
             uploadProgress: 0,
             issavingdrinks: false,
-            isdrinksAdded: false
+            isdrinksAdded: false,
+            ownerID: '',
+            isEmpty: false,
+            isEdit: false,
+            drinksKey: ''
         }
+
+        var _ths = this;
+        firebaseAuth.onAuthStateChanged(function(user) {
+            if (user) {
+                _ths.loadDrinksData();
+            } else {
+                // No user is signed in.
+                console.log('There is no logged in user');
+            }
+        });
     }
 
     componentDidMount(){
 
-        this.loadDrinksData();
+
+
     }
+
 
     loadDrinksData() {
       var _ths = this;
       let theclubData = [];
 
-      _ths.setState({
-          loadingData: true
-      })
-      clubssref.on('value', function(snapshot) {
+      var userID = firebaseAuth.currentUser.uid;
 
+
+
+      _ths.setState({
+          loadingData: true,
+          ownerID: userID
+      })
+      //clubssref.on('value', function(snapshot) {
+        clubssref.orderByChild('ownerID').equalTo(userID).once('value', function (snapshot) {
+          if(snapshot.numChildren() == 0) {
+             _ths.setState({
+                 isEmpty: true
+             });
+          } else {
+            _ths.setState({
+                isEmpty: false
+            });
+          }
           snapshot.forEach(function(eventItem) {
               var childKey = eventItem.key;
               var childData = eventItem.val();
@@ -139,12 +169,12 @@ class AllDrinks extends React.Component {
           _ths.setState({
               clubData: theclubData
           })
-      }).bind(this);
+      });
 
       var count = 0;
       var theDrinksData = [];
-      clubssref.once('value', function(snapshot) {
-
+      //clubssref.once('value', function(snapshot) {
+      clubssref.orderByChild('ownerID').equalTo(userID).once('value', function (snapshot) {
           var totalCount = snapshot.numChildren();
           snapshot.forEach(function(clubItem) {
             var childKey = clubItem.key;
@@ -175,7 +205,6 @@ class AllDrinks extends React.Component {
 
           });
       });
-
     }
 
     saveDrinks(){
@@ -200,8 +229,8 @@ class AllDrinks extends React.Component {
                     if (progress === 100){
                         _ths.setState({
                             isloading: false,
-                            issuccess: true,
                             isdrinksAdded: true,
+                            issuccess: true
                         })
                         setTimeout(() => {
                             _ths.setState({
@@ -272,7 +301,7 @@ class AllDrinks extends React.Component {
             if (willDelete) {
                 drinksref.child(clubKey).child(key).remove();
             }
-              this.loadDrinksData();
+            this.loadDrinksData();
         });
     };
 
@@ -314,12 +343,136 @@ class AllDrinks extends React.Component {
     };
 
     handleClickOpen = () => {
-        this.setState({ open: true });
+        if(this.state.isEmpty == false) {
+           this.setState({ open: true });
+        } else {
+           swal ( "Oops" ,  "Club is empty!" ,  "error" );
+        }
     };
 
     handleRequestClose = () => {
         this.setState({ open: false });
     };
+
+    editDrinks(clubKey, drinksKey) {
+        var _ths = this;
+
+
+        drinksref.child(clubKey).child(drinksKey).on('value', function(snapshot) {
+            let thedrinksData = [];
+
+            if(snapshot.exists()) {
+              _ths.setState({isEdit: true})
+              let drinksData = snapshot.val();
+              _ths.setState({
+                  drinksDesc: drinksData.description,
+                  drinksName: drinksData.name,
+                  drinkPrice: drinksData.price,
+                  whatsinit: drinksData.whatsinit,
+                  selectedclubid: clubKey,
+                  drinksKey: drinksKey
+              })
+
+              if (drinksData.isFreeDrinks == true) {
+                _ths.setState({
+                    checked: ['isFreeDrink'],
+                    isFree: drinksData.isFreeDrinks
+                })
+              }
+
+              if (drinksData.image != "") {
+                Storageref.child('Drinks/'+drinksData.image).getDownloadURL().then(function(url) {
+                    _ths.setState({
+                        drinksImgpreview: url
+                    })
+                }).catch((err) => {
+                    _ths.setState({
+                        drinksImgpreview: ''
+                    })
+                })
+              }
+
+              _ths.handleClickOpen();
+            }
+
+
+        });
+
+
+    }
+
+    updateDrinks() {
+        var _ths = this;
+        var clubKey = _ths.state.selectedclubid;
+        var drinksKey = _ths.state.drinksKey;
+
+        var imageName = "";
+        var value = {};
+         if (this.state.drinksImg !== ''){
+           var filenamearr = this.state.drinksImgName.split('.');
+           var theFileid = this.makeid();
+           imageName = theFileid+'.'+filenamearr[1];
+           value = {
+               name : _ths.state.drinksName,
+               whatsinit : _ths.state.whatsinit,
+               description : _ths.state.drinksDesc,
+               image : imageName,
+               isFreeDrinks : _ths.state.isFree,
+               price : _ths.state.drinkPrice
+           };
+         } else {
+           imageName = "";
+           value = {
+               name : _ths.state.drinksName,
+               whatsinit : _ths.state.whatsinit,
+               description : _ths.state.drinksDesc,
+               isFreeDrinks : _ths.state.isFree,
+               price : _ths.state.drinkPrice
+           }
+         }
+
+
+
+        // console.log(`${_ths.props.match.params.clubid}/${_ths.props.match.params.drinkid}/isFreeDrinks/`);
+        // drinksref.child(`${_ths.props.match.params.clubid}/${_ths.props.match.params.drinkid}/isFreeDrinks/`).set(_ths.state.isFree)
+        drinksref.child(clubKey).child(drinksKey).update(value).then((club) => {
+            if (this.state.drinksImg !== "") {
+                  var uploadTask = Storageref.child('Drinks/'+theFileid+'.'+filenamearr[1]).put(this.state.drinksImg);
+
+                  uploadTask.on('state_changed', function(snapshot){
+                      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+                      if (progress === 100){
+                          _ths.setState({
+                              isloading: false,
+                              isEdit: false,
+                              issuccess: true
+                          })
+
+                          _ths.handleRequestClose()
+
+                      }
+
+                      console.log(snapshot.state);
+                  }, function(error) {
+                      console.log('Filed');
+                  }, function() {
+                      var downloadURL = uploadTask.snapshot.downloadURL;
+                      console.log(downloadURL);
+                  });
+            } else {
+              _ths.setState({
+                  isloading: false,
+                  isEdit: false,
+                  issuccess: true
+              })
+              _ths.handleRequestClose()
+            }
+        });
+
+
+
+    }
 
     render() {
         const { classes } = this.props;
@@ -333,7 +486,7 @@ class AllDrinks extends React.Component {
             _ths.setState({
                 issuccess: false
             })
-              this.loadDrinksData();
+            this.loadDrinksData();
         }
 
         return (
@@ -347,7 +500,9 @@ class AllDrinks extends React.Component {
                         {/*</Button>*/}
                     </Grid>
                     <Grid item xs={6} className="pageToolbarRight">
-                        <Button onClick={() => {this.handleClickOpen()}} raised color="primary">Add Drinks</Button>
+
+                        <Button onClick={() => {this.handleClickOpen()}} raised color="primary" >Add Drinks</Button>
+
                         <Dialog
                             open={this.state.open}
                             transition={Transition}
@@ -478,6 +633,30 @@ class AllDrinks extends React.Component {
                                 <Button onClick={this.handleRequestClose} color="primary">
                                     Cancel
                                 </Button>
+
+                                {
+
+                                    this.state.isEdit ?
+
+                                    <Button raised
+                                            color="primary"
+                                            disabled={this.state.isloading}
+                                            onClick={() => {
+                                                this.updateDrinks()
+                                            }}>
+                                        {
+                                            this.state.isloading ? <CircularProgress size={24} className={classes.buttonProgress} /> :
+                                                this.state.issuccess ? <CheckIcon  className={classes.leftIcon}/> :
+                                                    <Save className={classes.leftIcon} />
+                                        }
+                                        {
+                                            this.state.issuccess ? 'Updated' : 'Update'
+                                        }
+                                    </Button>
+
+                                :
+
+
                                 <Button
                                     color="primary"
                                     className={buttonClassname}
@@ -494,6 +673,7 @@ class AllDrinks extends React.Component {
                                         this.state.isdrinksAdded ? 'Saving Drinks' : 'Save Drinks'
                                     }
                                 </Button>
+                              }
                             </DialogActions>
                         </Dialog>
                     </Grid>
@@ -561,9 +741,12 @@ class AllDrinks extends React.Component {
 
                                                     <div>
 
-                                                        <Link to={'/drinks/edit/'+row.original.clubID+"/"+row.value} style={{color: '#757575'}} aria-label="Edit">
+                                                        <IconButton aria-label="Edit"
+                                                                    onClick={() => {
+                                                                        this.editDrinks(row.original.clubID,row.value)
+                                                                    }}>
                                                             <EditIcon />
-                                                        </Link>
+                                                        </IconButton>
 
                                                       <IconButton aria-label="Delete"
                                                                   onClick={() => {

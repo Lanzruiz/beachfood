@@ -23,6 +23,7 @@ import Dashboard from "./Dashboard";
 
 import Settings from './settings'
 import ClubsRouter from './club'
+import DrinksRouter from './drinks'
 //import Subscriptions from './subscriptions'
 
 
@@ -76,7 +77,7 @@ const routes = [
         menuName: 'Drinks',
         menuIcon: <LocalBar />,
         sidebar: () => <div>Dashboard</div>,
-        main: () => <Dashboard/>
+        main: () => <DrinksRouter/>
     }
 
 

@@ -38,8 +38,9 @@ export function saveClubOwner(club) {
 }
 
 export function updateClub(club) {
+  if (club.image != "") {
     return ref.child(`clubs/${club.thkey}`)
-        .set({
+        .update({
             address : club.address,
             city : club.city,
             description : club.description,
@@ -51,6 +52,21 @@ export function updateClub(club) {
             zip : club.clzip
         })
         .then(() => club)
+  } else {
+    return ref.child(`clubs/${club.thkey}`)
+        .update({
+            address : club.address,
+            city : club.city,
+            description : club.description,
+            lat : club.lat,
+            lng : club.lng,
+            name : club.name,
+            state : club.clubstate,
+            zip : club.clzip
+        })
+        .then(() => club)
+  }
+
 }
 
 export function updateClubOwner(club) {

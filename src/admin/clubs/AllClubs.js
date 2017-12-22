@@ -30,7 +30,7 @@ import { CircularProgress } from 'material-ui/Progress';
 import Divider from 'material-ui/Divider';
 import Tooltip from 'material-ui/Tooltip';
 
-import { clubssref, clubStoreref } from '../../FB'
+import { clubssref, clubStoreref, firebaseAuth, Storageref } from '../../FB'
 import stylesm from '../../App.css'
 import swal from 'sweetalert';
 import { saveClub, updateClub } from '../../helpers/clubs'
@@ -38,6 +38,7 @@ import {
     Link
 } from 'react-router-dom'
 import matchSorter from 'match-sorter'
+import Avatar from 'material-ui/Avatar';
 
 var i2b = require("imageurl-base64");
 function Transition(props) {
@@ -101,31 +102,61 @@ class AllClubs extends React.Component {
             isloading: false,
             issuccess: false,
             isPlaceChanged: false,
-            uploadProgress: 0
+            uploadProgress: 0,
+            clubImgpreview: false,
+            clubImg: '',
+            clubImgName: '',
+            clubImgtype: '',
+            prevImg: '',
+            ifImgChanged: true
         }
     }
 
     componentDidMount(){
         var _ths = this;
         _ths.theGoolgePlaces()
-        clubssref.on('value', function(snapshot) {
-            let theclubData = [];
-            _ths.setState({
-                loadingData: true
-            })
-            snapshot.forEach(function(eventItem) {
-                var childKey = eventItem.key;
-                var childData = eventItem.val();
-                childData['key'] = childKey;
-                if (!childData.info){
-                    theclubData.push(childData)
-                }
+        this.loadClubData();
+    }
+
+    loadClubData() {
+      var _ths = this;
+      clubssref.on('value', function(snapshot) {
+          let theclubData = [];
+          _ths.setState({
+              loadingData: true
+          })
+          snapshot.forEach(function(eventItem) {
+              var childKey = eventItem.key;
+              var childData = eventItem.val();
+              childData['key'] = childKey;
+              if (!childData.info){
+                  theclubData.push(childData)
+              }
+          });
+          _ths.setState({
+              clubData: theclubData,
+              loadingData: false
+          })
+      }).bind(this);
+    }
+
+    _handleImageChange(e) {
+        e.preventDefault();
+
+        let reader = new FileReader();
+        let file = e.target.files[0];
+
+        reader.onloadend = () => {
+            this.setState({
+                clubImg: file,
+                clubImgName: file.name,
+                clubImgtype: file.type,
+                clubImgpreview: reader.result,
+                ifImgChanged: true
             });
-            _ths.setState({
-                clubData: theclubData,
-                loadingData: false
-            })
-        }).bind(this);
+        }
+
+        reader.readAsDataURL(file)
     }
 
     theGoolgePlaces(){
@@ -195,7 +226,15 @@ class AllClubs extends React.Component {
                 isloading: true,
             })
 
-            var imageName = `${this.makeid()}.png`;
+            //var imageName = `${this.makeid()}.png`;
+            var imageName = "";
+             if (this.state.clubImg !== ''){
+               var filenamearr = this.state.clubImgName.split('.');
+               var theFileid = this.makeid();
+               imageName = theFileid+'.'+filenamearr[1];
+             } else {
+               imageName = "";
+             }
 
             //console.log(this.state.dimage);
 
@@ -212,50 +251,30 @@ class AllClubs extends React.Component {
                     clzip : this.state.zip
                 }).then((club) => {
 
-                    this.toDataURL(this.state.clubimage)
-                    .then((response) => response)
-                    .then((data) => {
-                        var thencB64img = data.replace(/^data:image\/(png|jpg);base64,/, "")
-                        var blob = _ths.b64toBlob(thencB64img, 'image/png');
-                        let uploadTask = clubStoreref.child(imageName).put(blob);
+                  if (this.state.clubImg !== ''){
+                      var uploadTask = Storageref.child('club_image/'+theFileid+'.'+filenamearr[1]).put(this.state.clubImg);
 
-                        uploadTask.on('state_changed', function(snapshot){
-                            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            _ths.setState({
-                                uploadProgress :progress
-                            });
-                            console.log(progress);
-                            //console.log(snapshot.state);
-                        }, function(error) {
-                            console.log('Filed');
-                        }, function() {
-                            _ths.setState({
-                                isSingle: false,
-                                isSingleID: '',
-                                clubName: '',
-                                address: '',
-                                clubDesc: '',
-                                clubimage: '',
-                                icon: '',
-                                phone: '',
-                                lat: '',
-                                lng: '',
-                                city: '',
-                                zip: '',
-                                clubstate: '',
-                                isPlaceChanged: false,
-                                isloading: false
-                            })
-                            setTimeout(() => {
-                                _ths.setState({
-                                    issuccess: false,
-                                })
-                            }, 2000)
-                            //var downloadURL = uploadTask.snapshot.downloadURL;
-                            //console.log(downloadURL);
-                        });
+                      uploadTask.on('state_changed', function(snapshot){
+                          var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
 
-                    })
+                          if (progress === 100){
+                              _ths.setState({
+                                  isloading: false,
+                                  isclubAdded: true,
+                                  issuccess: true
+                              })
+
+                          }
+
+                          console.log(snapshot.state);
+                      }, function(error) {
+                          console.log('Filed');
+                      }, function() {
+                          var downloadURL = uploadTask.snapshot.downloadURL;
+                          console.log(downloadURL);
+                      });
+                  }
+
                 })
 
             }, 1000)
@@ -320,6 +339,9 @@ class AllClubs extends React.Component {
 
         thref.on('value', (snap) => {
             snap.forEach((club) => {
+              var childKey = club.key;
+              var childData = club.val();
+
                 _ths.setState({ [club.key]: club.val() });
                 if (club.key === 'name' ){
                     _ths.setState({
@@ -332,9 +354,15 @@ class AllClubs extends React.Component {
                     });
                 }
                 if (club.key === 'image' ){
-                    _ths.setState({
-                        clubimage: club.val()
-                    });
+                    Storageref.child('club_image/'+childData).getDownloadURL().then(function(url) {
+                        _ths.setState({
+                            clubImgpreview: url
+                        })
+                    }).catch((err) => {
+                        _ths.setState({
+                            clubImgpreview: ''
+                        })
+                    })
                 }
                 if (club.key === 'state' ){
                     _ths.setState({
@@ -355,9 +383,19 @@ class AllClubs extends React.Component {
                 isloading: true,
             })
 
-            var imageName = _ths.state.isPlaceChanged ? `${this.makeid()}.png` : _ths.state.clubimage;
+            //var imageName = _ths.state.isPlaceChanged ? `${this.makeid()}.png` : _ths.state.clubimage;
 
             //console.log(this.state.dimage);
+            var imageName = "";
+             if (this.state.clubImg !== ''){
+               var filenamearr = this.state.clubImgName.split('.');
+               var theFileid = this.makeid();
+               imageName = theFileid+'.'+filenamearr[1];
+             } else {
+               imageName = "";
+             }
+
+
 
             updateClub({
                 thkey: this.state.isSingleID,
@@ -371,76 +409,39 @@ class AllClubs extends React.Component {
                 clubstate : this.state.clubstate,
                 clzip : this.state.zip
             }).then((club) => {
-                if (_ths.state.isPlaceChanged) {
-                    _ths.toDataURL(this.state.clubimage)
-                        .then((response) => response)
-                        .then((data) => {
-                            console.log('in');
-                            var thencB64img = data.replace(/^data:image\/(png|jpg);base64,/, "")
-                            var blob = _ths.b64toBlob(thencB64img, 'image/png');
-                            let uploadTask = clubStoreref.child(imageName).put(blob);
+              if (this.state.clubImg !== ''){
+                  var uploadTask = Storageref.child('club_image/'+theFileid+'.'+filenamearr[1]).put(this.state.clubImg);
 
-                            uploadTask.on('state_changed', function(snapshot){
-                                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                                _ths.setState({
-                                    uploadProgress :progress
-                                });
-                                console.log(progress);
+                  uploadTask.on('state_changed', function(snapshot){
+                      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
 
-                                //console.log(snapshot.state);
-                            }, function(error) {
-                                console.log('Filed');
-                            }, function() {
-                                _ths.setState({
-                                    isSingle: false,
-                                    isSingleID: '',
-                                    clubName: '',
-                                    address: '',
-                                    clubDesc: '',
-                                    clubimage: '',
-                                    icon: '',
-                                    phone: '',
-                                    lat: '',
-                                    lng: '',
-                                    city: '',
-                                    zip: '',
-                                    clubstate: '',
-                                    isPlaceChanged: false,
-                                    isloading: false
-                                })
-                                setTimeout(() => {
-                                    _ths.setState({
-                                        issuccess: false,
-                                    })
-                                }, 2000)
-                                //var downloadURL = uploadTask.snapshot.downloadURL;
-                                //console.log(downloadURL);
-                            });
+                      if (progress === 100){
+                          _ths.setState({
+                              isloading: false,
+                              isclubAdded: true,
+                              issuccess: true
+                          })
+                          setTimeout(() => {
+                              _ths.editClub(_ths.state.isSingleID);
 
-                        })
-                }
-                else {
-                    setTimeout(() => {
-                        _ths.setState({
-                            isSingle: false,
-                            isSingleID: '',
-                            clubName: '',
-                            address: '',
-                            clubDesc: '',
-                            clubimage: '',
-                            icon: '',
-                            phone: '',
-                            lat: '',
-                            lng: '',
-                            city: '',
-                            zip: '',
-                            clubstate: '',
-                            isPlaceChanged: false,
-                            isloading: false,
-                            issuccess: false,
-                        })
-                    }, 2000)
-                }
+
+                          }, 3000)
+                      }
+
+                      console.log(snapshot.state);
+                  }, function(error) {
+                      console.log('Filed');
+                  }, function() {
+                      var downloadURL = uploadTask.snapshot.downloadURL;
+                      console.log(downloadURL);
+                  });
+              } else {
+                _ths.setState({
+                    isloading: false,
+                    isclubAdded: true,
+                    issuccess: true
+                })
+              }
 
 
             })
@@ -465,6 +466,7 @@ class AllClubs extends React.Component {
             isPlaceChanged: false,
             isloading: false,
             issuccess: false,
+            clubImgpreview: ''
         })
     }
 
@@ -472,7 +474,7 @@ class AllClubs extends React.Component {
         var _ths = this;
         swal({
             title: "Are you sure?",
-            text: "Once deleted, you will not be able to recover this event!",
+            text: "Once deleted, you will not be able to recover this club!",
             icon: "warning",
             buttons: true,
             dangerMode: true,
@@ -480,6 +482,8 @@ class AllClubs extends React.Component {
             if (willDelete) {
                 clubssref.child(key).remove();
             }
+            _ths.loadClubData();
+            _ths.cancelEdit();
         });
     };
 
@@ -514,6 +518,8 @@ class AllClubs extends React.Component {
             _ths.setState({
                 issuccess: false
             })
+            this.loadClubData();
+            this.cancelEdit();
         }
 
         return (
@@ -556,6 +562,24 @@ class AllClubs extends React.Component {
                                     onChange={this.handleChange('clubDesc')}
                                     margin="normal"
                                 />
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} lg={6}>
+                            <FormControl fullWidth className={stylesm.theFromControl}>
+                                <InputLabel htmlFor="clubImg">Club Image</InputLabel>
+                                <TextField
+                                    id="clubImg"
+                                    onChange={(e)=>this._handleImageChange(e)}
+                                    margin="normal"
+                                    type="file"
+                                />
+                            </FormControl>
+                            <FormControl fullWidth>
+                                <Avatar style={{
+                                    borderRadius: 0,
+                                    width: 100,
+                                    height: 100
+                                }} src={this.state.clubImgpreview}/>
                             </FormControl>
                         </Grid>
                     </Grid>

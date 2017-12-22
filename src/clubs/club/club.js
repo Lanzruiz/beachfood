@@ -111,15 +111,22 @@ class AllClubs extends React.Component {
             prevImg: '',
             ifImgChanged: true
         }
+
+        var _ths = this;
+        firebaseAuth.onAuthStateChanged(function(user) {
+            if (user) {
+                _ths.loadClubData();
+            } else {
+                // No user is signed in.
+                console.log('There is no logged in user');
+            }
+        });
     }
 
     componentDidMount(){
         var _ths = this;
         _ths.theGoolgePlaces()
 
-
-
-        this.loadClubData();
     }
 
     loadClubData() {
@@ -521,7 +528,7 @@ class AllClubs extends React.Component {
         var _ths = this;
         swal({
             title: "Are you sure?",
-            text: "Once deleted, you will not be able to recover this event!",
+            text: "Once deleted, you will not be able to recover this club!",
             icon: "warning",
             buttons: true,
             dangerMode: true,

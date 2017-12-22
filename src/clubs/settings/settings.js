@@ -92,6 +92,16 @@ class UpdateSettings extends React.Component {
             requirelogin: false
 
         }
+
+        var _ths = this;
+        firebaseAuth.onAuthStateChanged(function(user) {
+            if (user) {
+                _ths.loadSettingsData();
+            } else {
+                // No user is signed in.
+                console.log('There is no logged in user');
+            }
+        });
     }
 
 
@@ -108,26 +118,31 @@ class UpdateSettings extends React.Component {
         this.setState({ showPassword: !this.state.showPassword });
     };
 
-    componentDidMount(){
-        var _ths = this;
-        //console.log(firebaseAuth.currentUser);
-        var user = firebaseAuth.currentUser;
-        var userID = user.uid;
+    loadSettingsData() {
+      var _ths = this;
+      //console.log(firebaseAuth.currentUser);
+      var user = firebaseAuth.currentUser;
 
-        clubOwnerRef.orderByChild('userid').equalTo(userID).once('child_added', function (snapshot) {
-        //usersref.child(userID).once('value', function(snapshot) {
-            let userRec = snapshot.val();
-            
-            _ths.setState({
-               firstname: userRec.firstname,
-               lastname: userRec.lastname,
-               email: userRec.email,
-               userid: userRec.userid,
-               origEmail: userRec.email,
-               origPassword: userRec.password,
-               userKey: snapshot.key
-            })
-        });
+      var userID = user.uid;
+
+      clubOwnerRef.orderByChild('userid').equalTo(userID).once('child_added', function (snapshot) {
+      //usersref.child(userID).once('value', function(snapshot) {
+          let userRec = snapshot.val();
+
+          _ths.setState({
+             firstname: userRec.firstname,
+             lastname: userRec.lastname,
+             email: userRec.email,
+             userid: userRec.userid,
+             origEmail: userRec.email,
+             origPassword: userRec.password,
+             userKey: snapshot.key
+          })
+      });
+    }
+
+    componentDidMount(){
+
 
     }
 
