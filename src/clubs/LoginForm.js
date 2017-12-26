@@ -70,7 +70,7 @@ class LoginForm extends React.Component {
                 console.log(user.uid);
                 //check if userid is valid
                 clubOwnerRef.orderByChild('userid').equalTo(user.uid).once('child_added', function (snapshot) {
-                  console.log(snapshot.val());
+                  //console.log(snapshot.val());
                     if(snapshot.exists()) {
                       reactLocalStorage.set('isloggedinClub', true);
                       reactLocalStorage.set('uid', user.uid);
@@ -89,7 +89,7 @@ class LoginForm extends React.Component {
                    _ths.setState(setErrorMsg('Invalid username/password.'));
                 });
 
-                _ths.setState(setErrorMsg('Invalid username/password.'));
+                //_ths.setState(setErrorMsg('Invalid username/password.'));
 
             })
             .catch((error) => {

@@ -79,7 +79,7 @@ class LoginForm extends React.Component {
                           'displayName': user.displayName,
                           'photoURL': user.photoURL,
                       });
-                      window.location.assign('/');
+                      window.location.assign('/drynx_admin');
                       _ths.setState(setErrorMsg(null));
                     } else {
                       console.log("Invalid access");
@@ -90,7 +90,7 @@ class LoginForm extends React.Component {
                    _ths.setState(setErrorMsg('Invalid username/password.'));
                 });
 
-                _ths.setState(setErrorMsg('Invalid username/password.'));
+                //_ths.setState(setErrorMsg('Invalid username/password.'));
 
             })
             .catch((error) => {

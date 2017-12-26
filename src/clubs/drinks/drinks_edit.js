@@ -462,7 +462,7 @@ class UpdateDrinks extends React.Component {
 
                                 <Grid item xs={12} lg={6}>
                                     <FormControl fullWidth className={stylesm.theFromControl}>
-                                        <InputLabel htmlFor="drinksImg">Event Images</InputLabel>
+                                        
                                         <TextField
                                             id="drinksImg"
                                             onChange={(e)=>this._handleImageChange(e)}

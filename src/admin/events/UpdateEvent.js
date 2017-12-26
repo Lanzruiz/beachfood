@@ -227,6 +227,7 @@ class UpdateEvent extends React.Component {
         }
 
         if(isError == false) {
+
           updateEvent({
               evid: this.props.match.params.evid,
               address : this.state.address,

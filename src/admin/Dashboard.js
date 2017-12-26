@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Grid from 'material-ui/Grid';
+import { administratorRef, firebaseAuth } from '../FB'
 
 const styles = theme => ({
     root: {
@@ -16,31 +17,64 @@ const styles = theme => ({
     },
 });
 
-function Home(props) {
-    const { classes } = props;
 
-    return (
-        <div className="App">
-            <Grid container spacing={24}>
-                <Grid item xs={12} lg={3}>
-                    <Paper className={classes.paper}>xs=6</Paper>
-                </Grid>
-                <Grid item xs={12} lg={3}>
-                    <Paper className={classes.paper}>xs=3</Paper>
-                </Grid>
-                <Grid item xs={12} lg={3}>
-                    <Paper className={classes.paper}>xs=6</Paper>
-                </Grid>
-                <Grid item xs={12} lg={3}>
-                    <Paper className={classes.paper}>xs=3</Paper>
-                </Grid>
-            </Grid>
-        </div>
+class Dashboard extends React.Component {
+  constructor(props){
+      super(props)
+      this.state = {
+          firstname: '',
+          lastname: ''
+
+      }
+
+      var _ths = this;
+      firebaseAuth.onAuthStateChanged(function(user) {
+          if (user) {
+              _ths.loadSettingsData();
+          } else {
+              // No user is signed in.
+              console.log('There is no logged in user');
+          }
+      });
+  }
+
+  loadSettingsData() {
+    var _ths = this;
+    //console.log(firebaseAuth.currentUser);
+    var user = firebaseAuth.currentUser;
+
+    var userID = user.uid;
+    console.log(userID);
+
+    administratorRef.orderByChild('userid').equalTo(userID).once('child_added', function (snapshot) {
+    //usersref.child(userID).once('value', function(snapshot) {
+        let userRec = snapshot.val();
+
+        _ths.setState({
+           firstname: userRec.firstname,
+           lastname: userRec.lastname
+        })
+    });
+  }
+
+
+
+  render() {
+    return(
+        <p style={{padding: 15}}>Welcome {this.state.firstname}, </p>
     );
+  }
+
+
+
+
+
 }
 
-Home.propTypes = {
+
+
+Dashboard.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Home);
+export default withStyles(styles)(Dashboard);
