@@ -33,6 +33,13 @@ import Tooltip from 'material-ui/Tooltip';
 import { clubssref, clubStoreref, firebaseAuth, Storageref } from '../../FB'
 import stylesm from '../../App.css'
 import swal from 'sweetalert';
+import Dialog, {
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+} from 'material-ui/Dialog';
+import ImageLoader from '../ImageLoader'
+import OpenIcon from 'material-ui-icons/Visibility';
 import { saveClub, updateClub } from '../../helpers/clubs'
 import {
     Link
@@ -60,6 +67,13 @@ const styles = theme => ({
     },
     rightIcon: {
         marginLeft: theme.spacing.unit,
+    },
+    avatar: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 0,
+        borderWidth: 2,
+        borderColor: '#000'
     },
     appBar: {
         position: 'relative',
@@ -108,7 +122,14 @@ class AllClubs extends React.Component {
             clubImgName: '',
             clubImgtype: '',
             prevImg: '',
-            ifImgChanged: true
+            open_display: false,
+            ifImgChanged: true,
+            openClubName: '',
+            openClubDesc: '',
+            openclubImgpreview: false,
+            openClubimage:'',
+            openClubstate:'',
+            openAddress:''
         }
     }
 
@@ -328,6 +349,7 @@ class AllClubs extends React.Component {
     }
 
     editClub(key){
+        window.location.hash = '';
         var _ths = this;
 
         _ths.setState({
@@ -370,13 +392,75 @@ class AllClubs extends React.Component {
                     });
                 }
 
+
+                //ReactDOM.findDOMNode(_ths).scrollIntoView();
+            })
+        })
+
+        //window.scrollTo(0, 0);
+        //document.querySelector('#edit').scrollTop = 0;
+        window.location.hash = '#edit';
+    }
+
+    openDetails(key) {
+        this.setState({open_display: true})
+
+        var _ths = this;
+
+
+        var thref = clubssref.child(key);
+
+        thref.on('value', (snap) => {
+            snap.forEach((club) => {
+              var childKey = club.key;
+              var childData = club.val();
+
+                _ths.setState({ [club.key]: club.val() });
+                if (club.key === 'name' ){
+                    _ths.setState({
+                        openClubName: club.val()
+                    });
+                }
+                if (club.key === 'description' ){
+                    _ths.setState({
+                        openClubDesc: club.val()
+                    });
+                }
+                if (club.key === 'address' ){
+                    _ths.setState({
+                        openAddress: club.val()
+                    });
+                }
+                if (club.key === 'image' ){
+                    Storageref.child('club_image/'+childData).getDownloadURL().then(function(url) {
+                        _ths.setState({
+                            openclubImgpreview: url
+                        })
+                    }).catch((err) => {
+                        _ths.setState({
+                            openclubImgpreview: ''
+                        })
+                    })
+                }
+                if (club.key === 'state' ){
+                    _ths.setState({
+                        openClubstate: club.val()
+                    });
+                }
+
+                _ths.setState({address: ''})
+
             })
         })
     }
 
+    handleRequestClose() {
+       this.setState({open_display: false, openclubImgpreview:''})
+    }
+
 
     updatetheClub(){
-
+        window.location.hash = '';
         var _ths = this;
         if (this.state.clubName !== ''){
             _ths.setState({
@@ -449,6 +533,7 @@ class AllClubs extends React.Component {
     }
 
     cancelEdit(){
+      window.location.hash = '';
         this.setState({
             isSingle: false,
             isSingleID: '',
@@ -524,7 +609,70 @@ class AllClubs extends React.Component {
 
         return (
             <div className="App">
-                <Grid container spacing={24}>
+
+            {  /**********display club***************/ }
+              <Dialog
+                  open={this.state.open_display}
+                  transition={Transition}
+                  keepMounted
+                  onRequestClose={this.handleRequestClose}>
+                  <DialogTitle>Club Information</DialogTitle>
+                  <DialogContent>
+                      <Grid container>
+                          <Grid container>
+                              <Grid item xs={12} lg={6}>
+                                    <p style={{fontSize:12, color:'#999'}}>Name</p>
+                                    <p style={{color: '#000'}}>{this.state.openClubName}</p>
+                              </Grid>
+                              <Grid item xs={12} lg={6}>
+
+                                  <p style={{fontSize:12, color:'#999'}}>Description</p>
+                                  <p style={{color: '#000'}}>{this.state.openClubDesc}</p>
+
+                              </Grid>
+                          </Grid>
+
+
+
+                         <Grid container>
+
+                              <Grid item xs={12} lg={6}>
+                                  <p style={{fontSize:12, color:'#999'}}>Address</p>
+                                  <p style={{color: '#000'}}>{this.state.openAddress}</p>
+
+                              </Grid>
+
+                              <Grid item xs={12} lg={6}>
+                              <p style={{fontSize:12, color:'#999'}}>Image</p>
+                              <FormControl fullWidth className={stylesm.theFromControl} style={{justifyContent: 'center', alignItems: 'center'}}>
+                                  {
+                                      (this.state.openclubImgpreview && this.state.openclubImgpreview !== '') ?
+                                      <ImageLoader
+                                          src={this.state.openclubImgpreview}
+                                          className={classes.avatar}
+                                          placeholder="Loading">
+                                          <CircularProgress className={classes.progress} />
+                                      </ImageLoader>
+                                       : ''
+
+                                  }
+                              </FormControl>
+                              </Grid>
+
+                          </Grid>
+
+                      </Grid>
+                  </DialogContent>
+                  <DialogActions>
+                      <Button onClick={() => {this.handleRequestClose()}} color="primary">
+                          Close
+                      </Button>
+
+                  </DialogActions>
+              </Dialog>
+              { /***********end display clubs**********/ }
+
+                <Grid container spacing={24} id="edit">
 
                     <Grid item xs={12} lg={8}>
 
@@ -674,6 +822,13 @@ class AllClubs extends React.Component {
                                       filterable: false,
                                       Cell: row => (
                                         <div>
+                                            <IconButton aria-label="Open"
+                                                        onClick={() => {
+                                                            this.openDetails(row.value)
+                                                        }}>
+                                                <OpenIcon />
+                                            </IconButton>
+
                                               <IconButton aria-label="Edit"
                                                   onClick={() => {
                                                       this.editClub(row.value)

@@ -216,73 +216,7 @@ class UpdateEvent extends React.Component {
         reader.readAsDataURL(file)
     }
 
-    updateTheEvent(){
-        var _ths = this;
-        var theFileid = this.makeid();
-        var filenamearr = this.state.evtImgName.split('.');
 
-        var isError = false;
-        if (this.state.name == "") {
-           isError = true;
-           swal ( "Oops" ,  "Please enter your event name!" ,  "error" );
-           this.setState({
-               isloading: false
-           })
-        }
-
-        if(isError == false) {
-
-          updateEvent({
-              evid: this.props.match.params.evid,
-              address : this.state.address,
-              description : this.state.description,
-              evstartdatetime : this.state.evstartdatetime,
-              evenddatetime : this.state.evenddatetime,
-              image : (this.state.ifImgChanged) ? theFileid+'.'+filenamearr[1] : this.state.evtImgName,
-              lat : this.state.lat,
-              lng : this.state.lng,
-              name : this.state.name,
-              state : this.state.state,
-              zip : this.state.zip
-          })
-
-          if (this.state.ifImgChanged){
-              var uploadTask = Storageref.child('events/'+theFileid+'.'+filenamearr[1]).put(this.state.evtImg);
-
-              uploadTask.on('state_changed', function(snapshot){
-                  var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-
-                  if (progress === 100){
-                      _ths.setState({
-                          isloading: false,
-                          issuccess: true,
-                      })
-                      setTimeout(() => {
-                          _ths.setState({
-                              issuccess: false,
-                          })
-                      }, 3000)
-                  }
-
-                  console.log(snapshot.state);
-              }, function(error) {
-                  console.log('Filed');
-              }, function() {
-                  var downloadURL = uploadTask.snapshot.downloadURL;
-                  console.log(uploadTask.snapshot);
-              });
-          } else {
-            _ths.setState({
-                isloading: false,
-                issuccess: true,
-            })
-          }
-        }
-
-
-
-
-    }
 
     makeid = () => {
         var text = "";
@@ -320,21 +254,7 @@ class UpdateEvent extends React.Component {
                         </Link>
                     </Grid>
                     <Grid item xs={6} className="pageToolbarRight">
-                        <Button
-                            className={buttonClassname}
-                            disabled={this.state.isloading} raised dense color="primary"
-                            onClick={() => {
-                                this.updateTheEvent()
-                            }}>
-                            {
-                                this.state.isloading ? <CircularProgress size={24} className={classes.buttonProgress} /> :
-                                    this.state.issuccess ? <CheckIcon  className={classes.leftIcon}/> :
-                                        <Save className={classes.leftIcon} />
-                            }
-                            {
-                                this.state.issuccess ? `Event Updated` : `Update Event`
-                            }
-                        </Button>
+
                     </Grid>
                     <Grid item xs={7}>
                         <Paper className={classes.paper}>
@@ -342,40 +262,38 @@ class UpdateEvent extends React.Component {
                                 Event Details
                             </Typography>
                             <FormControl fullWidth className={stylesm.theFromControl}>
-                                <InputLabel htmlFor="name">Event Name</InputLabel>
-                                <Input
-                                    id="name"
-                                    value={this.state.name}
-                                    onChange={this.handleChange('name')}
-                                />
+
+                                <p>Event Name</p>
+                                <p style={{color: '#000'}}>{this.state.name}</p>
+
                             </FormControl>
                             <FormControl fullWidth className={stylesm.theFromControl}>
-                                <TextField
-                                    id="description"
-                                    label="Event Description"
-                                    multiline
-                                    rows="4"
-                                    value={this.state.description}
-                                    onChange={this.handleChange('description')}
-                                    margin="normal"
-                                />
+
+                            <p>Event Description</p>
+                            <p style={{color: '#000'}}>{this.state.description}</p>
+
+
                             </FormControl>
                             <div
                                 style={{
                                     marginTop: 20,
                                     marginBottom: 20,
                                 }}>
+
+
                                 <InputLabel htmlFor="evtDate">Event Start</InputLabel>
                                 <FormControl fullWidth className={stylesm.theFromControl}>
                                     <DateTimePicker
                                         style={{
                                             width: '100%',
                                         }}
+                                        readOnly
                                         value={this.state.evstartdatetime}
                                         returnMoment={false}
                                         format="MMMM Do YYYY, h:mm:ss a"
-                                        onChange={this.handlestartDateTimeChange}
                                     />
+
+
                                 </FormControl>
                             </div>
                             <div
@@ -389,36 +307,16 @@ class UpdateEvent extends React.Component {
                                         style={{
                                             width: '100%',
                                         }}
+                                        readOnly
                                         value={this.state.evenddatetime}
                                         returnMoment={false}
                                         format="MMMM Do YYYY, h:mm:ss a"
-                                        onChange={this.handleendDateTimeChange}
                                     />
                                 </FormControl>
                             </div>
 
-                            <FormControl fullWidth className={stylesm.theFromControl}>
-                                
-                                <TextField
-                                    id="evtImg"
-                                    onChange={(e)=>this._handleImageChange(e)}
-                                    margin="normal"
-                                    type="file"
-                                />
-                            </FormControl>
 
-                            <FormControl fullWidth className={stylesm.theFromControl} style={{justifyContent: 'center', alignItems: 'center'}}>
-                                {
-                                    this.state.evtImgpreview &&
-                                    <ImageLoader
-                                        src={this.state.evtImgpreview}
-                                        className={classes.avatar}
-                                        placeholder="Loading">
-                                        <CircularProgress className={classes.progress} />
-                                    </ImageLoader>
 
-                                }
-                            </FormControl>
 
                         </Paper>
                     </Grid>
@@ -428,39 +326,16 @@ class UpdateEvent extends React.Component {
                                 Venue
                             </Typography>
                             <FormControl fullWidth className={stylesm.theFromControl}>
-                                <InputLabel htmlFor="evtVenue">Search for place</InputLabel>
-                                <Input
-                                    ref={(address) => { this.addr = address; }}
-                                    id="address"
-                                    value={this.state.address}
-                                    onChange={this.handlePlaces('address')}
-                                />
+
+
+                                <div>{this.state.address}</div>
+
+
                             </FormControl>
 
-                            <FormControl fullWidth className={stylesm.theFromControl} style={{marginTop: 50}}>
-                                <Card className={classes.card}>
-                                    <CardHeader
-                                        avatar={
-                                            <Avatar aria-label="Recipe" src={this.state.icon}/>
-                                        }
-                                        title={this.state.address}
-                                    />
-                                    <CardContent>
-                                        <Typography>{
-                                            this.state.phone ?
-                                                `Phone: ${this.state.phone}` : ''
-                                        }
-                                        </Typography>
-                                        <Typography>{
-                                            this.state.zip ?
-                                                `Zip: ${this.state.zip}` : ''
-                                        }
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
-                            </FormControl>
+
                             <Typography type="title" gutterBottom style={{marginTop: 30}}>
-                                Previous Image
+                               Image
                             </Typography>
                             <FormControl fullWidth className={stylesm.theFromControl} style={{justifyContent: 'center', alignItems: 'center'}}>
                                 {

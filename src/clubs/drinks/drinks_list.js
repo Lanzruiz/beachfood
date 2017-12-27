@@ -29,6 +29,8 @@ import Input, { InputLabel } from 'material-ui/Input';
 import { FormControl } from 'material-ui/Form';
 import Avatar from 'material-ui/Avatar';
 import TextField from 'material-ui/TextField';
+import ImageLoader from '../../admin/ImageLoader'
+import OpenIcon from 'material-ui-icons/Visibility';
 import { LinearProgress } from 'material-ui/Progress';
 import Dialog, {
     DialogActions,
@@ -68,6 +70,13 @@ const styles = theme => ({
     },
     flex: {
         flex: 1,
+    },
+    avatar: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 0,
+        borderWidth: 2,
+        borderColor: '#000'
     },
     buttonProgress: {
         color: '#999',
@@ -212,6 +221,12 @@ class AllDrinks extends React.Component {
         var theFileid = this.makeid();
         var filenamearr = this.state.drinksImgName.split('.');
 
+      if(this.state.selectedclubid == null || this.state.selectedclubid == "") {
+        swal ( "Oops" ,  "Please select club!" ,  "error" );
+      } else if(this.state.drinksName == "") {
+        swal ( "Oops" ,  "Please input your drink name!" ,  "error" );
+
+      } else {
         drinksref.child(`${this.state.selectedclubid}`).push({
             name : _ths.state.drinksName,
             whatsinit : _ths.state.whatsinit,
@@ -268,6 +283,9 @@ class AllDrinks extends React.Component {
                 });
             }
         })
+      }
+
+
 
     }
 
@@ -304,6 +322,10 @@ class AllDrinks extends React.Component {
             this.loadDrinksData();
         });
     };
+
+    displayHandleRequestClose() {
+      this.setState({open_display: false, drinksImgpreview:''})
+    }
 
     makeid = () => {
         var text = "";
@@ -344,7 +366,7 @@ class AllDrinks extends React.Component {
 
     handleClickOpen = () => {
         if(this.state.isEmpty == false) {
-           this.setState({ open: true });
+           this.setState({ open: true, drinksName:'', drinkPrice:'', drinksDesc:'',drinksImgpreview:'',open_display:false, whatsinit:'' });
         } else {
            swal ( "Oops" ,  "Club is empty!" ,  "error" );
         }
@@ -399,6 +421,70 @@ class AllDrinks extends React.Component {
         });
 
 
+    }
+
+
+    displayDrinks(clubKey,drinkKey) {
+      var _ths = this;
+      this.setState({open_display: true})
+
+      drinksref.child(clubKey).child(drinkKey).on('value', function(snapshot) {
+          let thedrinksData = [];
+
+          snapshot.forEach(function(drinks) {
+              var childKey = drinks.key;
+              var childData = drinks.val();
+
+              if ( childKey === 'description'){
+                  _ths.setState({
+                      drinksDesc: childData
+                  })
+              }
+
+              if ( childKey === 'image'){
+
+                  Storageref.child('Drinks/'+childData).getDownloadURL().then(function(url) {
+
+                      _ths.setState({
+                          drinksImgpreview: url
+                      })
+                  }).catch((err) => {
+                      _ths.setState({
+                          drinksImgpreview: ''
+                      })
+                  })
+
+              }
+
+              if ( childKey === 'name'){
+                  _ths.setState({
+                      drinksName: childData
+                  })
+              }
+
+              if ( childKey === 'price'){
+                  _ths.setState({
+                      drinkPrice: childData
+                  })
+              }
+
+              if ( childKey === 'whatsinit'){
+                  _ths.setState({
+                      whatsinit: childData
+                  })
+              }
+
+              if ( childKey === 'isFreeDrinks'){
+                  if (childData === true) {
+                      console.log(childData);
+                      _ths.setState({
+                          checked: ['isFreeDrink'],
+                          isFree: childData
+                      })
+                  }
+              }
+          });
+      });
     }
 
     updateDrinks() {
@@ -491,6 +577,81 @@ class AllDrinks extends React.Component {
 
         return (
             <div className="App">
+
+            {  /**********display drinks***************/ }
+              <Dialog
+                  open={this.state.open_display}
+                  transition={Transition}
+                  keepMounted
+                  onRequestClose={this.handleRequestClose}>
+                  <DialogTitle>Drinks Information</DialogTitle>
+                  <DialogContent>
+                      <Grid container>
+                          <Grid container>
+                              <Grid item xs={12} lg={6}>
+                                    <p style={{fontSize:12, color:'#999'}}>Name</p>
+                                    <p style={{color: '#000'}}>{this.state.drinksName}</p>
+                              </Grid>
+                              <Grid item xs={12} lg={6}>
+
+
+
+                              </Grid>
+                          </Grid>
+
+                          <Grid container>
+                              <Grid item xs={12} lg={6}>
+                                    <p style={{fontSize:12, color:'#999'}}>Whats In It</p>
+                                    <p style={{color: '#000'}}>{this.state.whatsinit}</p>
+                              </Grid>
+                              <Grid item xs={12} lg={6}>
+
+                                  <p style={{fontSize:12, color:'#999'}}>Description</p>
+                                  <p style={{color: '#000'}}>{this.state.drinksDesc}</p>
+
+                              </Grid>
+                          </Grid>
+
+
+
+                         <Grid container>
+
+                              <Grid item xs={12} lg={6}>
+                                  <p style={{fontSize:12, color:'#999'}}>Price</p>
+                                  <p style={{color: '#000'}}>${this.state.drinkPrice}</p>
+
+                              </Grid>
+
+                              <Grid item xs={12} lg={6}>
+                              <p style={{fontSize:12, color:'#999'}}>Image</p>
+                              <FormControl fullWidth className={stylesm.theFromControl} style={{justifyContent: 'center', alignItems: 'center'}}>
+                                  {
+                                      (this.state.drinksImgpreview && this.state.drinksImgpreview !== '') ?
+                                      <ImageLoader
+                                          src={this.state.drinksImgpreview}
+                                          className={classes.avatar}
+                                          placeholder="Loading">
+                                          <CircularProgress className={classes.progress} />
+                                      </ImageLoader>
+                                       : ''
+
+                                  }
+                              </FormControl>
+                              </Grid>
+
+                          </Grid>
+
+                      </Grid>
+                  </DialogContent>
+                  <DialogActions>
+                      <Button onClick={() => {this.displayHandleRequestClose()}} color="primary">
+                          Close
+                      </Button>
+
+                  </DialogActions>
+              </Dialog>
+              { /***********end display drinks**********/ }
+
                 <Grid container spacing={24}>
 
                     <Grid item xs={6}>
@@ -687,7 +848,7 @@ class AllDrinks extends React.Component {
                               data={this.state.drinksData}
                               columns={[
                                 {
-                                  Header: "Club Information",
+                                  Header: "Drinks Information",
                                   columns: [
                                     {
                                       Header: "Name",
@@ -740,6 +901,13 @@ class AllDrinks extends React.Component {
                                                 Cell: row => (
 
                                                     <div>
+
+                                                    <IconButton aria-label="Delete"
+                                                                onClick={() => {
+                                                                    this.displayDrinks(row.original.clubID,row.value)
+                                                                }}>
+                                                        <OpenIcon />
+                                                    </IconButton>
 
                                                         <IconButton aria-label="Edit"
                                                                     onClick={() => {

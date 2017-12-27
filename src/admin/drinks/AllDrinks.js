@@ -40,10 +40,11 @@ import Divider from 'material-ui/Divider';
 import Tooltip from 'material-ui/Tooltip';
 import Switch from 'material-ui/Switch';
 import { clubssref, drinksref, Storageref } from '../../FB'
-
+import OpenIcon from 'material-ui-icons/Visibility';
 import swal from 'sweetalert';
 import MenuItem from 'material-ui/Menu/MenuItem';
 import stylesm from '../../App.css'
+import ImageLoader from '../ImageLoader'
 function Transition(props) {
     return <Slide direction="up" {...props} />;
 }
@@ -68,6 +69,13 @@ const styles = theme => ({
     },
     flex: {
         flex: 1,
+    },
+    avatar: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 0,
+        borderWidth: 2,
+        borderColor: '#000'
     },
     buttonProgress: {
         color: '#999',
@@ -110,7 +118,8 @@ class AllDrinks extends React.Component {
             isPlaceChanged: false,
             uploadProgress: 0,
             issavingdrinks: false,
-            isdrinksAdded: false
+            isdrinksAdded: false,
+            open_display: false
         }
     }
 
@@ -183,62 +192,69 @@ class AllDrinks extends React.Component {
         var theFileid = this.makeid();
         var filenamearr = this.state.drinksImgName.split('.');
 
-        drinksref.child(`${this.state.selectedclubid}`).push({
-            name : _ths.state.drinksName,
-            whatsinit : _ths.state.whatsinit,
-            description : _ths.state.drinksDesc,
-            image : theFileid+'.'+filenamearr[1],
-            isFreeDrinks : _ths.state.isFree,
-            price : _ths.state.drinkPrice
-        }).then((data) => {
-            if (this.state.evtImg !== ''){
-                var uploadTask = Storageref.child('Drinks/'+theFileid+'.'+filenamearr[1]).put(this.state.drinksImg);
+        if(this.state.selectedclubid == null || this.state.selectedclubid == "") {
+          swal ( "Oops" ,  "Please select club!" ,  "error" );
+        } else if(this.state.drinksName == "") {
+          swal ( "Oops" ,  "Please input your drink name!" ,  "error" );
 
-                uploadTask.on('state_changed', function(snapshot){
-                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        } else {
+          drinksref.child(`${this.state.selectedclubid}`).push({
+              name : _ths.state.drinksName,
+              whatsinit : _ths.state.whatsinit,
+              description : _ths.state.drinksDesc,
+              image : theFileid+'.'+filenamearr[1],
+              isFreeDrinks : _ths.state.isFree,
+              price : _ths.state.drinkPrice
+          }).then((data) => {
+              if (this.state.evtImg !== ''){
+                  var uploadTask = Storageref.child('Drinks/'+theFileid+'.'+filenamearr[1]).put(this.state.drinksImg);
 
-                    if (progress === 100){
-                        _ths.setState({
-                            isloading: false,
-                            issuccess: true,
-                            isdrinksAdded: true,
-                        })
-                        setTimeout(() => {
-                            _ths.setState({
-                                loadingData: false,
-                                drinksName: '',
-                                whatsinit: '',
-                                drinksDesc: '',
-                                drinksPrice: '',
-                                drinksImg: '',
-                                drinksImgName: '',
-                                drinksImgtype: '',
-                                drinksImgpreview: '',
-                                selectedclubid: '',
-                                drinkPrice: '',
-                                isFree: false,
-                                isSingle: false,
-                                isSingleID: '',
-                                isloading: false,
-                                isPlaceChanged: false,
-                                uploadProgress: 0,
-                                issavingdrinks: false,
-                                isdrinksAdded: false
-                            })
+                  uploadTask.on('state_changed', function(snapshot){
+                      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
 
-                            _ths.handleRequestClose()
-                        }, 3000)
-                    }
+                      if (progress === 100){
+                          _ths.setState({
+                              isloading: false,
+                              issuccess: true,
+                              isdrinksAdded: true,
+                          })
+                          setTimeout(() => {
+                              _ths.setState({
+                                  loadingData: false,
+                                  drinksName: '',
+                                  whatsinit: '',
+                                  drinksDesc: '',
+                                  drinksPrice: '',
+                                  drinksImg: '',
+                                  drinksImgName: '',
+                                  drinksImgtype: '',
+                                  drinksImgpreview: '',
+                                  selectedclubid: '',
+                                  drinkPrice: '',
+                                  isFree: false,
+                                  isSingle: false,
+                                  isSingleID: '',
+                                  isloading: false,
+                                  isPlaceChanged: false,
+                                  uploadProgress: 0,
+                                  issavingdrinks: false,
+                                  isdrinksAdded: false
+                              })
 
-                    console.log(snapshot.state);
-                }, function(error) {
-                    console.log('Filed');
-                }, function() {
-                    var downloadURL = uploadTask.snapshot.downloadURL;
-                    console.log(downloadURL);
-                });
-            }
-        })
+                              _ths.handleRequestClose()
+                          }, 3000)
+                      }
+
+                      console.log(snapshot.state);
+                  }, function(error) {
+                      console.log('Filed');
+                  }, function() {
+                      var downloadURL = uploadTask.snapshot.downloadURL;
+                      console.log(downloadURL);
+                  });
+              }
+          })
+        }
 
     }
 
@@ -275,6 +291,70 @@ class AllDrinks extends React.Component {
               this.loadDrinksData();
         });
     };
+
+
+    displayDrinks(clubKey,drinkKey) {
+      var _ths = this;
+      this.setState({open_display: true})
+
+      drinksref.child(clubKey).child(drinkKey).on('value', function(snapshot) {
+          let thedrinksData = [];
+
+          snapshot.forEach(function(drinks) {
+              var childKey = drinks.key;
+              var childData = drinks.val();
+
+              if ( childKey === 'description'){
+                  _ths.setState({
+                      drinksDesc: childData
+                  })
+              }
+
+              if ( childKey === 'image'){
+
+                  Storageref.child('Drinks/'+childData).getDownloadURL().then(function(url) {
+
+                      _ths.setState({
+                          drinksImgpreview: url
+                      })
+                  }).catch((err) => {
+                      _ths.setState({
+                          drinksImgpreview: ''
+                      })
+                  })
+
+              }
+
+              if ( childKey === 'name'){
+                  _ths.setState({
+                      drinksName: childData
+                  })
+              }
+
+              if ( childKey === 'price'){
+                  _ths.setState({
+                      drinkPrice: childData
+                  })
+              }
+
+              if ( childKey === 'whatsinit'){
+                  _ths.setState({
+                      whatsinit: childData
+                  })
+              }
+
+              if ( childKey === 'isFreeDrinks'){
+                  if (childData === true) {
+                      console.log(childData);
+                      _ths.setState({
+                          checked: ['isFreeDrink'],
+                          isFree: childData
+                      })
+                  }
+              }
+          });
+      });
+    }
 
     makeid = () => {
         var text = "";
@@ -314,12 +394,16 @@ class AllDrinks extends React.Component {
     };
 
     handleClickOpen = () => {
-        this.setState({ open: true });
+        this.setState({ open: true, drinksName:'', drinkPrice:'', drinksDesc:'',drinksImgpreview:'',open_display:false, whatsinit:'' });
     };
 
     handleRequestClose = () => {
         this.setState({ open: false });
     };
+
+    displayHandleRequestClose() {
+      this.setState({open_display: false, drinksImgpreview:''})
+    }
 
     render() {
         const { classes } = this.props;
@@ -338,6 +422,81 @@ class AllDrinks extends React.Component {
 
         return (
             <div className="App">
+
+            {  /**********display drinks***************/ }
+              <Dialog
+                  open={this.state.open_display}
+                  transition={Transition}
+                  keepMounted
+                  onRequestClose={this.handleRequestClose}>
+                  <DialogTitle>Drinks Information</DialogTitle>
+                  <DialogContent>
+                      <Grid container>
+                          <Grid container>
+                              <Grid item xs={12} lg={6}>
+                                    <p style={{fontSize:12, color:'#999'}}>Name</p>
+                                    <p style={{color: '#000'}}>{this.state.drinksName}</p>
+                              </Grid>
+                              <Grid item xs={12} lg={6}>
+
+
+
+                              </Grid>
+                          </Grid>
+
+                          <Grid container>
+                              <Grid item xs={12} lg={6}>
+                                    <p style={{fontSize:12, color:'#999'}}>Whats In It</p>
+                                    <p style={{color: '#000'}}>{this.state.whatsinit}</p>
+                              </Grid>
+                              <Grid item xs={12} lg={6}>
+
+                                  <p style={{fontSize:12, color:'#999'}}>Description</p>
+                                  <p style={{color: '#000'}}>{this.state.drinksDesc}</p>
+
+                              </Grid>
+                          </Grid>
+
+
+
+                         <Grid container>
+
+                              <Grid item xs={12} lg={6}>
+                                  <p style={{fontSize:12, color:'#999'}}>Price</p>
+                                  <p style={{color: '#000'}}>${this.state.drinkPrice}</p>
+
+                              </Grid>
+
+                              <Grid item xs={12} lg={6}>
+                              <p style={{fontSize:12, color:'#999'}}>Image</p>
+                              <FormControl fullWidth className={stylesm.theFromControl} style={{justifyContent: 'center', alignItems: 'center'}}>
+                                  {
+                                      (this.state.drinksImgpreview && this.state.drinksImgpreview !== '') ?
+                                      <ImageLoader
+                                          src={this.state.drinksImgpreview}
+                                          className={classes.avatar}
+                                          placeholder="Loading">
+                                          <CircularProgress className={classes.progress} />
+                                      </ImageLoader>
+                                       : ''
+
+                                  }
+                              </FormControl>
+                              </Grid>
+
+                          </Grid>
+
+                      </Grid>
+                  </DialogContent>
+                  <DialogActions>
+                      <Button onClick={() => {this.displayHandleRequestClose()}} color="primary">
+                          Close
+                      </Button>
+
+                  </DialogActions>
+              </Dialog>
+              { /***********end display drinks**********/ }
+
                 <Grid container spacing={24}>
 
                     <Grid item xs={6}>
@@ -455,7 +614,7 @@ class AllDrinks extends React.Component {
 
                                         <Grid item xs={12} lg={6}>
                                             <FormControl fullWidth className={stylesm.theFromControl}>
-                                              
+
                                                 <TextField
                                                     id="drinksImg"
                                                     onChange={(e)=>this._handleImageChange(e)}
@@ -507,7 +666,7 @@ class AllDrinks extends React.Component {
                               data={this.state.drinksData}
                               columns={[
                                 {
-                                  Header: "Club Information",
+                                  Header: "Drinks Information",
                                   columns: [
                                     {
                                       Header: "Name",
@@ -560,6 +719,12 @@ class AllDrinks extends React.Component {
                                                 Cell: row => (
 
                                                     <div>
+                                                    <IconButton aria-label="Delete"
+                                                                onClick={() => {
+                                                                    this.displayDrinks(row.original.clubID,row.value)
+                                                                }}>
+                                                        <OpenIcon />
+                                                    </IconButton>
 
                                                         <Link to={'/drinks/edit/'+row.original.clubID+"/"+row.value} style={{color: '#757575'}} aria-label="Edit">
                                                             <EditIcon />

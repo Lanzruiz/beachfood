@@ -98,9 +98,26 @@ class LoginForm extends React.Component {
     }
 
     resetPassword = () => {
-        resetPassword(this.state.email)
-            .then(() => this.setState(setErrorMsg(`Password reset email sent to ${this.email.value}.`)))
-            .catch((error) => this.setState(setErrorMsg(`Email address not found.`)))
+
+        if(this.state.email == "") {
+          this.setState(setErrorMsg('Please enter your valid email address'));
+        } else {
+          var _ths = this;
+          clubOwnerRef.orderByChild('email').equalTo(this.state.email).once('child_added', function (snapshot) {
+              if(snapshot.exists()) {
+                resetPassword(_ths.state.email)
+                    .then(() => _ths.setState(setErrorMsg(`Password reset email sent to ${_ths.state.email}.`)))
+                    .catch(function(error) {
+                      _ths.setState(setErrorMsg(`Email address not found.`));
+                      console.log(error);
+                    });
+
+              } else {
+                 _ths.setState(setErrorMsg(`Email address not found.`));
+              }
+          });
+
+        }
     }
 
     render() {
@@ -146,7 +163,9 @@ class LoginForm extends React.Component {
                         }
                     />
                 </FormControl>
-                <Button className={classes.buttonReset}>Reset Password</Button>
+                <Button className={classes.buttonReset} onClick={() => {
+                    this.resetPassword()
+                }}>Reset Password</Button>
 
                 <Button raised color="primary" className={classes.button}
                 onClick={() => {

@@ -10,10 +10,17 @@ import List, { ListItem, ListItemSecondaryAction, ListItemText } from 'material-
 import IconButton from 'material-ui/IconButton';
 import DeleteIcon from 'material-ui-icons/Delete';
 import EditIcon from 'material-ui-icons/Edit';
+
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
 
-import Dialog from 'material-ui/Dialog';
+  import Dialog, {
+      DialogActions,
+      DialogContent,
+      DialogTitle,
+  } from 'material-ui/Dialog';
+  import ImageLoader from '../ImageLoader'
+  import OpenIcon from 'material-ui-icons/Visibility';
 import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Slide from 'material-ui/transitions/Slide';
@@ -118,7 +125,8 @@ class AllEvents extends React.Component {
         isloading: false,
         issuccess: false,
         isSingle: false,
-        singleData: []
+        singleData: [],
+        open_display: false,
     };
 
 
@@ -264,7 +272,7 @@ class AllEvents extends React.Component {
     }
 
     handleModalOpen(){
-        this.setState({ open: true });
+        this.setState({ open: true, evtName:'', evtDesc:'',address:'', zip:'' });
         setTimeout(() => {
             this.theGoolgePlaces()
         }, 2000)
@@ -304,6 +312,10 @@ class AllEvents extends React.Component {
             open: true,
             isSingle: true
         });
+    };
+
+    handleRequestClose() {
+      this.setState({open_display: false, evtImgprev: ''});
     };
 
     handleModalClose() {
@@ -361,6 +373,61 @@ class AllEvents extends React.Component {
         });
     };
 
+    openDetails(key) {
+      var _ths = this;
+      this.setState({open_display: true});
+      eventsref.child(key).on('value', (snap) => {
+          snap.forEach(function (childSnap) {
+              _ths.setState({ [childSnap.key]: childSnap.val() });
+
+              if (childSnap.key === 'evstartdatetime'){
+                  _ths.setState({
+                      evstartdatetime: childSnap.val().toLocaleString()
+                  })
+              }
+
+              if (childSnap.key === 'evenddatetime'){
+                  _ths.setState({
+                      evenddatetime: childSnap.val().toLocaleString()
+                  })
+              }
+
+              if (childSnap.key === 'image'){
+
+                  //setTimeout(() => {
+
+                      if (childSnap.val() !== ''){
+                          //_ths.setState({checkImage: "Image Loading..."})
+                          Storageref.child('events/'+childSnap.val()).getDownloadURL().then(function(url) {
+                              _ths.setState({
+                                  evtImgprev: url,
+                                  checkImage: ''
+                              })
+                          }).catch((err) => {
+                              _ths.setState({
+                                  evtImgprev: '',
+                                  checkImage: 'Image not found.'
+                              })
+                          })
+                          eventsStoreref.child(`${_ths.state.image}`).getMetadata().then(function(metadata) {
+                              _ths.setState({
+                                  evtImg: metadata.name,
+                                  evtImgName: metadata.name
+                              })
+                          }).catch((err) => {
+                              _ths.setState({
+                                  evtImg: '',
+                                  evtImgName: ''
+                              })
+                          })
+                      }
+                  //}, 500)
+              }
+
+          });
+      });
+    }
+
     makeid = () => {
         var text = "";
         var possible = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -389,6 +456,80 @@ class AllEvents extends React.Component {
         return (
             <div className="App">
                 <Grid container spacing={24}>
+
+                  {  /**********display events***************/ }
+                    <Dialog
+                        open={this.state.open_display}
+                        transition={Transition}
+                        keepMounted
+                        onRequestClose={this.handleRequestClose}>
+                        <DialogTitle>Event Information</DialogTitle>
+                        <DialogContent>
+                            <Grid container>
+                                <Grid container>
+                                    <Grid item xs={12} lg={6}>
+                                          <p style={{fontSize:12, color:'#999'}}>Name</p>
+                                          <p style={{color: '#000'}}>{this.state.name}</p>
+                                    </Grid>
+                                    <Grid item xs={12} lg={6}>
+
+                                        <p style={{fontSize:12, color:'#999'}}>Description</p>
+                                        <p style={{color: '#000'}}>{this.state.description}</p>
+
+                                    </Grid>
+                                </Grid>
+
+                                <Grid container>
+
+                                    <Grid item xs={12} lg={6}>
+                                        <p style={{fontSize:12, color:'#999'}}>Event Start</p>
+                                        <p style={{color: '#000'}}>{this.state.evstartdatetime}</p>
+                                    </Grid>
+                                    <Grid item xs={12} lg={6}>
+                                        <p style={{fontSize:12, color:'#999'}}>Event End</p>
+                                        <p style={{color: '#000'}}>{this.state.evenddatetime}</p>
+                                    </Grid>
+                               </Grid>
+
+                               <Grid container>
+
+                                    <Grid item xs={12} lg={6}>
+                                        <p style={{fontSize:12, color:'#999'}}>Address</p>
+                                        <p style={{color: '#000'}}>{this.state.address}</p>
+
+                                    </Grid>
+
+                                    <Grid item xs={12} lg={6}>
+                                    <p style={{fontSize:12, color:'#999'}}>Image</p>
+                                    <FormControl fullWidth className={stylesm.theFromControl} style={{justifyContent: 'center', alignItems: 'center'}}>
+                                        {
+                                            (this.state.evtImgprev && this.state.evtImgprev !== '') ?
+                                            <ImageLoader
+                                                src={this.state.evtImgprev}
+                                                className={classes.avatar}
+                                                placeholder="Loading">
+                                                <CircularProgress className={classes.progress} />
+                                            </ImageLoader> :
+                                                <Typography>
+                                                    {this.state.checkImage}
+                                                </Typography>
+
+                                        }
+                                    </FormControl>
+                                    </Grid>
+
+                                </Grid>
+
+                            </Grid>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => {this.handleRequestClose()}} color="primary">
+                                Close
+                            </Button>
+
+                        </DialogActions>
+                    </Dialog>
+                    { /***********end display events**********/ }
 
                     <Grid item xs={6}>
                         {/*<Button href={`/orders/23`} color="primary" className={classes.button}>*/}
@@ -494,7 +635,7 @@ class AllEvents extends React.Component {
                                         </div>
 
                                         <FormControl fullWidth className={stylesm.theFromControl}>
-                                            <InputLabel htmlFor="evtImg">Event Images</InputLabel>
+                                            
                                             <TextField
                                                 id="evtImg"
                                                 onChange={(e)=>this._handleImageChange(e)}
@@ -582,9 +723,24 @@ class AllEvents extends React.Component {
                                       filterable: false,
                                       Cell: row => (
                                         <div>
+
+
+                                        <IconButton aria-label="Open"
+                                                    onClick={() => {
+                                                        this.openDetails(row.value)
+                                                    }}>
+                                            <OpenIcon />
+                                        </IconButton>
+
+
+
                                             <Link to={`/events/edit/`+row.value} style={{color: '#757575'}} aria-label="Edit">
                                                 <EditIcon />
                                             </Link>
+
+
+
+
 
                                             <IconButton aria-label="Delete"
                                                         onClick={() => {
