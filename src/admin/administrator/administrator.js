@@ -37,6 +37,7 @@
  import { CircularProgress } from 'material-ui/Progress';
  import Divider from 'material-ui/Divider';
  import Tooltip from 'material-ui/Tooltip';
+import Background from '../images/login.jpg';
 
  import {
      Link
@@ -81,6 +82,9 @@ class Administrator extends React.Component {
 
   componentDidMount(){
       var _ths = this;
+
+    document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+    document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
 
      this.loadAdministratorData();
 

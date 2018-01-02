@@ -30,6 +30,7 @@ import { FormControl } from 'material-ui/Form';
 import Avatar from 'material-ui/Avatar';
 import TextField from 'material-ui/TextField';
 import { LinearProgress } from 'material-ui/Progress';
+import Background from '../images/drrinks.jpg';
 import Dialog, {
     DialogActions,
     DialogContent,
@@ -71,8 +72,8 @@ const styles = theme => ({
         flex: 1,
     },
     avatar: {
-        width: '100%',
-        height: '100%',
+        width: '50%',
+        height: 'auto',
         borderRadius: 0,
         borderWidth: 2,
         borderColor: '#000'
@@ -124,6 +125,8 @@ class AllDrinks extends React.Component {
     }
 
     componentDidMount(){
+      document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+      document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
 
         this.loadDrinksData();
     }
@@ -204,7 +207,7 @@ class AllDrinks extends React.Component {
               description : _ths.state.drinksDesc,
               image : theFileid+'.'+filenamearr[1],
               isFreeDrinks : _ths.state.isFree,
-              price : _ths.state.drinkPrice
+              price : parseFloat(_ths.state.drinkPrice)
           }).then((data) => {
               if (this.state.evtImg !== ''){
                   var uploadTask = Storageref.child('Drinks/'+theFileid+'.'+filenamearr[1]).put(this.state.drinksImg);
@@ -468,23 +471,32 @@ class AllDrinks extends React.Component {
                               </Grid>
 
                               <Grid item xs={12} lg={6}>
-                              <p style={{fontSize:12, color:'#999'}}>Image</p>
-                              <FormControl fullWidth className={stylesm.theFromControl} style={{justifyContent: 'center', alignItems: 'center'}}>
-                                  {
-                                      (this.state.drinksImgpreview && this.state.drinksImgpreview !== '') ?
-                                      <ImageLoader
-                                          src={this.state.drinksImgpreview}
-                                          className={classes.avatar}
-                                          placeholder="Loading">
-                                          <CircularProgress className={classes.progress} />
-                                      </ImageLoader>
-                                       : ''
 
-                                  }
-                              </FormControl>
                               </Grid>
 
                           </Grid>
+
+                          <Grid container>
+
+
+                               <Grid item xs={12} lg={12}>
+                               <p style={{fontSize:12, color:'#999'}}>Image</p>
+                               <FormControl fullWidth className={stylesm.theFromControl} style={{justifyContent: 'center', alignItems: 'center'}}>
+                                   {
+                                       (this.state.drinksImgpreview && this.state.drinksImgpreview !== '') ?
+                                       <ImageLoader
+                                           src={this.state.drinksImgpreview}
+                                           className={classes.avatar}
+                                           placeholder="Loading">
+                                           <CircularProgress className={classes.progress} />
+                                       </ImageLoader>
+                                        : ''
+
+                                   }
+                               </FormControl>
+                               </Grid>
+
+                           </Grid>
 
                       </Grid>
                   </DialogContent>
@@ -658,7 +670,7 @@ class AllDrinks extends React.Component {
                     </Grid>
 
                     <Grid item xs={12}>
-                        <Paper className={classes.paper}>
+
                             <LinearProgress mode="determinate" value={this.state.uploadProgress} />
 
                             <ReactTable
@@ -766,7 +778,7 @@ class AllDrinks extends React.Component {
                                   );
                               }}
                             />
-                        </Paper>
+                        
                     </Grid>
                 </Grid>
             </div>

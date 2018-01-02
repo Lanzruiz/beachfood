@@ -21,7 +21,7 @@ import { CircularProgress } from 'material-ui/Progress';
 import Switch from 'material-ui/Switch';
 import KeyboardBackspace from 'material-ui-icons/KeyboardBackspace';
 import { clubssref, drinksref, Storageref } from '../../FB'
-
+import Background from '../images/drrinks.jpg';
 import swal from 'sweetalert';
 import MenuItem from 'material-ui/Menu/MenuItem';
 import stylesm from '../../App.css'
@@ -97,6 +97,10 @@ class UpdateDrinks extends React.Component {
         _ths.setState({
             loadingData: true
         })
+
+        document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+        document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
+        
         clubssref.on('value', function(snapshot) {
 
             snapshot.forEach(function(eventItem) {
@@ -196,7 +200,7 @@ class UpdateDrinks extends React.Component {
                description : _ths.state.drinksDesc,
                image : imageName,
                isFreeDrinks : _ths.state.isFree,
-               price : _ths.state.drinkPrice
+               price : parseFloat(_ths.state.drinkPrice)
            };
          } else {
            imageName = "";
@@ -205,7 +209,7 @@ class UpdateDrinks extends React.Component {
                whatsinit : _ths.state.whatsinit,
                description : _ths.state.drinksDesc,
                isFreeDrinks : _ths.state.isFree,
-               price : _ths.state.drinkPrice
+               price : parseFloat(_ths.state.drinkPrice)
            }
          }
 
@@ -468,24 +472,27 @@ class UpdateDrinks extends React.Component {
                                     </FormControl>
                                 </Grid>
 
-                                <Grid item xs={12} lg={6}>
-                                    <FormControl fullWidth className={stylesm.theFromControl}>
-                                        
-                                        <TextField
-                                            id="drinksImg"
-                                            onChange={(e)=>this._handleImageChange(e)}
-                                            margin="normal"
-                                            type="file"
-                                        />
-                                    </FormControl>
-                                    <FormControl fullWidth>
-                                        <Avatar style={{
-                                            borderRadius: 0,
-                                            width: 100,
-                                            height: 100
-                                        }} src={this.state.drinksImgpreview}/>
-                                    </FormControl>
-                                </Grid>
+
+                            </Grid>
+                            <Grid container>
+                            <Grid item xs={12} lg={12}>
+                                <FormControl fullWidth className={stylesm.theFromControl}>
+
+                                    <TextField
+                                        id="drinksImg"
+                                        onChange={(e)=>this._handleImageChange(e)}
+                                        margin="normal"
+                                        type="file"
+                                    />
+                                </FormControl>
+                                <FormControl fullWidth>
+                                    <Avatar style={{
+                                        borderRadius: 0,
+                                        width: "50%",
+                                        height: "auto"
+                                    }} src={this.state.drinksImgpreview}/>
+                                </FormControl>
+                            </Grid>
                             </Grid>
                         </Grid>
                     </Grid>

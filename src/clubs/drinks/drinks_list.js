@@ -31,6 +31,7 @@ import Avatar from 'material-ui/Avatar';
 import TextField from 'material-ui/TextField';
 import ImageLoader from '../../admin/ImageLoader'
 import OpenIcon from 'material-ui-icons/Visibility';
+import Background from '../../admin/images/drrinks.jpg';
 import { LinearProgress } from 'material-ui/Progress';
 import Dialog, {
     DialogActions,
@@ -72,8 +73,8 @@ const styles = theme => ({
         flex: 1,
     },
     avatar: {
-        width: '100%',
-        height: '100%',
+        width: '50%',
+        height: '50%',
         borderRadius: 0,
         borderWidth: 2,
         borderColor: '#000'
@@ -139,7 +140,8 @@ class AllDrinks extends React.Component {
 
     componentDidMount(){
 
-
+      document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+      document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
 
     }
 
@@ -233,7 +235,7 @@ class AllDrinks extends React.Component {
             description : _ths.state.drinksDesc,
             image : theFileid+'.'+filenamearr[1],
             isFreeDrinks : _ths.state.isFree,
-            price : _ths.state.drinkPrice
+            price : parseFloat(_ths.state.drinkPrice)
         }).then((data) => {
             if (this.state.evtImg !== ''){
                 var uploadTask = Storageref.child('Drinks/'+theFileid+'.'+filenamearr[1]).put(this.state.drinksImg);
@@ -372,6 +374,14 @@ class AllDrinks extends React.Component {
         }
     };
 
+    handleClickOpenEdit = () => {
+        if(this.state.isEmpty == false) {
+           this.setState({ open: true });
+        } else {
+           swal ( "Oops" ,  "Club is empty!" ,  "error" );
+        }
+    };
+
     handleRequestClose = () => {
         this.setState({ open: false });
     };
@@ -386,6 +396,7 @@ class AllDrinks extends React.Component {
             if(snapshot.exists()) {
               _ths.setState({isEdit: true})
               let drinksData = snapshot.val();
+              console.log(drinksData);
               _ths.setState({
                   drinksDesc: drinksData.description,
                   drinksName: drinksData.name,
@@ -414,7 +425,7 @@ class AllDrinks extends React.Component {
                 })
               }
 
-              _ths.handleClickOpen();
+              _ths.handleClickOpenEdit();
             }
 
 
@@ -504,7 +515,7 @@ class AllDrinks extends React.Component {
                description : _ths.state.drinksDesc,
                image : imageName,
                isFreeDrinks : _ths.state.isFree,
-               price : _ths.state.drinkPrice
+               price : parseFloat(_ths.state.drinkPrice)
            };
          } else {
            imageName = "";
@@ -513,7 +524,7 @@ class AllDrinks extends React.Component {
                whatsinit : _ths.state.whatsinit,
                description : _ths.state.drinksDesc,
                isFreeDrinks : _ths.state.isFree,
-               price : _ths.state.drinkPrice
+               price : parseFloat(_ths.state.drinkPrice)
            }
          }
 
@@ -623,23 +634,33 @@ class AllDrinks extends React.Component {
                               </Grid>
 
                               <Grid item xs={12} lg={6}>
-                              <p style={{fontSize:12, color:'#999'}}>Image</p>
-                              <FormControl fullWidth className={stylesm.theFromControl} style={{justifyContent: 'center', alignItems: 'center'}}>
-                                  {
-                                      (this.state.drinksImgpreview && this.state.drinksImgpreview !== '') ?
-                                      <ImageLoader
-                                          src={this.state.drinksImgpreview}
-                                          className={classes.avatar}
-                                          placeholder="Loading">
-                                          <CircularProgress className={classes.progress} />
-                                      </ImageLoader>
-                                       : ''
 
-                                  }
-                              </FormControl>
                               </Grid>
 
                           </Grid>
+
+
+                          <Grid container>
+
+
+                               <Grid item xs={12} lg={12}>
+                               <p style={{fontSize:12, color:'#999'}}>Image</p>
+                               <FormControl fullWidth className={stylesm.theFromControl} style={{justifyContent: 'center', alignItems: 'center'}}>
+                                   {
+                                       (this.state.drinksImgpreview && this.state.drinksImgpreview !== '') ?
+                                       <ImageLoader
+                                           src={this.state.drinksImgpreview}
+                                           className={classes.avatar}
+                                           placeholder="Loading">
+                                           <CircularProgress className={classes.progress} />
+                                       </ImageLoader>
+                                        : ''
+
+                                   }
+                               </FormControl>
+                               </Grid>
+
+                           </Grid>
 
                       </Grid>
                   </DialogContent>
@@ -769,7 +790,10 @@ class AllDrinks extends React.Component {
                                             </FormControl>
                                         </Grid>
 
-                                        <Grid item xs={12} lg={6}>
+
+                                    </Grid>
+                                    <Grid container>
+                                        <Grid item xs={12} lg={12}>
                                             <FormControl fullWidth className={stylesm.theFromControl}>
 
                                                 <TextField
@@ -782,8 +806,8 @@ class AllDrinks extends React.Component {
                                             <FormControl fullWidth>
                                                 <Avatar style={{
                                                     borderRadius: 0,
-                                                    width: 100,
-                                                    height: 100
+                                                    width: "50%",
+                                                    height: "50%"
                                                 }} src={this.state.drinksImgpreview}/>
                                             </FormControl>
                                         </Grid>
@@ -840,7 +864,7 @@ class AllDrinks extends React.Component {
                     </Grid>
 
                     <Grid item xs={12}>
-                        <Paper className={classes.paper}>
+
                             <LinearProgress mode="determinate" value={this.state.uploadProgress} />
 
                             <ReactTable
@@ -952,7 +976,7 @@ class AllDrinks extends React.Component {
                                   );
                               }}
                             />
-                        </Paper>
+                        
                     </Grid>
                 </Grid>
             </div>

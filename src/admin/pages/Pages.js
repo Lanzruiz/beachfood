@@ -11,6 +11,7 @@
  import swal from 'sweetalert';
  import EditIcon from 'material-ui-icons/Edit';
  import ReactTable from "react-table";
+  import Background from '../images/login.jpg';
  import "react-table/react-table.css";
  import {
      Link
@@ -51,7 +52,9 @@ class Pages extends React.Component {
 
   componentDidMount(){
       var _ths = this;
-
+      document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+      document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
+      
      let thePagesData = [];
 
       pagesRef.once('value', function(snapshot) {

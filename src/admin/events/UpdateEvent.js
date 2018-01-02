@@ -27,6 +27,7 @@ import { eventsStoreref, Storageref, eventsref } from '../../FB'
 import { updateEvent } from '../../helpers/events'
 
 import ImageLoader from '../ImageLoader'
+import Background from '../images/event.jpg';
 
 
 import stylesm from '../../App.css'
@@ -100,6 +101,9 @@ class UpdateEvent extends React.Component {
     componentDidMount(){
         var _ths = this;
         var element = document.querySelector('#address');
+
+        document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+        document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
 
         eventsref.child(`${this.props.match.params.evid}/`).on('value', (snap) => {
             snap.forEach(function (childSnap) {
@@ -398,7 +402,7 @@ class UpdateEvent extends React.Component {
                             </div>
 
                             <FormControl fullWidth className={stylesm.theFromControl}>
-                                
+
                                 <TextField
                                     id="evtImg"
                                     onChange={(e)=>this._handleImageChange(e)}

@@ -49,6 +49,7 @@ import { eventsref, Storageref, eventsStoreref } from '../../FB'
 import { saveEvent } from '../../helpers/events'
 import stylesm from '../../App.css'
 import matchSorter from 'match-sorter'
+import Background from '../images/event.jpg';
 
 const styles = theme => ({
     root: {
@@ -132,6 +133,9 @@ class AllEvents extends React.Component {
 
     componentDidMount(){
         var _ths = this;
+
+        document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+        document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
 
         eventsref.on('value', function(snapshot) {
             let theEventData = [];
@@ -635,7 +639,7 @@ class AllEvents extends React.Component {
                                         </div>
 
                                         <FormControl fullWidth className={stylesm.theFromControl}>
-                                            
+
                                             <TextField
                                                 id="evtImg"
                                                 onChange={(e)=>this._handleImageChange(e)}
@@ -690,7 +694,7 @@ class AllEvents extends React.Component {
                         </Dialog>
                     </Grid>
                     <Grid item xs={12}>
-                        <Paper className={classes.paper}>
+
 
                             <ReactTable
                               filterable
@@ -769,7 +773,7 @@ class AllEvents extends React.Component {
                                   );
                               }}
                             />
-                        </Paper>
+                        
 
                     </Grid>
                 </Grid>

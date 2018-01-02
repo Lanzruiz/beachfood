@@ -11,6 +11,7 @@
  import stylesm from '../../App.css'
  import swal from 'sweetalert';
  import ReactTable from "react-table";
+  import Background from '../images/referral.jpg';
  import "react-table/react-table.css";
  var dateFormat = require('dateformat');
 
@@ -47,6 +48,9 @@ class UserReferral extends React.Component {
 
   componentDidMount(){
       var _ths = this;
+
+      document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+      document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
 
      let theUserReferralData = [];
 
@@ -163,7 +167,7 @@ class UserReferral extends React.Component {
           defaultPageSize={15}
           className="-striped -highlight"
           SubComponent = {row =>  {
-            
+
               return (
                 <div style={{padding: "20px"}}>
                 <ReactTable

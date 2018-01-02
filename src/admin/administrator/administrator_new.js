@@ -27,6 +27,7 @@ import Visibility from 'material-ui-icons/Visibility';
 import VisibilityOff from 'material-ui-icons/VisibilityOff';
 import IconButton from 'material-ui/IconButton';
 import swal from 'sweetalert';
+import Background from '../images/login.jpg';
 
 import stylesm from '../../App.css'
 
@@ -104,6 +105,8 @@ class NewAdministrator extends React.Component {
 
     componentDidMount(){
         var _ths = this;
+        document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+        document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
 
     }
 

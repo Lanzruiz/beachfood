@@ -11,6 +11,7 @@ import matchSorter from 'match-sorter'
  import stylesm from '../../App.css'
  import swal from 'sweetalert';
  import ReactTable from "react-table";
+ import Background from '../images/login.jpg';
  import "react-table/react-table.css";
 
 const styles = theme => ({
@@ -47,6 +48,9 @@ class ContactUs extends React.Component {
   componentDidMount(){
       var _ths = this;
 
+      document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+      document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
+      
      let theContactUsData = [];
 
       contactusRef.once('value', function(snapshot) {

@@ -23,7 +23,7 @@ import { DateTimePicker } from 'material-ui-pickers'
 import swal from 'sweetalert';
 import { faqRef } from '../../FB'
 import { saveEvent } from '../../helpers/events'
-
+import Background from '../images/login.jpg';
 
 import stylesm from '../../App.css'
 
@@ -81,6 +81,8 @@ class FAQNew extends React.Component {
     componentDidMount(){
         var _ths = this;
 
+        document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+        document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
     }
 
 

@@ -208,7 +208,7 @@ class UpdateDrinks extends React.Component {
             description : _ths.state.drinksDesc,
             image : (this.state.ifImgChanged) ? theFileid+'.'+filenamearr[1] : this.state.drinksImgName,
             isFreeDrinks : _ths.state.isFree,
-            price : _ths.state.drinkPrice
+            price : parseFloat(_ths.state.drinkPrice)
         })
 
         // if (this.state.ifImgChanged){
@@ -462,7 +462,7 @@ class UpdateDrinks extends React.Component {
 
                                 <Grid item xs={12} lg={6}>
                                     <FormControl fullWidth className={stylesm.theFromControl}>
-                                        
+
                                         <TextField
                                             id="drinksImg"
                                             onChange={(e)=>this._handleImageChange(e)}

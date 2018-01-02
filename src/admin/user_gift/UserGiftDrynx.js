@@ -12,6 +12,7 @@
  import swal from 'sweetalert';
  import ReactTable from "react-table";
  import "react-table/react-table.css";
+ import Background from '../images/gift.jpg';
 
 const styles = theme => ({
     root: {
@@ -47,6 +48,9 @@ class UserGiftDrynx extends React.Component {
   componentDidMount(){
       var _ths = this;
 
+      document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+      document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
+      
      let theUserGiftData = [];
 
       userGiftRef.once('value', function(snapshot) {

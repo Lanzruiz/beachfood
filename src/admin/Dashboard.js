@@ -4,6 +4,7 @@ import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Grid from 'material-ui/Grid';
 import { administratorRef, firebaseAuth } from '../FB'
+import Background from './images/login.jpg';
 
 const styles = theme => ({
     root: {
@@ -36,6 +37,13 @@ class Dashboard extends React.Component {
               console.log('There is no logged in user');
           }
       });
+  }
+
+  componentDidMount(){
+     //document.body.style.backgroundImage = `url(${Background})`;
+     document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+     document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
+     //$(".pageInner").css({"background-image": "./images/login.jpg", "background-size":"cover"})
   }
 
   loadSettingsData() {

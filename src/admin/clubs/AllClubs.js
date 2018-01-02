@@ -46,6 +46,7 @@ import {
 } from 'react-router-dom'
 import matchSorter from 'match-sorter'
 import Avatar from 'material-ui/Avatar';
+import Background from '../images/clubs.jpg';
 
 var i2b = require("imageurl-base64");
 function Transition(props) {
@@ -135,6 +136,9 @@ class AllClubs extends React.Component {
 
     componentDidMount(){
         var _ths = this;
+        document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+        document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
+
         _ths.theGoolgePlaces()
         this.loadClubData();
     }
@@ -218,6 +222,8 @@ class AllClubs extends React.Component {
 
             for (var i = 0; i < place.address_components.length; i++) {
                 for (var j = 0; j < place.address_components[i].types.length; j++) {
+                  console.log(place.address_components[i].types[j]);
+                  console.log(place.address_components[i].long_name);
                     if (place.address_components[i].types[j] === "postal_code") {
                         _ths.setState({
                             zip: place.address_components[i].long_name
@@ -225,12 +231,12 @@ class AllClubs extends React.Component {
                     }
                     if (place.address_components[i].types[j] === "administrative_area_level_1") {
                         _ths.setState({
-                            city: place.address_components[i].long_name
+                            clubstate: place.address_components[i].long_name
                         })
                     }
-                    if (place.address_components[i].types[j] === "administrative_area_level_2") {
+                    if (place.address_components[i].types[j] === "locality") {
                         _ths.setState({
-                            clubstate: place.address_components[i].long_name
+                            city: place.address_components[i].long_name
                         })
                     }
 
@@ -643,23 +649,34 @@ class AllClubs extends React.Component {
                               </Grid>
 
                               <Grid item xs={12} lg={6}>
-                              <p style={{fontSize:12, color:'#999'}}>Image</p>
-                              <FormControl fullWidth className={stylesm.theFromControl} style={{justifyContent: 'center', alignItems: 'center'}}>
-                                  {
-                                      (this.state.openclubImgpreview && this.state.openclubImgpreview !== '') ?
-                                      <ImageLoader
-                                          src={this.state.openclubImgpreview}
-                                          className={classes.avatar}
-                                          placeholder="Loading">
-                                          <CircularProgress className={classes.progress} />
-                                      </ImageLoader>
-                                       : ''
 
-                                  }
-                              </FormControl>
                               </Grid>
 
                           </Grid>
+
+
+                          <Grid container>
+
+
+
+                               <Grid item xs={12} lg={12}>
+                               <p style={{fontSize:12, color:'#999'}}>Image</p>
+                               <FormControl fullWidth className={stylesm.theFromControl} style={{justifyContent: 'center', alignItems: 'center'}}>
+                                   {
+                                       (this.state.openclubImgpreview && this.state.openclubImgpreview !== '') ?
+                                       <ImageLoader
+                                           src={this.state.openclubImgpreview}
+                                           className={classes.avatar}
+                                           placeholder="Loading">
+                                           <CircularProgress className={classes.progress} />
+                                       </ImageLoader>
+                                        : ''
+
+                                   }
+                               </FormControl>
+                               </Grid>
+
+                           </Grid>
 
                       </Grid>
                   </DialogContent>
@@ -712,7 +729,7 @@ class AllClubs extends React.Component {
                                 />
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12} lg={6}>
+                        <Grid item xs={12} lg={12}>
                             <FormControl fullWidth className={stylesm.theFromControl}>
                                 <InputLabel htmlFor="clubImg">Club Image</InputLabel>
                                 <TextField
@@ -725,8 +742,8 @@ class AllClubs extends React.Component {
                             <FormControl fullWidth>
                                 <Avatar style={{
                                     borderRadius: 0,
-                                    width: 100,
-                                    height: 100
+                                    width: "100%",
+                                    height: "100%"
                                 }} src={this.state.clubImgpreview}/>
                             </FormControl>
                         </Grid>
@@ -785,7 +802,7 @@ class AllClubs extends React.Component {
 
 
                     <Grid item xs={12}>
-                        <Paper className={classes.paper}>
+
                             <LinearProgress mode="determinate" value={this.state.uploadProgress} />
 
                             <ReactTable
@@ -866,7 +883,7 @@ class AllClubs extends React.Component {
                                   );
                               }}
                             />
-                        </Paper>
+                        
                     </Grid>
                 </Grid>
             </div>

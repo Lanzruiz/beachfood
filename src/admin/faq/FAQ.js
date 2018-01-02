@@ -32,7 +32,7 @@
  import swal from 'sweetalert';
  import { DateTimePicker } from 'material-ui-pickers'
  import Card, { CardHeader, CardContent } from 'material-ui/Card';
-
+ import Background from '../images/login.jpg';
  import Avatar from 'material-ui/Avatar';
  import { CircularProgress } from 'material-ui/Progress';
  import Divider from 'material-ui/Divider';
@@ -82,6 +82,9 @@ class FAQ extends React.Component {
   componentDidMount(){
       var _ths = this;
 
+      document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+      document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
+      
      this.loadFAQData();
 
   }

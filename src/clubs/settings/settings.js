@@ -28,7 +28,7 @@ import Visibility from 'material-ui-icons/Visibility';
 import VisibilityOff from 'material-ui-icons/VisibilityOff';
 import IconButton from 'material-ui/IconButton';
 import swal from 'sweetalert';
-
+import Background from '../../admin/images/login.jpg';
 import stylesm from '../../App.css'
 
 const styles = theme => ({
@@ -143,7 +143,9 @@ class UpdateSettings extends React.Component {
 
     componentDidMount(){
 
-
+      document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+      document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
+      
     }
 
 

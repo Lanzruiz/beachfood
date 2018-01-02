@@ -9,6 +9,7 @@ import SwipeableViews from 'react-swipeable-views';
 import AppBar from 'material-ui/AppBar';
 
 import config from '../config'
+import Background from '../admin/images/login.jpg';
 
 const styles = theme => ({
     root: {
@@ -40,6 +41,13 @@ class Login extends React.Component {
     state = {
         value: 0,
     };
+
+    componentDidMount(){
+       document.body.style.backgroundImage = `url(${Background})`;
+       //document.body.style.backgroundSize = 'auto';
+
+
+    }ch
 
     // Handle tab index
     handleChange = (event, value) => {

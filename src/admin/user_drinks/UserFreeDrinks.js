@@ -11,6 +11,7 @@
  import stylesm from '../../App.css'
  import swal from 'sweetalert';
  import ReactTable from "react-table";
+  import Background from '../images/drrinks.jpg';
  import "react-table/react-table.css";
 var dateFormat = require('dateformat');
 
@@ -48,6 +49,9 @@ class UserGiftDrynx extends React.Component {
   componentDidMount(){
       var _ths = this;
 
+      document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+      document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
+      
      let theUserDrinkData = [];
 
       userDrinksRef.once('value', function(snapshot) {
@@ -93,6 +97,7 @@ class UserGiftDrynx extends React.Component {
                       drinkName = drinkDetails.val().name;
 
                       totalSavings = totalSavings + price;
+                      //console.log(totalSavings);
 
                       drinksDetailsData.push({key: drinkDetails.key, club_name: clubName, drink_name: drinkName, amount: "$"+price, date: date})
 
@@ -107,7 +112,7 @@ class UserGiftDrynx extends React.Component {
                usersref.orderByChild('userid').equalTo(subscriptionItem.key).once('child_added', function (snapshot) {
                    //console.log(snapshot.val());
                    theUserDrinkData.push({key: snapshot.key, firstname: snapshot.val().firstname, lastname: snapshot.val().lastname,
-                                         email: snapshot.val().email, drinkCount: subscriptionItem.numChildren(), totalSavings: "$"+totalSavings.toFixed(2), details: drinksDetailsData});
+                                         email: snapshot.val().email, drinkCount: subscriptionItem.numChildren(), totalSavings: "$"+(totalSavings.toFixed(2)).toString(), details: drinksDetailsData});
 
 
                   if (totalCount == counter) {

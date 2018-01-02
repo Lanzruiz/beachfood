@@ -18,7 +18,7 @@ import { CircularProgress } from 'material-ui/Progress';
 import green from 'material-ui/colors/green';
 import CheckIcon from 'material-ui-icons/Check';
 import KeyboardBackspace from 'material-ui-icons/KeyboardBackspace';
-
+import Background from '../images/login.jpg';
 import { DateTimePicker } from 'material-ui-pickers'
 
 import { pagesRef } from '../../FB'
@@ -82,6 +82,9 @@ class PagesUpdate extends React.Component {
     componentDidMount(){
         var _ths = this;
         var pageID = this.props.match.params.pageid;
+
+        document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+        document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
 
         var description = "";
 

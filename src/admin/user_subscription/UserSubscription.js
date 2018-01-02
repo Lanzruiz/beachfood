@@ -11,6 +11,7 @@
  import stylesm from '../../App.css'
  import swal from 'sweetalert';
  import ReactTable from "react-table";
+ import Background from '../images/user_subscription.jpg';
  import "react-table/react-table.css";
  var dateFormat = require('dateformat');
 
@@ -48,6 +49,9 @@ class UserSubscription extends React.Component {
   componentDidMount(){
       var _ths = this;
      //console.log(_ths.state.userSubscriptionData.length);
+     document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+     document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
+
      let theUserSubscriptionData = [];
 
       userSubscriptionRef.once('value', function(snapshot) {

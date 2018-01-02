@@ -23,7 +23,7 @@ import { DateTimePicker } from 'material-ui-pickers'
 
 import { faqRef } from '../../FB'
 import { saveEvent } from '../../helpers/events'
-
+import Background from '../images/login.jpg';
 
 import stylesm from '../../App.css'
 
@@ -82,6 +82,11 @@ class FAQUpdate extends React.Component {
 
     componentDidMount(){
         var _ths = this;
+
+
+        document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+        document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
+
         var faqID = this.props.match.params.faqid;
 
         var answer = "";

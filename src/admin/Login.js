@@ -11,13 +11,17 @@ import AppBar from 'material-ui/AppBar';
 
 import config from '../config'
 
+import Background from './images/login.jpg';
+
+
+
 const styles = theme => ({
     root: {
         display: 'flex',
         paddingLeft: 20,
         paddingRight: 20,
         flexGrow: 1,
-        marginTop: 30,
+        marginTop: 30
     },
     tabRoot: {
         backgroundColor: theme.palette.background.paper,
@@ -25,6 +29,7 @@ const styles = theme => ({
     paper: {
         color: theme.palette.text.secondary,
     },
+
 });
 
 
@@ -41,6 +46,11 @@ class Login extends React.Component {
     state = {
         value: 0,
     };
+
+    componentDidMount(){
+       document.body.style.backgroundImage = `url(${Background})`;
+
+    }
 
     // Handle tab index
     handleChange = (event, value) => {
@@ -86,7 +96,7 @@ class Login extends React.Component {
                                 <TabContainer dir={theme.direction}>
                                     <LoginForm />
                                 </TabContainer>
-                                
+
                             </SwipeableViews>
 
                         </Paper>

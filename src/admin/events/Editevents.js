@@ -26,7 +26,7 @@ import { DateTimePicker } from 'material-ui-pickers'
 import { Storageref } from '../../FB'
 import { saveEvent } from '../../helpers/events'
 
-
+import Background from '../images/event.jpg';
 import stylesm from '../../App.css'
 
 const styles = theme => ({
@@ -95,7 +95,10 @@ class EditEvents extends React.Component {
 
     componentDidMount(){
 
-        console.log(this.props);
+        //console.log(this.props);
+
+        document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+        document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
 
         var _ths = this;
         var element = document.querySelector('#address');

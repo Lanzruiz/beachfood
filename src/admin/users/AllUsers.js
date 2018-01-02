@@ -43,6 +43,7 @@ import {
     Link
 } from 'react-router-dom'
 import matchSorter from 'match-sorter'
+import Background from '../images/users.jpg';
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
@@ -112,6 +113,9 @@ class AllUsers extends React.Component {
 
     componentDidMount(){
         var _ths = this;
+
+        document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+        document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
 
         usersref.on('value', function(snapshot) {
             let theUserData = [];
@@ -291,7 +295,7 @@ class AllUsers extends React.Component {
                         </Dialog>
                     </Grid>
                     <Grid item xs={12}>
-                        <Paper className={classes.paper}>
+
 
                             <ReactTable
                             filterable
@@ -332,7 +336,7 @@ class AllUsers extends React.Component {
                                         <Link to={`/users/edit/`+row.value} style={{color: '#757575'}} aria-label="Edit">
                                             <EditIcon />
                                         </Link>
-                                        
+
 
                                             <IconButton aria-label="Delete"
                                                         onClick={() => {
@@ -367,7 +371,7 @@ class AllUsers extends React.Component {
                               }}
                             />
 
-                        </Paper>
+                        
                     </Grid>
                 </Grid>
             </div>
