@@ -12,7 +12,7 @@ import { FormControl } from 'material-ui/Form';
 import Visibility from 'material-ui-icons/Visibility';
 import VisibilityOff from 'material-ui-icons/VisibilityOff';
 import {reactLocalStorage} from 'reactjs-localstorage';
- import { administratorRef } from '../FB'
+ import { administratorRef, clubOwnerRef } from '../FB'
 
 import { login, resetPassword } from '../helpers/auth'
 
@@ -65,11 +65,13 @@ class LoginForm extends React.Component {
     // Handle auth
     handleSubmit = () => {
       var _ths = this;
+      var loginSuccess = false;
 
         login(this.state.email, this.state.password)
             .then((user) => {
                 console.log(user.uid);
                 //check if userid is valid
+                //check if user is admin
                 administratorRef.orderByChild('userid').equalTo(user.uid).once('child_added', function (snapshot) {
                   console.log(snapshot.val());
                     if(snapshot.exists()) {
@@ -81,14 +83,41 @@ class LoginForm extends React.Component {
                       });
                       window.location.assign('/drynx_admin');
                       _ths.setState(setErrorMsg(null));
+                      loginSuccess = true;
                     } else {
-                      console.log("Invalid access");
-                       _ths.setState(setErrorMsg('Invalid username/password.'));
+                      //console.log("Invalid access");
+                      // _ths.setState(setErrorMsg('Invalid username/password.'));
+                      loginSuccess = false;
                     }
                 }).catch(function(error) {
-                  console.log("Invalid access");
-                   _ths.setState(setErrorMsg('Invalid username/password.'));
+                  //console.log("Invalid access");
+                   //_ths.setState(setErrorMsg('Invalid username/password.'));
+                   loginSuccess = false;
                 });
+
+                //check if user is club owner
+                if(loginSuccess == false) {
+                    clubOwnerRef.orderByChild('userid').equalTo(user.uid).once('child_added', function (snapshot) {
+                      //console.log(snapshot.val());
+                        if(snapshot.exists()) {
+                          reactLocalStorage.set('isloggedinClub', true);
+                          reactLocalStorage.set('uid', user.uid);
+                          reactLocalStorage.setObject('user', {
+                              'displayName': user.displayName,
+                              'photoURL': user.photoURL,
+                          });
+                          window.location.assign('/drynx_club');
+                          _ths.setState(setErrorMsg(null));
+                        } else {
+                          console.log("Invalid access");
+                           _ths.setState(setErrorMsg('Invalid username/password.'));
+                        }
+                    }).catch(function(error) {
+                      console.log("Invalid access");
+                       _ths.setState(setErrorMsg('Invalid username/password.'));
+                    });
+                }
+
 
                 //_ths.setState(setErrorMsg('Invalid username/password.'));
 

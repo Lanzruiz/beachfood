@@ -102,6 +102,7 @@ class AllDrinks extends React.Component {
             loadingData: false,
             drinksData: [],
             clubData: [],
+            drinkPopulateData: [],
             drinksName: '',
             whatsinit: '',
             drinksDesc: '',
@@ -113,6 +114,7 @@ class AllDrinks extends React.Component {
             checked: ['isFreeDrink'],
             isFree: true,
             selectedclubid: '',
+            selecteddrinid: '',
             isSingle: false,
             isSingleID: '',
             isloading: false,
@@ -123,6 +125,7 @@ class AllDrinks extends React.Component {
             isdrinksAdded: false,
             ownerID: '',
             isEmpty: false,
+            isDrinksEmpty: false,
             isEdit: false,
             drinksKey: ''
         }
@@ -149,10 +152,9 @@ class AllDrinks extends React.Component {
     loadDrinksData() {
       var _ths = this;
       let theclubData = [];
+      let theDrinkPopulateData = [];
 
       var userID = firebaseAuth.currentUser.uid;
-
-
 
       _ths.setState({
           loadingData: true,
@@ -180,6 +182,52 @@ class AllDrinks extends React.Component {
           _ths.setState({
               clubData: theclubData
           })
+      });
+
+      drinksref.once('value', function(snapshot) {
+         if(snapshot.numChildren() == 0) {
+             _ths.setState({
+                isDrinksEmpty: true
+             });
+         } else {
+           _ths.setState({
+              isDrinksEmpty: false
+           });
+         }
+
+         snapshot.forEach(function(drinkItem) {
+             var childKey = drinkItem.key;
+             var childData = drinkItem.val();
+
+             console.log(childKey);
+             console.log(childData);
+
+             for (var p in childData) {
+                if(childData.hasOwnProperty(p)) {
+                  var data = {};
+                  data.name = childData[p].name;
+                  data.image = childData[p].image;
+
+                  //var result = p + " , " + childData[p].name;
+                  //var image = childData[p].image;
+                  //console.log(result);
+                  //console.log(image);
+                  data.key = p;
+                  data.clubKey = childKey;
+                  theDrinkPopulateData.push(data);
+                }
+                //theDrinkPopulateData = [];
+                //console.log(prop);
+
+
+             }
+
+         });
+
+         _ths.setState({
+             drinkPopulateData: theDrinkPopulateData
+         })
+
       });
 
       var count = 0;
@@ -692,7 +740,39 @@ class AllDrinks extends React.Component {
                             onRequestClose={this.handleRequestClose}>
                             <DialogTitle>Add New Drinks</DialogTitle>
                             <DialogContent>
+
                                 <Grid container>
+                                  { /*
+                                    <Grid container>
+                                    <Grid item xs={12} lg={6}>
+                                        <FormControl fullWidth className={stylesm.theFromControl}>
+                                            <TextField
+                                                id="selecteddrinid"
+                                                select
+                                                label="Select Existing Drinks"
+                                                value={this.state.selecteddrinid}
+                                                onChange={this.handleChange('selecteddrinid')}
+                                                SelectProps={{
+                                                    MenuProps: {
+                                                        className: classes.menu,
+                                                    },
+                                                }}
+                                                helperText="Please select drinks"
+                                                margin="normal"
+                                            >
+                                                {
+                                                    this.state.drinkPopulateData.map((drinkData, i) => {
+                                                        return (
+                                                            <MenuItem key={drinkData.clubKey} value={drinkData.key}>{drinkData.name}</MenuItem>
+                                                        )
+                                                    })
+                                                }
+
+                                            </TextField>
+                                        </FormControl>
+                                    </Grid>
+
+                                    </Grid> */ }
                                     <Grid container>
                                         <Grid item xs={12} lg={6}>
                                             <FormControl fullWidth
@@ -976,7 +1056,7 @@ class AllDrinks extends React.Component {
                                   );
                               }}
                             />
-                        
+
                     </Grid>
                 </Grid>
             </div>

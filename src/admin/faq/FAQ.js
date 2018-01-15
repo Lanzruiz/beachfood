@@ -84,7 +84,7 @@ class FAQ extends React.Component {
 
       document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
       document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
-      
+
      this.loadFAQData();
 
   }
@@ -200,11 +200,11 @@ class FAQ extends React.Component {
                   accessor: "key",
                   Cell: row => (
                     <div>
-                        <Link to={`/faq/edit/`+row.value} style={{color: '#757575'}} aria-label="Edit">
+                        <Link to={`/faq/edit/`+row.value} style={{color: '#000'}} aria-label="Edit">
                             <EditIcon />
                         </Link>
 
-                        <IconButton aria-label="Delete"
+                        <IconButton aria-label="Delete" style={{color: '#000'}}
                                     onClick={() => {
                                         this.askDeleteConfirm(row.value)
                                     }}>

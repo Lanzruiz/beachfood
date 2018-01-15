@@ -8,10 +8,9 @@ import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import SwipeableViews from 'react-swipeable-views';
 import AppBar from 'material-ui/AppBar';
-
 import config from '../config'
 
-import Background from './images/login.jpg';
+import Background from './images/clubimagelogin.jpg';
 
 
 
@@ -49,6 +48,7 @@ class Login extends React.Component {
 
     componentDidMount(){
        document.body.style.backgroundImage = `url(${Background})`;
+       document.body.style.backgroundSize = 'cover';
 
     }
 

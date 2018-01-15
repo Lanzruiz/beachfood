@@ -31,6 +31,9 @@ import DrinksRouter from './drinks'
 import HomeIcon from 'material-ui-icons/Home';
 import Weekend from 'material-ui-icons/Weekend';
 import LocalBar from 'material-ui-icons/LocalBar';
+import CompanyLogo from '../admin/images/logo.png';
+import MenuItemImage from '../admin/images/btn_inactive.png';
+import TopMenuImage from '../admin/images/title_bg.png';
 
 
 import PowerSettingsNew from 'material-ui-icons/PowerSettingsNew';
@@ -100,6 +103,8 @@ const styles = theme => ({
         height: '100vh',
     },
     appBar: {
+      backgroundImage: `url(${TopMenuImage})`,
+      backgroundSize: 'cover',
         position: 'absolute',
         marginLeft: drawerWidth,
         [theme.breakpoints.up('md')]: {
@@ -111,7 +116,7 @@ const styles = theme => ({
             display: 'none',
         },
     },
-    drawerHeader: theme.mixins.toolbar,
+    drawerHeader: {backgroundColor: '#000'},
     drawerPaper: {
         width: 250,
         [theme.breakpoints.up('md')]: {
@@ -131,6 +136,26 @@ const styles = theme => ({
             height: 'calc(100% - 64px)',
             marginTop: 64,
         },
+    },
+    menuItem: {
+       backgroundImage: `url(${MenuItemImage})`,
+       backgroundSize: '97%',
+       backgroundRepeat: 'no-repeat',
+       color: '#fff'
+    },
+    menuItemIcon: {
+       color: '#fff',
+       marginTop: '-15px;'
+    },
+    menuItemText: {
+      color: '#fff',
+      marginLeft: '-18px',
+      marginTop: '-5px',
+      fontSize: '14px'
+    },
+    topMenu: {
+      backgroundImage: `url(${TopMenuImage})`,
+      backgroundSize: 'cover'
     },
 });
 
@@ -155,21 +180,23 @@ class Clubs extends React.Component {
                 }}>
                     <h1 style={{
                         margin: 0
-                    }}>{conf.sitename}</h1>
+                    }}><img src={CompanyLogo} style={{width: '200px', padding: '10px'}}/></h1>
                 </div>
                 <Divider />
-                <List>
+                <List style={{backgroundColor: '#222F35'}}>
                     {routes.map((route, index) => (
                         // Render more <Route>s with the same paths as
                         // above, but different components this time.
                     <Link key={index} to={route.path} style={{
                         textDecoration: 'none'
                         }}>
-                            <ListItem button>
-                                <ListItemIcon>
+                            <ListItem button className={classes.menuItem}>
+                                <ListItemIcon className={classes.menuItemIcon}>
                                     {route.menuIcon}
                                 </ListItemIcon>
-                                <ListItemText primary={route.menuName} />
+                                <ListItemText className={classes.menuItemText}
+                                    disableTypography primary={<Typography type="body2" style={{ color: '#9CA9AF' }}>{route.menuName}</Typography>}
+                                />
                             </ListItem>
                         </Link>
                     ))}

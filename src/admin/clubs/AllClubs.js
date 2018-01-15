@@ -839,21 +839,21 @@ class AllClubs extends React.Component {
                                       filterable: false,
                                       Cell: row => (
                                         <div>
-                                            <IconButton aria-label="Open"
+                                            <IconButton aria-label="Open" style={{color: '#000'}}
                                                         onClick={() => {
                                                             this.openDetails(row.value)
                                                         }}>
                                                 <OpenIcon />
                                             </IconButton>
 
-                                              <IconButton aria-label="Edit"
+                                              <IconButton aria-label="Edit" style={{color: '#000'}}
                                                   onClick={() => {
                                                       this.editClub(row.value)
                                                   }}>
                                                   <EditIcon />
                                               </IconButton>
 
-                                            <IconButton aria-label="Delete"
+                                            <IconButton aria-label="Delete" style={{color: '#000'}}
                                                         onClick={() => {
                                                             this.askDeleteConfirm(row.value)
                                                         }}>
@@ -883,7 +883,7 @@ class AllClubs extends React.Component {
                                   );
                               }}
                             />
-                        
+
                     </Grid>
                 </Grid>
             </div>

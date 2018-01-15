@@ -729,7 +729,7 @@ class AllEvents extends React.Component {
                                         <div>
 
 
-                                        <IconButton aria-label="Open"
+                                        <IconButton aria-label="Open" style={{color: '#000'}}
                                                     onClick={() => {
                                                         this.openDetails(row.value)
                                                     }}>
@@ -738,7 +738,7 @@ class AllEvents extends React.Component {
 
 
 
-                                            <Link to={`/events/edit/`+row.value} style={{color: '#757575'}} aria-label="Edit">
+                                            <Link to={`/events/edit/`+row.value} style={{color: '#000'}} aria-label="Edit">
                                                 <EditIcon />
                                             </Link>
 
@@ -746,7 +746,7 @@ class AllEvents extends React.Component {
 
 
 
-                                            <IconButton aria-label="Delete"
+                                            <IconButton aria-label="Delete" style={{color: '#000'}}
                                                         onClick={() => {
                                                             this.askDeleteConfirm(row.value)
                                                         }}>
@@ -773,7 +773,7 @@ class AllEvents extends React.Component {
                                   );
                               }}
                             />
-                        
+
 
                     </Grid>
                 </Grid>

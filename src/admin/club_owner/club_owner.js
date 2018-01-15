@@ -236,11 +236,11 @@ class ClubOwner extends React.Component {
                   accessor: "key",
                   Cell: row => (
                     <div>
-                        <Link to={`/club_owner/edit/`+row.value} style={{color: '#757575'}} aria-label="Edit">
+                        <Link to={`/club_owner/edit/`+row.value} style={{color: '#000'}} aria-label="Edit">
                             <EditIcon />
                         </Link>
 
-                        <IconButton aria-label="Delete"
+                        <IconButton aria-label="Delete" style={{color: '#000'}}
                                     onClick={() => {
                                         this.askDeleteConfirm(row.value)
                                     }}>

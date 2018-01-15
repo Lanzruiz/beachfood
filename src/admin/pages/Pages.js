@@ -54,7 +54,7 @@ class Pages extends React.Component {
       var _ths = this;
       document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
       document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
-      
+
      let thePagesData = [];
 
       pagesRef.once('value', function(snapshot) {
@@ -110,7 +110,7 @@ class Pages extends React.Component {
                   accessor: "key",
                   Cell: row => (
                     <div>
-                        <Link to={`/pages/edit/`+row.value} style={{color: '#757575'}} aria-label="Edit">
+                        <Link to={`/pages/edit/`+row.value} style={{color: '#000'}} aria-label="Edit">
                             <EditIcon />
                         </Link>
 

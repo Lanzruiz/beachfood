@@ -731,18 +731,18 @@ class AllDrinks extends React.Component {
                                                 Cell: row => (
 
                                                     <div>
-                                                    <IconButton aria-label="Delete"
+                                                    <IconButton aria-label="Delete" style={{color: '#000'}}
                                                                 onClick={() => {
                                                                     this.displayDrinks(row.original.clubID,row.value)
                                                                 }}>
                                                         <OpenIcon />
                                                     </IconButton>
 
-                                                        <Link to={'/drinks/edit/'+row.original.clubID+"/"+row.value} style={{color: '#757575'}} aria-label="Edit">
+                                                        <Link to={'/drinks/edit/'+row.original.clubID+"/"+row.value} style={{color: '#000'}} aria-label="Edit">
                                                             <EditIcon />
                                                         </Link>
 
-                                                      <IconButton aria-label="Delete"
+                                                      <IconButton aria-label="Delete" style={{color: '#000'}}
                                                                   onClick={() => {
                                                                       this.askDeleteConfirm(row.original.clubID,row.value)
                                                                   }}>
@@ -778,7 +778,7 @@ class AllDrinks extends React.Component {
                                   );
                               }}
                             />
-                        
+
                     </Grid>
                 </Grid>
             </div>

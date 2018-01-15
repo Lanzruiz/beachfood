@@ -113,6 +113,57 @@ body {
     z-index: 99999999!important;
 }
 
+.ReactTable .-headerGroups .rt-th {
+  background-color: #3D484F;
+  color: #fff;
+  font-size: 20px;
+}
+
+.ReactTable .-header .rt-th {
+  background-color: #212224;
+  color: #fff;
+  font-size: 16px;
+}
+
+
+.ReactTable .rt-tbody .rt-tr-group {
+  border-bottom: solid 3px rgba(0,0,0,0.05) !important;
+}
+
+.ReactTable .rt-tbody .rt-td {
+  border-right: 1px solid rgba(0,0,0,.0) !important;
+  margin-left: 3px;
+  background-color: #B7B8B9 !important;
+}
+
+.ReactTable .rt-tbody .rt-td:last-child {
+  text-align: center;
+}
+
+.ReactTable .-pagination {
+  background-color: #3D484F;
+}
+
+.ReactTable .-pagination .-previous, .ReactTable .-pagination .-next {
+   background-color: #212224;
+}
+
+.ReactTable .-pagination .-btn {
+  color: #fff !important;
+}
+
+.ReactTable .-pagination .-pageInfo {
+  color: #fff;
+}
+
+.Clubs-drawerPaper-6 {
+  background-color: #222F35 !important;
+}
+
+.c6 {
+  background-color: #222F35 !important;
+}
+
 @media only screen and (max-width: 960px) {
     /* For mobile phones: */
 

@@ -9,7 +9,7 @@ import SwipeableViews from 'react-swipeable-views';
 import AppBar from 'material-ui/AppBar';
 
 import config from '../config'
-import Background from '../admin/images/login.jpg';
+import Background from '../admin/images/clubimagelogin.jpg';
 
 const styles = theme => ({
     root: {
@@ -44,6 +44,7 @@ class Login extends React.Component {
 
     componentDidMount(){
        document.body.style.backgroundImage = `url(${Background})`;
+       document.body.style.backgroundSize = 'cover';
        //document.body.style.backgroundSize = 'auto';
 
 

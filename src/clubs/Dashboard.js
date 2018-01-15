@@ -4,7 +4,7 @@ import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Grid from 'material-ui/Grid';
 import { clubOwnerRef, firebaseAuth } from '../FB'
-import Background from '../admin/images/login.jpg';
+import Background from '../admin/images/clubimagelogin.jpg';
 
 const styles = theme => ({
     root: {
@@ -58,7 +58,7 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount(){
-     
+
      document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
      document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
 
