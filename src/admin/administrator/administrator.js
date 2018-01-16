@@ -74,7 +74,7 @@ class Administrator extends React.Component {
       super(props)
       this.state = {
           loadingData: false,
-          AdministratorData: []
+          AdministratorData: [],
       }
   }
 

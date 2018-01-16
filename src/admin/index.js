@@ -52,8 +52,9 @@ import ContactIcon from 'material-ui-icons/Contacts';
 import LockIcon from 'material-ui-icons/Lock';
 import CompanyLogo from './images/logo.png';
 import MenuItemImage from './images/btn_inactive.png';
+import MenuItemImageActive from './images/btn_active.png';
 import TopMenuImage from './images/title_bg.png';
-
+import NavLink from "./NavLink";
 import PowerSettingsNew from 'material-ui-icons/PowerSettingsNew';
 import {
     BrowserRouter as Router,
@@ -235,6 +236,15 @@ const styles = theme => ({
        backgroundRepeat: 'no-repeat',
        color: '#fff'
     },
+
+    menuItemActive: {
+       backgroundImage: `url(${MenuItemImageActive})`,
+       backgroundSize: '97%',
+       backgroundRepeat: 'no-repeat',
+       color: '#fff'
+    },
+
+
     menuItemIcon: {
        color: '#fff',
        marginTop: '-15px;'
@@ -261,10 +271,12 @@ class Frontend extends React.Component {
     };
 
 
-
     render() {
         const { classes, theme } = this.props;
-
+        //var isActive = this.router === this.props.to;
+        //var className = isActive ? classes.menuItemActive : classes.menuItem;
+        //console.log(this);
+        //console.log(this.props.location.pathname);
         const drawer = (
             <div>
                 <div className={classes.drawerHeader}  style={{
@@ -281,10 +293,10 @@ class Frontend extends React.Component {
                     {routes.map((route, index) => (
                         // Render more <Route>s with the same paths as
                         // above, but different components this time.
-                    <Link key={index} to={route.path} style={{
+                    <NavLink key={index} to={route.path} style={{
                         textDecoration: 'none'
                       }}>
-                            <ListItem button className={classes.menuItem}>
+                            <ListItem button>
                                 <ListItemIcon className={classes.menuItemIcon}>
                                     {route.menuIcon}
                                 </ListItemIcon>
@@ -293,7 +305,7 @@ class Frontend extends React.Component {
                                     disableTypography primary={<Typography type="body2" style={{ color: '#9CA9AF' }}>{route.menuName}</Typography>}
                                 />
                             </ListItem>
-                        </Link>
+                        </NavLink>
                     ))}
 
                 </List>
@@ -304,7 +316,7 @@ class Frontend extends React.Component {
             return (
                 <Login/>
             )
-        } 
+        }
 
         return (
             <div className={classes.root}>

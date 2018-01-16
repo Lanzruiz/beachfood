@@ -164,6 +164,39 @@ body {
   background-color: #222F35 !important;
 }
 
+.menuactive {
+  background-image: url("./admin/images/btn_active.png");
+  background-size: 97%;
+  background-repeat: no-repeat;
+  color: '#fff'
+}
+
+.menuinactive {
+  background-image: url("./admin/images/btn_inactive.png");
+  background-size: 97%;
+  background-repeat: no-repeat;
+  color: '#fff !important'
+}
+
+.MuiListItem-default-136, .MuiListItem-default-135, .c136, .c135   {
+  padding-top: 7px !important;
+  padding-bottom: 7px !important;
+}
+
+.MuiListItem-gutters-140, .MuiListItem-gutters-139, .c140, .c139 {
+  padding-left: 7px !important;
+  padding-right: 7px !important;
+}
+
+.MuiTypography-body2-82, .c82 {
+   margin-top: -2px !important;
+}
+
+.menuactive .MuiTypography-body2-82, .menuactive .MuiTypography-body2-81, .menuactive .c82, .menuactive .c81 {
+   color: #fff !important;
+   font-size: 16px;
+}
+
 @media only screen and (max-width: 960px) {
     /* For mobile phones: */
 

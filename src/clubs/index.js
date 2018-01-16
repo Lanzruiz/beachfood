@@ -25,7 +25,7 @@ import Settings from './settings'
 import ClubsRouter from './club'
 import DrinksRouter from './drinks'
 //import Subscriptions from './subscriptions'
-
+import NavLink from "../admin/NavLink";
 
 
 import HomeIcon from 'material-ui-icons/Home';
@@ -187,10 +187,10 @@ class Clubs extends React.Component {
                     {routes.map((route, index) => (
                         // Render more <Route>s with the same paths as
                         // above, but different components this time.
-                    <Link key={index} to={route.path} style={{
+                    <NavLink key={index} to={route.path} style={{
                         textDecoration: 'none'
                         }}>
-                            <ListItem button className={classes.menuItem}>
+                            <ListItem button>
                                 <ListItemIcon className={classes.menuItemIcon}>
                                     {route.menuIcon}
                                 </ListItemIcon>
@@ -198,7 +198,7 @@ class Clubs extends React.Component {
                                     disableTypography primary={<Typography type="body2" style={{ color: '#9CA9AF' }}>{route.menuName}</Typography>}
                                 />
                             </ListItem>
-                        </Link>
+                        </NavLink>
                     ))}
 
                 </List>
