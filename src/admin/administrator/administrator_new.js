@@ -31,6 +31,8 @@ import Background from '../images/login.jpg';
 
 import stylesm from '../../App.css'
 
+
+
 const styles = theme => ({
     root: {
         flexGrow: 1,
@@ -174,6 +176,8 @@ class NewAdministrator extends React.Component {
                          emailError: false,
                          errorFields: false
                      });
+
+
 
 
 

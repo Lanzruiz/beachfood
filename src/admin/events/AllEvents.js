@@ -50,6 +50,8 @@ import { saveEvent } from '../../helpers/events'
 import stylesm from '../../App.css'
 import matchSorter from 'match-sorter'
 import Background from '../images/event.jpg';
+var geolocation = require('geolocation');
+var geocoder = require('geocoder');
 
 const styles = theme => ({
     root: {
@@ -280,6 +282,20 @@ class AllEvents extends React.Component {
         setTimeout(() => {
             this.theGoolgePlaces()
         }, 2000)
+
+        var _ths = this;
+        geolocation.getCurrentPosition(function (err, position) {
+            if (err) throw err
+            //console.log();
+            
+            geocoder.reverseGeocode( position.coords.latitude, position.coords.longitude, function ( err, data ) {
+               //console.log(data.results[0].formatted_address);
+                if (typeof data !== 'undefined') {
+                  _ths.setState({address: data.results[0].formatted_address})
+                }
+            });
+
+          })
     };
 
     handleSingleModalOpen(evid){

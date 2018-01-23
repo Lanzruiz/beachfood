@@ -127,7 +127,8 @@ class AllDrinks extends React.Component {
             isEmpty: false,
             isDrinksEmpty: false,
             isEdit: false,
-            drinksKey: ''
+            drinksKey: '',
+            drinksImageFromSelection: ''
         }
 
         var _ths = this;
@@ -277,15 +278,22 @@ class AllDrinks extends React.Component {
         swal ( "Oops" ,  "Please input your drink name!" ,  "error" );
 
       } else {
+        var imageName = '';
+        if(this.state.drinksImageFromSelection != "") {
+           imageName = this.state.drinksImageFromSelection;
+        } else {
+           imageName = theFileid+'.'+filenamearr[1];
+        }
         drinksref.child(`${this.state.selectedclubid}`).push({
             name : _ths.state.drinksName,
             whatsinit : _ths.state.whatsinit,
             description : _ths.state.drinksDesc,
-            image : theFileid+'.'+filenamearr[1],
+            image : imageName,
             isFreeDrinks : _ths.state.isFree,
             price : parseFloat(_ths.state.drinkPrice)
         }).then((data) => {
-            if (this.state.evtImg !== ''){
+            if (this.state.evtImg !== '' && this.state.drinksImageFromSelection == ""){
+
                 var uploadTask = Storageref.child('Drinks/'+theFileid+'.'+filenamearr[1]).put(this.state.drinksImg);
 
                 uploadTask.on('state_changed', function(snapshot){
@@ -331,6 +339,12 @@ class AllDrinks extends React.Component {
                     var downloadURL = uploadTask.snapshot.downloadURL;
                     console.log(downloadURL);
                 });
+            } else {
+                _ths.setState({
+                    isloading: false,
+                    isdrinksAdded: true,
+                    issuccess: true
+                })
             }
         })
       }
@@ -412,11 +426,61 @@ class AllDrinks extends React.Component {
 
     handleChange = prop => event => {
         this.setState({ [prop]: event.target.value });
+
+        //console.log(event.target.value);
+        var _ths = this;
+        var drinksValue = event.target.value.split(';');
+        if (drinksValue.length == 2) {
+            console.log(drinksValue[0]);
+            console.log(drinksValue[1]);
+            var clubKey = drinksValue[0];
+            var drinkKey = drinksValue[1];
+
+            drinksref.child(clubKey).child(drinkKey).once('value', function(snapshot) {
+               console.log(snapshot.val());
+               _ths.setState({
+                    drinksName: snapshot.val().name,
+                    drinksDesc: snapshot.val().description,
+                    drinkPrice: snapshot.val().price,
+                    whatsinit: snapshot.val().whatsinit,
+                    drinksImageFromSelection: snapshot.val().image
+               })
+               if(snapshot.val().image != "") {
+
+                     Storageref.child('Drinks/'+snapshot.val().image).getDownloadURL().then(function(url) {
+                       console.log(url);
+                         _ths.setState({
+
+                             drinksImgpreview: url
+                         })
+                     }).catch((err) => {
+                         _ths.setState({
+                             drinksImgpreview: ''
+                         })
+                     })
+
+                     Storageref.child('Drinks/'+snapshot.val().image).getMetadata().then(function(metadata) {
+                       console.log(metadata);
+                         _ths.setState({
+                             drinksImg: metadata.name,
+                             drinksImgName: metadata.name
+                         })
+                     }).catch((err) => {
+                         _ths.setState({
+                             drinksImg: '',
+                             drinksImgName: ''
+                         })
+                     })
+               }
+            });
+        }
+
+
     };
 
     handleClickOpen = () => {
-        if(this.state.isEmpty == false) {
-           this.setState({ open: true, drinksName:'', drinkPrice:'', drinksDesc:'',drinksImgpreview:'',open_display:false, whatsinit:'' });
+        if(this.state.isEmpty == false) {        
+           this.setState({ selecteddrinid: '', selectedclubid: '',isloading: false, isdrinksAdded: false, issuccess: false, isEdit: false, open: true, drinksName:'', drinkPrice:'', drinksDesc:'',drinksImgpreview:'',open_display:false, whatsinit:'' });
         } else {
            swal ( "Oops" ,  "Club is empty!" ,  "error" );
         }
@@ -464,11 +528,13 @@ class AllDrinks extends React.Component {
               if (drinksData.image != "") {
                 Storageref.child('Drinks/'+drinksData.image).getDownloadURL().then(function(url) {
                     _ths.setState({
-                        drinksImgpreview: url
+                        drinksImgpreview: url,
+                        drinksImg: ''
                     })
                 }).catch((err) => {
                     _ths.setState({
-                        drinksImgpreview: ''
+                        drinksImgpreview: '',
+                        drinksImg: ''
                     })
                 })
               }
@@ -742,7 +808,7 @@ class AllDrinks extends React.Component {
                             <DialogContent>
 
                                 <Grid container>
-                                  { /*
+                                    { this.state.isEdit == false ?
                                     <Grid container>
                                     <Grid item xs={12} lg={6}>
                                         <FormControl fullWidth className={stylesm.theFromControl}>
@@ -763,7 +829,7 @@ class AllDrinks extends React.Component {
                                                 {
                                                     this.state.drinkPopulateData.map((drinkData, i) => {
                                                         return (
-                                                            <MenuItem key={drinkData.clubKey} value={drinkData.key}>{drinkData.name}</MenuItem>
+                                                            <MenuItem key={drinkData.clubKey+';'+drinkData.key} value={drinkData.clubKey+';'+drinkData.key}>{drinkData.name}</MenuItem>
                                                         )
                                                     })
                                                 }
@@ -772,7 +838,8 @@ class AllDrinks extends React.Component {
                                         </FormControl>
                                     </Grid>
 
-                                    </Grid> */ }
+                                    </Grid>
+                                     : "" }
                                     <Grid container>
                                         <Grid item xs={12} lg={6}>
                                             <FormControl fullWidth

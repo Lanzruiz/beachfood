@@ -47,6 +47,9 @@ import {
 import matchSorter from 'match-sorter'
 import Avatar from 'material-ui/Avatar';
 import Background from '../images/clubs.jpg';
+var geolocation = require('geolocation');
+var geocoder = require('geocoder');
+
 
 var i2b = require("imageurl-base64");
 function Transition(props) {
@@ -139,8 +142,30 @@ class AllClubs extends React.Component {
         document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
         document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
 
-        _ths.theGoolgePlaces()
+        _ths.geoLocation();
+        _ths.theGoolgePlaces();
         this.loadClubData();
+
+    }
+
+
+    geoLocation() {
+      var _ths = this;
+
+      geolocation.getCurrentPosition(function (err, position) {
+          if (err) throw err
+          //console.log();
+            console.log(position.coords.latitude);
+            console.log(position.coords.longitude);
+          geocoder.reverseGeocode( position.coords.latitude, position.coords.longitude, function ( err, data ) {
+             //console.log(data.results[0].formatted_address);
+             //console.log(data);
+              if (typeof data !== 'undefined') {
+                _ths.setState({address: data.results[0].formatted_address})
+              }
+          });
+
+        })
     }
 
     loadClubData() {
