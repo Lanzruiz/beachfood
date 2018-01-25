@@ -1,5 +1,5 @@
 /**
- * Created by BOSS on 12/4/2017.
+ * Created by Thomas Woodfin on 12/4/2017.
  */
 
 import React from 'react'
@@ -100,7 +100,7 @@ class UpdateDrinks extends React.Component {
 
         document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
         document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
-        
+
         clubssref.on('value', function(snapshot) {
 
             snapshot.forEach(function(eventItem) {

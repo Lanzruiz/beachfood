@@ -1,5 +1,5 @@
 /**
- * Created by BOSS on 11/11/2017.
+ * Created by Thomas Woodfin on 11/11/2017.
  */
 import React from 'react';
 import ReactTable from "react-table";
@@ -287,7 +287,7 @@ class AllEvents extends React.Component {
         geolocation.getCurrentPosition(function (err, position) {
             if (err) throw err
             //console.log();
-            
+
             geocoder.reverseGeocode( position.coords.latitude, position.coords.longitude, function ( err, data ) {
                //console.log(data.results[0].formatted_address);
                 if (typeof data !== 'undefined') {

@@ -1,5 +1,5 @@
 /**
- * Created by BOSS on 12/6/2017.
+ * Created by Thomas Woodfin on 12/6/2017.
  */
 import React, { Component } from 'react'
 import classNames from 'classnames';
@@ -89,25 +89,25 @@ class AllSubscriptions extends Component {
         _ths.setState({
             loadingData: true
         })
-    
+
         var thId = this.props.match.params.subsId;
-        
+
         //console.log(this.props.match.params.subsId);
-        
+
         subscriptionref.child(thId).on('value', (snap) => {
             snap.forEach((subs) => {
                 var childkey = subs.key;
                 var childdata = subs.val();
                 this.setState({ [childkey]: childdata });
-                
+
                 if (childkey === 'date_start') {
                     this.setState({ [childkey]: childdata.toLocaleString() });
                 }
-                
+
                 if (childkey === 'date_end') {
                     this.setState({ [childkey]: childdata.toLocaleString() });
                 }
-                
+
             })
             _ths.setState({
                 loadingData: false
@@ -123,10 +123,10 @@ class AllSubscriptions extends Component {
             isloading: true,
             issuccess: true
         })
-    
-    
+
+
         var thId = this.props.match.params.subsId;
-        
+
         subsref.child(thId).set({
             amount : _ths.state.amount,
             date_start : _ths.state.date_start.toLocaleString(),
@@ -140,11 +140,11 @@ class AllSubscriptions extends Component {
                     issuccess: false,
                     open: true,
                 })
-                
+
             }, 2000)
         })
     }
-    
+
     handleRequestClose = () => {
         this.setState({ open: false });
     };
@@ -168,7 +168,7 @@ class AllSubscriptions extends Component {
         });
         return (
             <div className="App">
-                
+
                 <Grid container spacing={24}>
                     <Grid item xs={6}>
                         <Link to={`/subscriptions`} className='linkBtn primary'>
@@ -209,7 +209,7 @@ class AllSubscriptions extends Component {
                             :
                             <Grid container style={{width: '100%', margin: 0}}>
                                 <Grid item xs={12} lg={7}>
-            
+
                                     <FormControl fullWidth className={stylesm.theFromControl}>
                                         <InputLabel htmlFor="amount">Ammount</InputLabel>
                                         <Input
@@ -258,7 +258,7 @@ class AllSubscriptions extends Component {
                                             />
                                         </FormControl>
                                     </div>
-        
+
                                 </Grid>
                                 <Grid item xs={12} lg={5}>
                                     <FormControl fullWidth className={stylesm.theFromControl}>
@@ -289,7 +289,7 @@ class AllSubscriptions extends Component {
                                             <MenuItem key='yearly' value='yearly'>
                                                 Yearly
                                             </MenuItem>
-                
+
                                         </TextField>
                                     </FormControl>
                                     <FormControl fullWidth className={stylesm.theFromControl}>
@@ -300,12 +300,12 @@ class AllSubscriptions extends Component {
                                                 onChange={this.handleChange('freeDrinks')}
                                         />
                                     </FormControl>
-        
+
                                 </Grid>
                             </Grid>
                     }
                 </Grid>
-    
+
                 <Snackbar
                     open={this.state.open}
                     onRequestClose={this.handleRequestClose}
@@ -316,7 +316,7 @@ class AllSubscriptions extends Component {
                     }}
                     message={<span id="message-id">Plan successfully updated..</span>}
                 />
-                
+
             </div>
         )
     }

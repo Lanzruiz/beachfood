@@ -1,5 +1,5 @@
 /**
- * Created by BOSS on 11/24/2017.
+ * Created by Thomas Woodfin on 11/24/2017.
  */
 import { ref, clubssref } from '../FB'
 

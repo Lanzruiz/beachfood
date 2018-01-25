@@ -1,5 +1,5 @@
 /**
- * Created by BOSS on 12/5/2017.
+ * Created by Thomas Woodfin on 12/5/2017.
  */
 import React, { Component } from 'react'
 import classNames from 'classnames';
