@@ -30,7 +30,7 @@ import { CircularProgress } from 'material-ui/Progress';
 import Divider from 'material-ui/Divider';
 import Tooltip from 'material-ui/Tooltip';
 
-import { clubssref, clubStoreref, firebaseAuth, Storageref } from '../../FB'
+import { clubssref, clubStoreref, firebaseAuth, Storageref, geoFireRef } from '../../FB'
 import stylesm from '../../App.css'
 import swal from 'sweetalert';
 import Dialog, {
@@ -160,7 +160,8 @@ class AllClubs extends React.Component {
           geocoder.reverseGeocode( position.coords.latitude, position.coords.longitude, function ( err, data ) {
              //console.log(data.results[0].formatted_address);
              //console.log(data);
-              if (typeof data !== 'undefined') {
+              //if (typeof data !== 'undefined') {
+               if (data.results[0] != null) {
                 _ths.setState({address: data.results[0].formatted_address})
               }
           });
@@ -289,6 +290,8 @@ class AllClubs extends React.Component {
              }
 
             //console.log(this.state.dimage);
+            var lat = this.state.lat;
+            var lng = this.state.lng;
 
             setTimeout(() => {
                 saveClub({
@@ -302,6 +305,17 @@ class AllClubs extends React.Component {
                     clubstate : this.state.clubstate,
                     clzip : this.state.zip
                 }).then((club) => {
+                  //save the location to geoFire
+                  var clubname = club.name;
+
+                  clubssref.orderByChild('name').equalTo(clubname).once('child_added', function (snapshot) {
+                      var clubkey = snapshot.key;
+                      geoFireRef.set(clubkey, [lat, lng]).then(function() {
+                         console.log("geofire was successfully added");
+                      });
+                  });
+
+
 
                   if (this.state.clubImg !== ''){
                       var uploadTask = Storageref.child('club_image/'+theFileid+'.'+filenamearr[1]).put(this.state.clubImg);
@@ -520,6 +534,9 @@ class AllClubs extends React.Component {
              }
 
 
+             var clubKey = this.state.isSingleID;
+             var lat = this.state.lat;
+             var lng = this.state.lng;
 
             updateClub({
                 thkey: this.state.isSingleID,
@@ -533,6 +550,15 @@ class AllClubs extends React.Component {
                 clubstate : this.state.clubstate,
                 clzip : this.state.zip
             }).then((club) => {
+
+              var clubname = club.name;
+
+
+                  geoFireRef.set(clubKey, [lat, lng]).then(function() {
+                     console.log("geofire was successfully added");
+                  });
+
+
               if (this.state.clubImg !== ''){
                   var uploadTask = Storageref.child('club_image/'+theFileid+'.'+filenamearr[1]).put(this.state.clubImg);
 

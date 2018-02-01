@@ -4,6 +4,7 @@
 import { ref, clubssref } from '../FB'
 
 export function saveClub(club) {
+
     return ref.child(`clubs/`)
         .push({
             address : club.address,

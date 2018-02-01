@@ -3,6 +3,7 @@
  */
 
 import firebase from 'firebase'
+var GeoFire = require('geofire');
 
 const config = {
     apiKey: "AIzaSyBmmd9J2m5N4NrtefEXLYq1QKilJrVBslc",
@@ -14,8 +15,10 @@ const config = {
 }
 
 firebase.initializeApp(config)
+//var geoFire = new GeoFire(firebase.database().ref('club_location/'));
 
 export const ref = firebase.database().ref()
+export const geoFireRef = new GeoFire(firebase.database().ref('club_location/'));
 export const eventsref = firebase.database().ref('events/')
 export const usersref = firebase.database().ref('users/')
 export const administratorRef = firebase.database().ref('administrator/')
