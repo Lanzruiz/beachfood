@@ -28,7 +28,7 @@ import VisibilityOff from 'material-ui-icons/VisibilityOff';
 import IconButton from 'material-ui/IconButton';
 import swal from 'sweetalert';
 import Background from '../images/login.jpg';
-
+import {reactLocalStorage} from 'reactjs-localstorage';
 import stylesm from '../../App.css'
 
 
@@ -151,15 +151,15 @@ class NewAdministrator extends React.Component {
                    //create new user in auth
                    firebaseAuth.createUserWithEmailAndPassword(_ths.state.email, _ths.state.password)
                    .then(function(user) {
-                     console.log(user.uid);
 
+                     var user_type = reactLocalStorage.get("type") == "admin" ? "admin" : "super_admin";
                      var value = {
                          firstname: _ths.state.firstname,
                          lastname: _ths.state.lastname,
                          email: _ths.state.email,
                          userid: user.uid,
                          password: _ths.state.password,
-                         user_type: "admin",
+                         user_type: user_type,
                      }
 
                      administratorRef.push(value);

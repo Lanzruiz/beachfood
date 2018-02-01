@@ -316,6 +316,15 @@ class AllClubs extends React.Component {
                                   issuccess: true
                               })
 
+                              // var firebaseRef = firebase.database().ref();
+                              // var geoFire = new GeoFire(firebaseRef);
+                              //
+                              // geoFire.set(club.key, [this.state.lat, this.state.lng]).then(function() {
+                              //     console.log("Provided key has been added to GeoFire");
+                              //   }, function(error) {
+                              //     console.log("Error: " + error);
+                              //   });
+
                           }
 
                           console.log(snapshot.state);

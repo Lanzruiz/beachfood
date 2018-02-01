@@ -38,6 +38,7 @@
  import Divider from 'material-ui/Divider';
  import Tooltip from 'material-ui/Tooltip';
 import Background from '../images/login.jpg';
+import {reactLocalStorage} from 'reactjs-localstorage';
 
  import {
      Link
@@ -93,7 +94,7 @@ class Administrator extends React.Component {
   loadAdministratorData() {
     var _ths = this;
     let theAdministratorData = [];
-    let user_type = "admin";
+    let user_type = reactLocalStorage.get("type") == "admin" ? "admin" : "super_admin";
 
      administratorRef.orderByChild('user_type').equalTo(user_type).once('value', function (snapshot) {
 

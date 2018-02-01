@@ -1,5 +1,5 @@
 /**
- * Created by BOSS on 11/4/2017.
+ * Created by Thomas Woodfin on 11/4/2017.
  */
 
 import React from 'react';
@@ -68,7 +68,112 @@ function logout() {
     window.location.assign('/')
 }
 
-const routes = [
+
+
+const routes = reactLocalStorage.get('type') == "admin" ? [
+    {
+        path: '/drynx_admin',
+        exact: true,
+        menuName: 'Home',
+        menuIcon: <HomeIcon />,
+        sidebar: () => <div>Dashboard</div>,
+        main: () => <Dashboard/>
+    },
+    {
+        path: '/administrator',
+        menuName: 'Administrator',
+        menuIcon: <LockIcon />,
+        sidebar: () => <div>Administrator</div>,
+        main: () => <Administrator/>
+    },
+    {
+        path: '/club_owner',
+        menuName: 'Club Owner',
+        menuIcon: <AccountIcon />,
+        sidebar: () => <div>Club Owner</div>,
+        main: () => <ClubOwner/>
+    },
+    {
+        path: '/events',
+        menuName: 'Events',
+        menuIcon: <EventIcon />,
+        sidebar: () => <div>Events</div>,
+        main: () => <Events/>
+    },
+    {
+        path: '/clubs',
+        menuName: 'Clubs',
+        menuIcon: <Weekend />,
+        sidebar: () => <div>Clubs</div>,
+        main: () => <AllClubs/>
+    },
+    {
+        path: '/drinks',
+        menuName: 'Drinks',
+        menuIcon: <LocalBar />,
+        sidebar: () => <div>Drinks</div>,
+        main: () => <AllDrinks/>
+    },
+    {
+        path: '/cities',
+        menuName: 'Cities',
+        menuIcon: <LocationCity />,
+        sidebar: () => <div>Cities</div>,
+        main: () => <Cities />
+    },
+    {
+      path: '/user-subscription',
+      menuName: 'User Subscription',
+      menuIcon: <Contacts />,
+      sidebar: () => <div>User Subscription</div>,
+      main: () => <UserSubscription />
+    },
+    {
+      path: '/user-gifts',
+      menuName: 'User Gift Drynx',
+      menuIcon: <GiftCard />,
+      sidebar: () => <div>User Gift Drynx</div>,
+      main: () => <UserGiftDrynx />
+    },
+    {
+      path: '/user-drinks',
+      menuName: 'User Free Drinks',
+      menuIcon: <LocalBar />,
+      sidebar: () => <div>User Free Drinks</div>,
+      main: () => <UserFreeDrinks />
+    },
+    {
+      path: '/user-referral',
+      menuName: 'User Referrals',
+      menuIcon: <Referrals />,
+      sidebar: () => <div>User Referral</div>,
+      main: () => <UserReferral />
+    },
+    {
+      path: '/pages',
+      menuName: 'Pages',
+      menuIcon: <PagesIcon />,
+      sidebar: () => <div>Pages</div>,
+      main: () => <Pages />
+    },
+    {
+      path: '/faq',
+      menuName: 'FAQ',
+      menuIcon: <QuestionAnswer />,
+      sidebar: () => <div>FAQ</div>,
+      main: () => <FAQ />
+    },
+    {
+      path: '/contact-us',
+      menuName: 'Contact Us',
+      menuIcon: <ContactIcon />,
+      sidebar: () => <div>Contact Us</div>,
+      main: () => <ContactUs />
+    }
+
+
+
+] : [
     {
         path: '/drynx_admin',
         exact: true,
@@ -321,7 +426,6 @@ class Frontend extends React.Component {
         return (
             <div className={classes.root}>
                 <div className={classes.appFrame} >
-
                     <Router>
                         <div className="app-wrapper">
                             <AppBar className={classes.appBar}>

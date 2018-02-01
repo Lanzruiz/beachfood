@@ -7,22 +7,22 @@ import Paper from 'material-ui/Paper';
 import Grid from 'material-ui/Grid';
 import swal from 'sweetalert';
 import TextField from 'material-ui/TextField';
-import Input, { InputLabel } from 'material-ui/Input';
+//import Input, { InputLabel } from 'material-ui/Input';
 import Button from 'material-ui/Button';
 import { FormControl } from 'material-ui/Form';
-import Avatar from 'material-ui/Avatar';
+//import Avatar from 'material-ui/Avatar';
 import Typography from 'material-ui/Typography';
 import Save from 'material-ui-icons/Save';
-import Card, { CardHeader, CardContent } from 'material-ui/Card';
+//import Card, { CardHeader, CardContent } from 'material-ui/Card';
 import { CircularProgress } from 'material-ui/Progress';
 import green from 'material-ui/colors/green';
 import CheckIcon from 'material-ui-icons/Check';
 import KeyboardBackspace from 'material-ui-icons/KeyboardBackspace';
 
-import { DateTimePicker } from 'material-ui-pickers'
+//import { DateTimePicker } from 'material-ui-pickers'
 
 import { faqRef } from '../../FB'
-import { saveEvent } from '../../helpers/events'
+//import { saveEvent } from '../../helpers/events'
 import Background from '../images/login.jpg';
 
 import stylesm from '../../App.css'

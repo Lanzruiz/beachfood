@@ -12,9 +12,10 @@ import { FormControl } from 'material-ui/Form';
 import Visibility from 'material-ui-icons/Visibility';
 import VisibilityOff from 'material-ui-icons/VisibilityOff';
 import {reactLocalStorage} from 'reactjs-localstorage';
- import { administratorRef, clubOwnerRef } from '../FB'
+import { administratorRef, clubOwnerRef, superAdminRef } from '../FB'
 
 import { login, resetPassword } from '../helpers/auth'
+//import Admin from "./admin";
 
 function setErrorMsg(error) {
     return {
@@ -73,15 +74,18 @@ class LoginForm extends React.Component {
                 //check if userid is valid
                 //check if user is admin
                 administratorRef.orderByChild('userid').equalTo(user.uid).once('child_added', function (snapshot) {
-                  console.log(snapshot.val());
+                  //console.log(snapshot.val());
                     if(snapshot.exists()) {
                       reactLocalStorage.set('isloggedin', true);
                       reactLocalStorage.set('uid', user.uid);
+                      reactLocalStorage.set('type',snapshot.val().user_type);
                       reactLocalStorage.setObject('user', {
                           'displayName': user.displayName,
                           'photoURL': user.photoURL,
                       });
                       window.location.assign('/drynx_admin');
+                      //this.props.router.push(null, 'drynx_admin');
+                      //<Redirect to="/drynx_admin" push={true} />
                       _ths.setState(setErrorMsg(null));
                       loginSuccess = true;
                     } else {
@@ -95,6 +99,9 @@ class LoginForm extends React.Component {
                    loginSuccess = false;
                 });
 
+
+
+
                 //check if user is club owner
                 if(loginSuccess == false) {
                     clubOwnerRef.orderByChild('userid').equalTo(user.uid).once('child_added', function (snapshot) {
@@ -107,6 +114,8 @@ class LoginForm extends React.Component {
                               'photoURL': user.photoURL,
                           });
                           window.location.assign('/drynx_club');
+                          //this.props.router.push(null, 'drynx_club');
+                          //return <Redirect to="/drynx_admin" push={true} />
                           _ths.setState(setErrorMsg(null));
                         } else {
                           console.log("Invalid access");
