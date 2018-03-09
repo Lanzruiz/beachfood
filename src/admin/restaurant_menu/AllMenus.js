@@ -37,7 +37,7 @@ import { CircularProgress } from 'material-ui/Progress';
 import Divider from 'material-ui/Divider';
 import Tooltip from 'material-ui/Tooltip';
 import Switch from 'material-ui/Switch';
-import { restaurantRef, restaurantMenuRef, Storageref } from '../../FB'
+import { menuCategoryRef, restaurantRef, restaurantMenuRef, Storageref } from '../../FB'
 import OpenIcon from 'material-ui-icons/Visibility';
 import swal from 'sweetalert';
 import MenuItem from 'material-ui/Menu/MenuItem';
@@ -98,6 +98,7 @@ class AllMenus extends React.Component {
             loadingData: false,
             menuData: [],
             restaurantData: [],
+            categoryData: [],
             menuName: '',
             menuDesc: '',
             menuImg: '',
@@ -106,6 +107,7 @@ class AllMenus extends React.Component {
             menuImgpreview: '',
             menuPrice: '',
             selectedrestaurantid: '',
+            selectedCategoryID: '',
             isSingle: false,
             isSingleID: '',
             isloading: false,
@@ -128,6 +130,7 @@ class AllMenus extends React.Component {
     loadMenuData() {
       var _ths = this;
       let therestaurantData = [];
+      let theCategoryData = [];
 
       _ths.setState({
           loadingData: true
@@ -146,6 +149,23 @@ class AllMenus extends React.Component {
               restaurantData: therestaurantData
           })
       }).bind(this);
+
+      menuCategoryRef.on('value', function(snapshot) {
+
+          snapshot.forEach(function(eventItem) {
+              var childKey = eventItem.key;
+              var childData = eventItem.val();
+              childData['key'] = childKey;
+              if (!childData.info){
+                  theCategoryData.push(childData)
+              }
+          });
+          _ths.setState({
+              categoryData: theCategoryData
+          })
+      }).bind(this);
+
+
 
       var count = 0;
       var theMenuData = [];
@@ -202,6 +222,7 @@ class AllMenus extends React.Component {
               name : _ths.state.menuName,
               description : _ths.state.menuDesc,
               image : theFileid+'.'+filenamearr[1],
+              categoryKey: _ths.state.selectedCategoryID,
               price : parseFloat(_ths.state.menuPrice)
           }).then((data) => {
               if (this.state.evtImg !== ''){
@@ -522,6 +543,22 @@ class AllMenus extends React.Component {
                                                 />
                                             </FormControl>
                                         </Grid>
+
+                                        <Grid item xs={12} lg={6}>
+                                            <FormControl fullWidth
+                                                 style={{
+                                                     marginTop: 15
+                                                 }}>
+                                                <InputLabel htmlFor="menuPrice">Menu Price</InputLabel>
+                                                <Input
+                                                    id="menuPrice"
+                                                    margin="normal"
+                                                    value={this.state.menuPrice}
+                                                    onChange={this.handleChange('menuPrice')}
+                                                />
+                                            </FormControl>
+                                        </Grid>
+
                                         <Grid item xs={12} lg={6}>
                                             <FormControl fullWidth className={stylesm.theFromControl}>
                                                 <TextField
@@ -549,11 +586,40 @@ class AllMenus extends React.Component {
                                                 </TextField>
                                             </FormControl>
                                         </Grid>
+
+                                        <Grid item xs={12} lg={6}>
+                                            <FormControl fullWidth className={stylesm.theFromControl}>
+                                                <TextField
+                                                    id="selectedCategoryID"
+                                                    select
+                                                    label="Select Category"
+                                                    value={this.state.selectedCategoryID}
+                                                    onChange={this.handleChange('selectedCategoryID')}
+                                                    SelectProps={{
+                                                        MenuProps: {
+                                                            className: classes.menu,
+                                                        },
+                                                    }}
+                                                    helperText="Please select category"
+                                                    margin="normal"
+                                                >
+                                                    {
+                                                        this.state.categoryData.map((category, i) => {
+                                                            return (
+                                                                <MenuItem key={i} value={category.key}>{category.name}</MenuItem>
+                                                            )
+                                                        })
+                                                    }
+
+                                                </TextField>
+                                            </FormControl>
+                                        </Grid>
+
                                     </Grid>
                                     <Grid container>
 
 
-                                        <Grid item xs={12} lg={6}>
+                                        <Grid item xs={12} lg={12}>
                                             <FormControl fullWidth className={stylesm.theFromControl}>
                                                 <TextField
                                                     id="menuDesc"
@@ -568,20 +634,14 @@ class AllMenus extends React.Component {
                                         </Grid>
 
 
-                                        <Grid item xs={12} lg={6}>
-                                            <FormControl fullWidth
-                                                 style={{
-                                                     marginTop: 15
-                                                 }}>
-                                                <InputLabel htmlFor="menuPrice">Menu Price</InputLabel>
-                                                <Input
-                                                    id="menuPrice"
-                                                    margin="normal"
-                                                    value={this.state.menuPrice}
-                                                    onChange={this.handleChange('menuPrice')}
-                                                />
-                                            </FormControl>
-                                        </Grid>
+
+
+                                    </Grid>
+                                    <Grid container>
+
+
+
+
 
                                         <Grid item xs={12} lg={6}>
                                             <FormControl fullWidth className={stylesm.theFromControl}>

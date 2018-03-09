@@ -36,6 +36,7 @@ import UserReferral from './user_referral'
 import Administrator from './administrator'
 import RestaurantOwner from './restaurant_owner'
 import Customer from './customer'
+import Category from './menu_category'
 
 
 import HomeIcon from 'material-ui-icons/Home';
@@ -108,6 +109,13 @@ const routes = reactLocalStorage.get('type') == "admin" ? [
         menuIcon: <Weekend />,
         sidebar: () => <div>Restaurant</div>,
         main: () => <Restaurant/>
+    },
+    {
+        path: '/menu_category',
+        menuName: 'Menu Category',
+        menuIcon: <LocalBar />,
+        sidebar: () => <div>Menu Category</div>,
+        main: () => <Category/>
     },
     {
         path: '/restaurant_menu',
