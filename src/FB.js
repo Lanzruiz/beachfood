@@ -5,20 +5,20 @@
 import firebase from 'firebase'
 var GeoFire = require('geofire');
 
-const config = {
-    apiKey: "AIzaSyBmmd9J2m5N4NrtefEXLYq1QKilJrVBslc",
-    authDomain: "credible-rex-168916.firebaseapp.com",
-    databaseURL: "https://credible-rex-168916.firebaseio.com",
-    projectId: "credible-rex-168916",
-    storageBucket: "credible-rex-168916.appspot.com",
-    messagingSenderId: "815060490703"
-}
+var config = {
+    apiKey: "AIzaSyDjNYwKHOIAizMhZdoHYwdR--uQNRtfon4",
+    authDomain: "beacheatz-e9e25.firebaseapp.com",
+    databaseURL: "https://beacheatz-e9e25.firebaseio.com",
+    projectId: "beacheatz-e9e25",
+    storageBucket: "beacheatz-e9e25.appspot.com",
+    messagingSenderId: "1043846171454"
+  }
 
 firebase.initializeApp(config)
 //var geoFire = new GeoFire(firebase.database().ref('club_location/'));
 
 export const ref = firebase.database().ref()
-export const geoFireRef = new GeoFire(firebase.database().ref('club_location/'));
+export const geoFireRef = new GeoFire(firebase.database().ref('restaurant_location/'));
 export const eventsref = firebase.database().ref('events/')
 export const usersref = firebase.database().ref('users/')
 export const administratorRef = firebase.database().ref('administrator/')
@@ -40,3 +40,8 @@ export const Storageref = firebase.storage().ref()
 export const clubStoreref = firebase.storage().ref('club_image/')
 export const eventsStoreref = firebase.storage().ref('events/')
 export const firebaseAuth = firebase.auth()
+export const RestaurantOwnerRef = firebase.database().ref('restaurant_owner/')
+export const restaurantRef = firebase.database().ref('restaurant/')
+export const restaurantMenuRef = firebase.database().ref('restaurant_menu/')
+export const retaurantStoreref = firebase.storage().ref('restaurant_image/')
+export const customerRef = firebase.database().ref('customer/')

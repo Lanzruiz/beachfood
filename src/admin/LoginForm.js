@@ -83,7 +83,7 @@ class LoginForm extends React.Component {
                           'displayName': user.displayName,
                           'photoURL': user.photoURL,
                       });
-                      window.location.assign('/drynx_admin');
+                      window.location.assign('/beacheatz_admin');
                       //this.props.router.push(null, 'drynx_admin');
                       //<Redirect to="/drynx_admin" push={true} />
                       _ths.setState(setErrorMsg(null));
@@ -98,7 +98,6 @@ class LoginForm extends React.Component {
                    //_ths.setState(setErrorMsg('Invalid username/password.'));
                    loginSuccess = false;
                 });
-
 
 
 
@@ -206,7 +205,7 @@ class LoginForm extends React.Component {
                     this.resetPassword()
                 }}>Reset Password</Button>
 
-                <Button raised color="primary" className={classes.button}
+                <Button raised color="primary" className={classes.button} style={{background: '#147dc2'}}
                 onClick={() => {
                     this.handleSubmit()
                 }}>

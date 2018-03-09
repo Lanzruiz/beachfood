@@ -111,9 +111,9 @@ class UpdateAdministrator extends React.Component {
     componentDidMount(){
         var _ths = this;
 
-        document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
-        document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
-        
+        //document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+        //document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
+
         var adminID = this.props.match.params.adminid;
 
         administratorRef.child(adminID).once('value', function(snapshot) {
@@ -301,6 +301,7 @@ class UpdateAdministrator extends React.Component {
                     </Grid>
                     <Grid item xs={6} className="pageToolbarRight">
                         <Button
+                            style={{background: '#147dc2'}}
                             className={buttonClassname}
                             disabled={this.state.isloading} raised dense color="primary"
                             onClick={() => {

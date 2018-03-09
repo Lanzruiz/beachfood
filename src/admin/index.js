@@ -21,7 +21,8 @@ import Login from "./Login";
 import Dashboard from "./Dashboard";
 import Events from './events'
 import Users from './users'
-import AllClubs from './clubs'
+import Restaurant from './restaurant'
+import RestaurantMenu from './restaurant_menu'
 import AllDrinks from './drinks'
 import Subscriptions from './subscriptions'
 import Cities from './cities'
@@ -33,7 +34,8 @@ import FAQ from './faq'
 import Pages from './pages'
 import UserReferral from './user_referral'
 import Administrator from './administrator'
-import ClubOwner from './club_owner'
+import RestaurantOwner from './restaurant_owner'
+import Customer from './customer'
 
 
 import HomeIcon from 'material-ui-icons/Home';
@@ -72,7 +74,7 @@ function logout() {
 
 const routes = reactLocalStorage.get('type') == "admin" ? [
     {
-        path: '/drynx_admin',
+        path: '/beacheatz_admin',
         exact: true,
         menuName: 'Home',
         menuIcon: <HomeIcon />,
@@ -87,40 +89,48 @@ const routes = reactLocalStorage.get('type') == "admin" ? [
         main: () => <Administrator/>
     },
     {
-        path: '/club_owner',
-        menuName: 'Club Owner',
+        path: '/restaurant_owner',
+        menuName: 'Restaurant Owner',
         menuIcon: <AccountIcon />,
-        sidebar: () => <div>Club Owner</div>,
-        main: () => <ClubOwner/>
+        sidebar: () => <div>Restaurant Owner</div>,
+        main: () => <RestaurantOwner/>
     },
-    {
+    /*{
         path: '/events',
         menuName: 'Events',
         menuIcon: <EventIcon />,
         sidebar: () => <div>Events</div>,
         main: () => <Events/>
-    },
+    },*/
     {
-        path: '/clubs',
-        menuName: 'Clubs',
+        path: '/restaurant',
+        menuName: 'Restaurant',
         menuIcon: <Weekend />,
-        sidebar: () => <div>Clubs</div>,
-        main: () => <AllClubs/>
+        sidebar: () => <div>Restaurant</div>,
+        main: () => <Restaurant/>
     },
     {
-        path: '/drinks',
-        menuName: 'Drinks',
+        path: '/restaurant_menu',
+        menuName: 'Menus',
         menuIcon: <LocalBar />,
-        sidebar: () => <div>Drinks</div>,
-        main: () => <AllDrinks/>
+        sidebar: () => <div>Menus</div>,
+        main: () => <RestaurantMenu/>
     },
     {
-        path: '/cities',
-        menuName: 'Cities',
+        path: '/customer',
+        menuName: 'Customer',
+        menuIcon: <AccountIcon />,
+        sidebar: () => <div>Customer</div>,
+        main: () => <Customer/>
+    },
+    {
+        path: '/orders',
+        menuName: 'Orders',
         menuIcon: <LocationCity />,
-        sidebar: () => <div>Cities</div>,
+        sidebar: () => <div>Orders</div>,
         main: () => <Cities />
     },
+    /*
     {
       path: '/user-subscription',
       menuName: 'User Subscription',
@@ -169,7 +179,7 @@ const routes = reactLocalStorage.get('type') == "admin" ? [
       menuIcon: <ContactIcon />,
       sidebar: () => <div>Contact Us</div>,
       main: () => <ContactUs />
-    }
+    }*/
 
 
 
@@ -190,11 +200,11 @@ const routes = reactLocalStorage.get('type') == "admin" ? [
         main: () => <Administrator/>
     },
     {
-        path: '/club_owner',
-        menuName: 'Club Owner',
+        path: '/restaurant_owner',
+        menuName: 'Restaurant Owner',
         menuIcon: <AccountIcon />,
-        sidebar: () => <div>Club Owner</div>,
-        main: () => <ClubOwner/>
+        sidebar: () => <div>Restaurant Owner</div>,
+        main: () => <RestaurantOwner/>
     },
     {
         path: '/events',
@@ -211,11 +221,11 @@ const routes = reactLocalStorage.get('type') == "admin" ? [
         main: () => <Users/>
     },
     {
-        path: '/clubs',
-        menuName: 'Clubs',
+        path: '/restaurant',
+        menuName: 'Restaurant',
         menuIcon: <Weekend />,
-        sidebar: () => <div>Clubs</div>,
-        main: () => <AllClubs/>
+        sidebar: () => <div>Restaurant</div>,
+        main: () => <Restaurant/>
     },
     {
         path: '/drinks',
@@ -363,7 +373,8 @@ const styles = theme => ({
     topMenu: {
       backgroundImage: `url(${TopMenuImage})`,
       backgroundSize: 'cover'
-    }
+    },
+
 });
 
 class Frontend extends React.Component {
@@ -388,13 +399,14 @@ class Frontend extends React.Component {
                     alignItems: 'center',
                     display: 'flex',
                     justifyContent: 'center',
+                    backgroundColor: '#fff'
                 }}>
                     <h1 style={{
                         margin: 0
                     }}><img src={CompanyLogo} style={{width: '200px', padding: '10px'}}/></h1>
                 </div>
                 <Divider />
-                <List style={{backgroundColor: '#222F35'}}>
+                <List style={{backgroundColor: '#fff'}}>
                     {routes.map((route, index) => (
                         // Render more <Route>s with the same paths as
                         // above, but different components this time.
@@ -407,7 +419,7 @@ class Frontend extends React.Component {
                                 </ListItemIcon>
 
                                 <ListItemText className={classes.menuItemText}
-                                    disableTypography primary={<Typography type="body2" style={{ color: '#9CA9AF' }}>{route.menuName}</Typography>}
+                                    disableTypography primary={<Typography type="body2" style={{ color: '#fff' }}>{route.menuName}</Typography>}
                                 />
                             </ListItem>
                         </NavLink>

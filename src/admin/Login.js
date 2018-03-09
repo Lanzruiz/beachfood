@@ -11,7 +11,7 @@ import AppBar from 'material-ui/AppBar';
 import config from '../config'
 
 import Background from './images/clubimagelogin.jpg';
-
+import CompanyLogo from './images/logo.png'
 
 
 const styles = theme => ({
@@ -47,8 +47,8 @@ class Login extends React.Component {
     };
 
     componentDidMount(){
-       document.body.style.backgroundImage = `url(${Background})`;
-       document.body.style.backgroundSize = 'cover';
+       //document.body.style.backgroundImage = `url(${Background})`;
+       //document.body.style.backgroundSize = 'cover';
 
     }
 
@@ -70,23 +70,14 @@ class Login extends React.Component {
                           direction='row'
                           justify='center'
                           alignItems='center'>
-                        <h1>{config.sitename}</h1>
+                        <h1><img src={CompanyLogo} style={{width: '200px', padding: '10px'}}/></h1>
                     </Grid>
                     <Grid item lg={4} xs={12}>
                     </Grid>
                     <Grid item lg={4} xs={12}>
                         <Paper className={classes.paper}>
                             <AppBar position="static" color="default">
-                                <Tabs
-                                    value={this.state.value}
-                                    onChange={this.handleChange}
-                                    indicatorColor="primary"
-                                    textColor="primary"
-                                    fullWidth
-                                >
-                                    <Tab label="Login" />
-
-                                </Tabs>
+                              
                             </AppBar>
                             <SwipeableViews
                                 axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}

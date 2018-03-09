@@ -1,11 +1,8 @@
-/**
- * Created by Thomas Woodfin on 12/20/2017.
- */
  import React from 'react'
  import classNames from 'classnames';
  import PropTypes from 'prop-types';
  import { withStyles } from 'material-ui/styles';
- import { clubOwnerRef, firebaseAuth } from '../../FB'
+ import { RestaurantOwnerRef, firebaseAuth } from '../../FB'
  import { updateUsers } from '../../helpers/users'
  import stylesm from '../../App.css'
  import ReactTable from "react-table";
@@ -68,13 +65,13 @@ const styles = theme => ({
 });
 
 
-class ClubOwner extends React.Component {
+class RestaurantOwner extends React.Component {
 
   constructor(props){
       super(props)
       this.state = {
           loadingData: false,
-          ClubOwnerData: []
+          restaurantOwnerData: []
       }
   }
 
@@ -83,23 +80,23 @@ class ClubOwner extends React.Component {
   componentDidMount(){
       var _ths = this;
 
-      document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
-      document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
+      //document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+      //document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
 
-     this.loadClubOwnerData();
+     this.loadRestaurantOwnerData();
 
   }
 
-  loadClubOwnerData() {
+  loadRestaurantOwnerData() {
     var _ths = this;
-    let theClubOwnerData = [];
+    let theRestaurantOwnerData = [];
     let user_type = "club_owner";
 
-     clubOwnerRef.orderByChild('user_type').equalTo(user_type).once('value', function (snapshot) {
+     RestaurantOwnerRef.orderByChild('user_type').equalTo(user_type).once('value', function (snapshot) {
 
        if(!snapshot.exists()) {
          _ths.setState({
-             ClubOwnerData: theClubOwnerData,
+             restaurantOwnerData: theRestaurantOwnerData,
              loadingData: true
          })
        }
@@ -110,14 +107,14 @@ class ClubOwner extends React.Component {
 
          snapshot.forEach(function(userItem) {
            let clubRec = userItem.val();
-            theClubOwnerData .push({key: userItem.key, firstname: clubRec.firstname, lastname: clubRec.lastname, email: clubRec.email, uid: clubRec.userid})
+            theRestaurantOwnerData .push({key: userItem.key, firstname: clubRec.firstname, lastname: clubRec.lastname, email: clubRec.email, uid: clubRec.userid})
             counter = counter + 1;
          });
 
 
          if (totalCount == counter) {
            _ths.setState({
-               ClubOwnerData: theClubOwnerData,
+               restaurantOwnerData: theRestaurantOwnerData,
                loadingData: true
            })
          }
@@ -143,13 +140,13 @@ class ClubOwner extends React.Component {
       var _ths = this;
       swal({
           title: "Are you sure?",
-          text: "Once deleted, you will not be able to recover this club owner!",
+          text: "Once deleted, you will not be able to recover this restaurant owner!",
           icon: "warning",
           buttons: true,
           dangerMode: true,
       }).then((willDelete) => {
           if (willDelete) {
-              clubOwnerRef.child(key).once('value', function(snapshot) {
+              RestaurantOwnerRef.child(key).once('value', function(snapshot) {
                  let userRec = snapshot.val();
                  let email = userRec.email;
                  let password = userRec.password;
@@ -157,18 +154,18 @@ class ClubOwner extends React.Component {
                   //authenticate user
                   firebaseAuth.signInWithEmailAndPassword(email,password).then(function(user) {
                       user.delete();
-                      clubOwnerRef.child(key).remove();
+                      RestaurantOwnerRef.child(key).remove();
 
                       _ths.setState({
                           loadingData: false
                       })
 
-                      _ths.loadClubOwnerData();
+                      _ths.loadRestaurantOwnerData();
                   }).catch(function(error) {
                         _ths.setState({
                             loadingData: false
                         });
-                        _ths.loadClubOwnerData();
+                        _ths.loadRestaurantOwnerData();
                   });
 
               });
@@ -205,8 +202,8 @@ class ClubOwner extends React.Component {
       <Grid container spacing={24}>
       <Grid item xs={12} className="pageToolbarRight">
           <div style={{margin: "20px"}}>
-              <Link to={`/club_owner/create`} style={{color: '#FFFFFF', background: '#3f51b5', padding: "10px", margin: "10px"}} aria-label="Add FAQ">
-                  Add Club Owner
+              <Link to={`/restaurant_owner/create`} style={{color: '#FFFFFF', background: '#147dc2', padding: "10px", margin: "10px", textDecorationLine: "none"}} aria-label="Add Restaurant Owner">
+                  Add Restaurant Owner
               </Link>
           </div>
 
@@ -214,10 +211,10 @@ class ClubOwner extends React.Component {
       </Grid>
 
         <ReactTable
-          data={this.state.ClubOwnerData}
+          data={this.state.restaurantOwnerData}
           columns={[
             {
-              Header: "Club Owner",
+              Header: "Restaurant Owner",
               columns: [
                 {
                   Header: "First name",
@@ -236,7 +233,7 @@ class ClubOwner extends React.Component {
                   accessor: "key",
                   Cell: row => (
                     <div>
-                        <Link to={`/club_owner/edit/`+row.value} style={{color: '#000'}} aria-label="Edit">
+                        <Link to={`/restaurant_owner/edit/`+row.value} style={{color: '#000'}} aria-label="Edit">
                             <EditIcon />
                         </Link>
 
@@ -270,8 +267,8 @@ class ClubOwner extends React.Component {
 }
 
 
-ClubOwner.propTypes = {
+RestaurantOwner.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ClubOwner);
+export default withStyles(styles)(RestaurantOwner);

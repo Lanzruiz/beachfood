@@ -20,7 +20,7 @@ import KeyboardBackspace from 'material-ui-icons/KeyboardBackspace';
 
 import { DateTimePicker } from 'material-ui-pickers'
 
-import { administratorRef, firebaseAuth } from '../../FB'
+import { customerRef, firebaseAuth } from '../../FB'
 import { saveEvent } from '../../helpers/events'
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import Visibility from 'material-ui-icons/Visibility';
@@ -72,7 +72,7 @@ const styles = theme => ({
 });
 
 
-class NewAdministrator extends React.Component {
+class NewCustomer extends React.Component {
 
     constructor(props){
         super(props)
@@ -82,6 +82,7 @@ class NewAdministrator extends React.Component {
             email: '',
             password: '',
             userid: '',
+            contact:'',
             isloading: false,
             issuccess: false,
             showPassword: false,
@@ -115,7 +116,7 @@ class NewAdministrator extends React.Component {
 
 
 
-    saveAdministrator(){
+    saveCustomer(){
 
         var _ths = this;
 
@@ -128,7 +129,7 @@ class NewAdministrator extends React.Component {
 
 
         var errorFields= false;
-        if(this.state.firstname == "" || this.state.lastname == "" || this.state.email == "" || this.state.password == "") {
+        if(this.state.firstname == "" || this.state.lastname == "" || this.state.email == "" || this.state.password == "" || this.state.contact == "") {
            errorFields = true;
            swal ( "Oops" ,  "All fields are required!" ,  "error" );
            this.setState({
@@ -157,12 +158,13 @@ class NewAdministrator extends React.Component {
                          firstname: _ths.state.firstname,
                          lastname: _ths.state.lastname,
                          email: _ths.state.email,
+                         contact: _ths.state.contact,
                          userid: user.uid,
                          password: _ths.state.password,
                          user_type: user_type,
                      }
 
-                     administratorRef.push(value);
+                     customerRef.push(value);
 
                      _ths.setState({
                          firstname: '',
@@ -170,6 +172,7 @@ class NewAdministrator extends React.Component {
                          email: '',
                          password: '',
                          userid: '',
+                         contact: '',
                          isloading: false,
                          issuccess: true,
                          showPassword: false,
@@ -217,7 +220,7 @@ class NewAdministrator extends React.Component {
         }
 
         if(this.state.issuccess == true) {
-          swal ( "Success" ,  "Administrator successfully saved!" ,  "success" );
+          swal ( "Success" ,  "Customer successfully saved!" ,  "success" );
             var _ths = this;
             _ths.setState({
                 issuccess: false
@@ -228,7 +231,7 @@ class NewAdministrator extends React.Component {
             <div className="App">
                 <Grid container spacing={24}>
                     <Grid item xs={6}>
-                        <Link to={`/administrator`} className='linkBtn primary'>
+                        <Link to={`/customer`} className='linkBtn primary'>
                         <span>
                             <KeyboardBackspace />
                             Back
@@ -241,7 +244,7 @@ class NewAdministrator extends React.Component {
                             className={buttonClassname}
                             disabled={this.state.isloading} raised dense color="primary"
                             onClick={() => {
-                                this.saveAdministrator()
+                                this.saveCustomer()
                             }}>
                             {
                                 this.state.isloading ? <CircularProgress size={24} className={classes.buttonProgress} /> :
@@ -249,14 +252,14 @@ class NewAdministrator extends React.Component {
                                         <Save className={classes.leftIcon} />
                             }
                             {
-                                this.state.issuccess ? `Administrator Saved` : `Save Administrator`
+                                this.state.issuccess ? `Customer Saved` : `Save Customer`
                             }
                         </Button>
                     </Grid>
                     <Grid item xs={7}>
                         <Paper className={classes.paper}>
                             <Typography type="title" gutterBottom>
-                                Administrator
+                                Customers
                             </Typography>
 
                             <FormControl fullWidth className={stylesm.theFromControl}>
@@ -275,6 +278,16 @@ class NewAdministrator extends React.Component {
                                     label="Last name"
                                     value={this.state.lastname}
                                     onChange={this.handleChange('lastname')}
+                                    margin="normal"
+                                />
+                            </FormControl>
+
+                            <FormControl fullWidth className={stylesm.theFromControl}>
+                                <TextField
+                                    id="contact"
+                                    label="Contact no"
+                                    value={this.state.contact}
+                                    onChange={this.handleChange('contact')}
                                     margin="normal"
                                 />
                             </FormControl>
@@ -322,8 +335,8 @@ class NewAdministrator extends React.Component {
     }
 }
 
-NewAdministrator.propTypes = {
+NewCustomer.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(NewAdministrator);
+export default withStyles(styles)(NewCustomer);

@@ -2,7 +2,7 @@
   "name": "drynx",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://drynxtest.usadevs.xyz/",
+  "homepage": "https://beacheatz.usadevs.xyz/",
   "dependencies": {
     "@google/maps": "^0.4.5",
     "@tinymce/tinymce-react": "^2.0.3",

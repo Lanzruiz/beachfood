@@ -40,10 +40,10 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount(){
-     //document.body.style.backgroundImage = `url(${Background})`;
-     document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
-     document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
-     //$(".pageInner").css({"background-image": "./images/login.jpg", "background-size":"cover"})
+
+     //document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+     //document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
+
   }
 
   loadSettingsData() {

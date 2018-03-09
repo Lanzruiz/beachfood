@@ -20,7 +20,7 @@ import KeyboardBackspace from 'material-ui-icons/KeyboardBackspace';
 
 import { DateTimePicker } from 'material-ui-pickers'
 
-import { clubOwnerRef, firebaseAuth } from '../../FB'
+import { RestaurantOwnerRef, firebaseAuth } from '../../FB'
 import { saveEvent } from '../../helpers/events'
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import Visibility from 'material-ui-icons/Visibility';
@@ -69,7 +69,7 @@ const styles = theme => ({
 });
 
 
-class UpdateClubOwner extends React.Component {
+class NewRestaurantOwner extends React.Component {
 
     constructor(props){
         super(props)
@@ -77,18 +77,13 @@ class UpdateClubOwner extends React.Component {
             firstname: '',
             lastname: '',
             email: '',
-            origEmail: '',
             password: '',
-            origPassword: '',
             userid: '',
-            userKey: '',
             isloading: false,
             issuccess: false,
             showPassword: false,
             emailError: false,
-            errorFields: false,
-            invalidEmail: false,
-            requirelogin: false
+            errorFields: false
 
         }
     }
@@ -110,27 +105,12 @@ class UpdateClubOwner extends React.Component {
     componentDidMount(){
         var _ths = this;
 
-        var clubID = this.props.match.params.clubid;
-
-        clubOwnerRef.child(clubID).once('value', function(snapshot) {
-            let clubRec = snapshot.val();
-            _ths.setState({
-               firstname: clubRec.firstname,
-               lastname: clubRec.lastname,
-               email: clubRec.email,
-               userid: clubRec.userid,
-               origEmail: clubRec.email,
-               origPassword: clubRec.password,
-               userKey: clubID
-            })
-        });
-
     }
 
 
 
 
-    saveClubOwner(){
+    saveRestaurantOwner(){
 
         var _ths = this;
 
@@ -143,100 +123,65 @@ class UpdateClubOwner extends React.Component {
 
 
         var errorFields= false;
-        if(this.state.firstname == "" || this.state.lastname == "" || this.state.email == "") {
+        if(this.state.firstname == "" || this.state.lastname == "" || this.state.email == "" || this.state.password == "") {
            errorFields = true;
-           swal ( "Oops" ,  "All fields are required except for password!" ,  "error" );
+           swal ( "Oops" ,  "All fields are required!" ,  "error" );
            this.setState({
                isloading: false
            })
         }
 
+        //check if email address is valid
         if(errorFields == false) {
 
-             //user want to change the email address on auth
-             firebaseAuth.signInWithEmailAndPassword(this.state.origEmail,this.state.origPassword)
-             .then(function(user) {
-                if (_ths.state.email != _ths.state.origEmail) {
-                      user.updateEmail(_ths.state.email).catch(function(error) {
-                          errorFields = true;
-                          if (error.code == "auth/invalid-email") {
-                              _ths.setState({
-                                  invalidEmail: true,
-                                  isloading: false,
-                                  issuccess: false
-                              })
-                          } else if(error.code == "auth/email-already-in-use") {
-                            _ths.setState({
-                                emailError: true,
-                                isloading: false,
-                                issuccess: false
-                            })
-                          } else if(error.code = "auth/requires-recent-login") {
-                            _ths.setState({
-                                requirelogin: true,
-                                isloading: false,
-                                issuccess: false
-                            })
-                          }
-                      }).then(function(user) {
-                        errorFields = false
-                      });
+          firebaseAuth.signInWithEmailAndPassword(this.state.email, " ")
+          .catch(function(error) {
+              if(error.code === "auth/wrong-password") {
+                _ths.setState({
+                    emailError: true,
+                    isloading: false,
+                    issuccess: false
+                })
+              } else if(error.code === "auth/user-not-found"){
+                   //create new user in auth
+                   firebaseAuth.createUserWithEmailAndPassword(_ths.state.email, _ths.state.password)
+                   .then(function(user) {
+                     console.log(user.uid);
+
+                     var value = {
+                         firstname: _ths.state.firstname,
+                         lastname: _ths.state.lastname,
+                         email: _ths.state.email,
+                         userid: user.uid,
+                         password: _ths.state.password,
+                         user_type: "club_owner",
+                     }
+
+                     RestaurantOwnerRef.push(value);
+
+                     _ths.setState({
+                         firstname: '',
+                         lastname: '',
+                         email: '',
+                         password: '',
+                         userid: '',
+                         isloading: false,
+                         issuccess: true,
+                         showPassword: false,
+                         emailError: false,
+                         errorFields: false
+                     });
+
+
+
+                   })
+                   .catch(function(error) {
+                      console.log(error);
+                   });
               }
-
-              //check if password is not empty change password to firebase auth
-              if(_ths.state.password != "") {
-                 //user wants to change password
-                 user.updatePassword(_ths.state.password).then(function(user) {
-                     console.log("success change password");
-                     errorFields = false;
-                 }).catch(function(error) {
-                    console.log(error);
-                    errorFields = true;
-                 });
-              }
-
-              //save data to user firebase
-              if(errorFields == false) {
-                        var value = {}
-                        if(_ths.state.password == "") {
-                         var value = {
-                              firstname: _ths.state.firstname,
-                              lastname: _ths.state.lastname,
-                              email: _ths.state.email
-                          }
-                          console.log(_ths.state.userKey);
-                          clubOwnerRef.child(_ths.state.userKey).update(value);
-                        } else {
-                         var value = {
-                              firstname: _ths.state.firstname,
-                              lastname: _ths.state.lastname,
-                              email: _ths.state.email,
-                              password: _ths.state.password
-                          }
-                          clubOwnerRef.child(_ths.state.userKey).update(value);
-                        }
-
-
-
-                        _ths.setState({
-                                      password: '',
-                                      isloading: false,
-                                      issuccess: true,
-                                      showPassword: false,
-                                      emailError: false,
-                                      errorFields: false
-                      });
-
-
-              }
-             });
+          });
 
         }
-
-
-
-
-
 
 
 
@@ -262,22 +207,10 @@ class UpdateClubOwner extends React.Component {
           _ths.setState({
               emailError: false
           })
-        } else if(this.state.invalidEmail) {
-          var _ths = this;
-          swal ( "Oops" ,  "Invalid Email address!" ,  "error" );
-          _ths.setState({
-              invalidEmail: false
-          })
-        } else if(this.state.requirelogin) {
-          var _ths = this;
-          swal ( "Oops" ,  "Error! Failed to validate user credential." ,  "error" );
-          _ths.setState({
-              requirelogin: false
-          })
         }
 
         if(this.state.issuccess == true) {
-          swal ( "Success" ,  "Club Owner successfully saved!" ,  "success" );
+          swal ( "Success" ,  "Restaurant Owner successfully saved!" ,  "success" );
             var _ths = this;
             _ths.setState({
                 issuccess: false
@@ -288,7 +221,7 @@ class UpdateClubOwner extends React.Component {
             <div className="App">
                 <Grid container spacing={24}>
                     <Grid item xs={6}>
-                        <Link to={`/club_owner`} className='linkBtn primary'>
+                        <Link to={`/restaurant_owner`} className='linkBtn primary'>
                         <span>
                             <KeyboardBackspace />
                             Back
@@ -300,7 +233,7 @@ class UpdateClubOwner extends React.Component {
                             className={buttonClassname}
                             disabled={this.state.isloading} raised dense color="primary"
                             onClick={() => {
-                                this.saveClubOwner()
+                                this.saveRestaurantOwner()
                             }}>
                             {
                                 this.state.isloading ? <CircularProgress size={24} className={classes.buttonProgress} /> :
@@ -308,14 +241,14 @@ class UpdateClubOwner extends React.Component {
                                         <Save className={classes.leftIcon} />
                             }
                             {
-                                this.state.issuccess ? `Club Owner Saved` : `Save Club Owner`
+                                this.state.issuccess ? `Restaurant Owner Saved` : `Save Restaurant Owner`
                             }
                         </Button>
                     </Grid>
                     <Grid item xs={7}>
                         <Paper className={classes.paper}>
                             <Typography type="title" gutterBottom>
-                                Administrator
+                                Restaurant Owner
                             </Typography>
 
                             <FormControl fullWidth className={stylesm.theFromControl}>
@@ -381,8 +314,8 @@ class UpdateClubOwner extends React.Component {
     }
 }
 
-UpdateClubOwner.propTypes = {
+NewRestaurantOwner.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(UpdateClubOwner);
+export default withStyles(styles)(NewRestaurantOwner);

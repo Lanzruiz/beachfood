@@ -1,11 +1,8 @@
-/**
- * Created by Thomas Woodfin on 12/19/2017.
- */
  import React from 'react'
  import classNames from 'classnames';
  import PropTypes from 'prop-types';
  import { withStyles } from 'material-ui/styles';
- import { administratorRef, firebaseAuth } from '../../FB'
+ import { customerRef, firebaseAuth } from '../../FB'
  import { updateUsers } from '../../helpers/users'
  import stylesm from '../../App.css'
  import ReactTable from "react-table";
@@ -69,13 +66,13 @@ const styles = theme => ({
 });
 
 
-class Administrator extends React.Component {
+class Customers extends React.Component {
 
   constructor(props){
       super(props)
       this.state = {
           loadingData: false,
-          AdministratorData: [],
+          CustomersData: [],
       }
   }
 
@@ -87,20 +84,20 @@ class Administrator extends React.Component {
     //document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
     //document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
 
-     this.loadAdministratorData();
+     this.loadCustomerData();
 
   }
 
-  loadAdministratorData() {
+  loadCustomerData() {
     var _ths = this;
-    let theAdministratorData = [];
-    let user_type = reactLocalStorage.get("type") == "admin" ? "admin" : "super_admin";
+    let theCustomerData = [];
+    //let user_type = reactLocalStorage.get("type") == "admin" ? "admin" : "super_admin";
 
-     administratorRef.orderByChild('user_type').equalTo(user_type).once('value', function (snapshot) {
+     customerRef.once('value', function (snapshot) {
 
        if(!snapshot.exists()) {
          _ths.setState({
-             AdministratorData: theAdministratorData,
+             CustomersData: theCustomerData,
              loadingData: true
          })
        }
@@ -110,15 +107,15 @@ class Administrator extends React.Component {
 
 
          snapshot.forEach(function(userItem) {
-           let adminRec = userItem.val();
-            theAdministratorData .push({key: userItem.key, firstname: adminRec.firstname, lastname: adminRec.lastname, email: adminRec.email, uid: adminRec.userid})
+           let userRec = userItem.val();
+            theCustomerData .push({key: userItem.key, firstname: userRec.firstname, lastname: userRec.lastname, email: userRec.email, contact: userRec.contact, uid: userRec.userid})
             counter = counter + 1;
          });
 
 
          if (totalCount == counter) {
            _ths.setState({
-               AdministratorData: theAdministratorData,
+               CustomersData: theCustomerData,
                loadingData: true
            })
          }
@@ -144,7 +141,7 @@ class Administrator extends React.Component {
       var _ths = this;
       swal({
           title: "Are you sure?",
-          text: "Once deleted, you will not be able to recover this administrator!",
+          text: "Once deleted, you will not be able to recover this customer!",
           icon: "warning",
           buttons: true,
           dangerMode: true,
@@ -152,7 +149,7 @@ class Administrator extends React.Component {
           if (willDelete) {
 
 
-              administratorRef.child(key).once('value', function(snapshot) {
+              customerRef.child(key).once('value', function(snapshot) {
                  let userRec = snapshot.val();
                  let email = userRec.email;
                  let password = userRec.password;
@@ -160,18 +157,18 @@ class Administrator extends React.Component {
                   //authenticate user
                   firebaseAuth.signInWithEmailAndPassword(email,password).then(function(user) {
                       user.delete();
-                      administratorRef.child(key).remove();
+                      customerRef.child(key).remove();
 
                       _ths.setState({
                           loadingData: false
                       })
 
-                      _ths.loadAdministratorData();
+                      _ths.loadCustomerData();
                   }).catch(function(error) {
                         _ths.setState({
                             loadingData: false
                         });
-                        _ths.loadAdministratorData();
+                        _ths.loadCustomerData();
                   });
 
               });
@@ -208,8 +205,8 @@ class Administrator extends React.Component {
       <Grid container spacing={24}>
       <Grid item xs={12} className="pageToolbarRight">
           <div style={{margin: "20px"}}>
-              <Link to={`/administrator/create`} style={{color: '#FFFFFF', background: '#147dc2', padding: "10px", margin: "10px", textDecorationLine: "none"}} aria-label="Add FAQ">
-                  Add Administrator
+              <Link to={`/customer/create`} style={{color: '#FFFFFF', background: '#147dc2', padding: "10px", margin: "10px", textDecorationLine: "none"}} aria-label="Add FAQ">
+                  Add Customer
               </Link>
           </div>
 
@@ -217,10 +214,10 @@ class Administrator extends React.Component {
       </Grid>
 
         <ReactTable
-          data={this.state.AdministratorData}
+          data={this.state.CustomersData}
           columns={[
             {
-              Header: "Administrator",
+              Header: "Customers",
               columns: [
                 {
                   Header: "First name",
@@ -239,7 +236,7 @@ class Administrator extends React.Component {
                   accessor: "key",
                   Cell: row => (
                     <div>
-                        <Link to={`/administrator/edit/`+row.value} style={{color: '#000'}} aria-label="Edit">
+                        <Link to={`/customer/edit/`+row.value} style={{color: '#000'}} aria-label="Edit">
                             <EditIcon />
                         </Link>
 
@@ -273,8 +270,8 @@ class Administrator extends React.Component {
 }
 
 
-Administrator.propTypes = {
+Customers.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Administrator);
+export default withStyles(styles)(Customers);

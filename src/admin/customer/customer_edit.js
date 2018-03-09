@@ -20,13 +20,14 @@ import KeyboardBackspace from 'material-ui-icons/KeyboardBackspace';
 
 import { DateTimePicker } from 'material-ui-pickers'
 
-import { clubOwnerRef, firebaseAuth } from '../../FB'
+import { customerRef, firebaseAuth } from '../../FB'
 import { saveEvent } from '../../helpers/events'
 import Input, { InputLabel, InputAdornment } from 'material-ui/Input';
 import Visibility from 'material-ui-icons/Visibility';
 import VisibilityOff from 'material-ui-icons/VisibilityOff';
 import IconButton from 'material-ui/IconButton';
 import swal from 'sweetalert';
+import Background from '../images/login.jpg';
 
 import stylesm from '../../App.css'
 
@@ -69,7 +70,7 @@ const styles = theme => ({
 });
 
 
-class NewClubOwner extends React.Component {
+class UpdateCustomer extends React.Component {
 
     constructor(props){
         super(props)
@@ -77,13 +78,19 @@ class NewClubOwner extends React.Component {
             firstname: '',
             lastname: '',
             email: '',
+            contact: '',
+            origEmail: '',
             password: '',
+            origPassword: '',
             userid: '',
+            userKey: '',
             isloading: false,
             issuccess: false,
             showPassword: false,
             emailError: false,
-            errorFields: false
+            errorFields: false,
+            invalidEmail: false,
+            requirelogin: false
 
         }
     }
@@ -105,12 +112,31 @@ class NewClubOwner extends React.Component {
     componentDidMount(){
         var _ths = this;
 
+        //document.getElementsByClassName("pageInner")[0].style.backgroundImage = `url(${Background})`;
+        //document.getElementsByClassName("pageInner")[0].style.backgroundSize = "cover";
+
+        var adminID = this.props.match.params.adminid;
+
+        customerRef.child(adminID).once('value', function(snapshot) {
+            let adminRec = snapshot.val();
+            _ths.setState({
+               firstname: adminRec.firstname,
+               lastname: adminRec.lastname,
+               email: adminRec.email,
+               contact: adminRec.contact,
+               userid: adminRec.userid,
+               origEmail: adminRec.email,
+               origPassword: adminRec.password,
+               userKey: adminID
+            })
+        });
+
     }
 
 
 
 
-    saveClubOwner(){
+    saveCustomer(){
 
         var _ths = this;
 
@@ -123,65 +149,102 @@ class NewClubOwner extends React.Component {
 
 
         var errorFields= false;
-        if(this.state.firstname == "" || this.state.lastname == "" || this.state.email == "" || this.state.password == "") {
+        if(this.state.firstname == "" || this.state.lastname == "" || this.state.email == "" || this.state.contact == "") {
            errorFields = true;
-           swal ( "Oops" ,  "All fields are required!" ,  "error" );
+           swal ( "Oops" ,  "All fields are required except for password!" ,  "error" );
            this.setState({
                isloading: false
            })
         }
 
-        //check if email address is valid
         if(errorFields == false) {
 
-          firebaseAuth.signInWithEmailAndPassword(this.state.email, " ")
-          .catch(function(error) {
-              if(error.code === "auth/wrong-password") {
-                _ths.setState({
-                    emailError: true,
-                    isloading: false,
-                    issuccess: false
-                })
-              } else if(error.code === "auth/user-not-found"){
-                   //create new user in auth
-                   firebaseAuth.createUserWithEmailAndPassword(_ths.state.email, _ths.state.password)
-                   .then(function(user) {
-                     console.log(user.uid);
-
-                     var value = {
-                         firstname: _ths.state.firstname,
-                         lastname: _ths.state.lastname,
-                         email: _ths.state.email,
-                         userid: user.uid,
-                         password: _ths.state.password,
-                         user_type: "club_owner",
-                     }
-
-                     clubOwnerRef.push(value);
-
-                     _ths.setState({
-                         firstname: '',
-                         lastname: '',
-                         email: '',
-                         password: '',
-                         userid: '',
-                         isloading: false,
-                         issuccess: true,
-                         showPassword: false,
-                         emailError: false,
-                         errorFields: false
-                     });
-
-
-
-                   })
-                   .catch(function(error) {
-                      console.log(error);
-                   });
+             //user want to change the email address on auth
+             firebaseAuth.signInWithEmailAndPassword(this.state.origEmail,this.state.origPassword)
+             .then(function(user) {
+                if (_ths.state.email != _ths.state.origEmail) {
+                      user.updateEmail(_ths.state.email).catch(function(error) {
+                          errorFields = true;
+                          if (error.code == "auth/invalid-email") {
+                              _ths.setState({
+                                  invalidEmail: true,
+                                  isloading: false,
+                                  issuccess: false
+                              })
+                          } else if(error.code == "auth/email-already-in-use") {
+                            _ths.setState({
+                                emailError: true,
+                                isloading: false,
+                                issuccess: false
+                            })
+                          } else if(error.code = "auth/requires-recent-login") {
+                            _ths.setState({
+                                requirelogin: true,
+                                isloading: false,
+                                issuccess: false
+                            })
+                          }
+                      }).then(function(user) {
+                        errorFields = false
+                      });
               }
-          });
+
+              //check if password is not empty change password to firebase auth
+              if(_ths.state.password != "") {
+                 //user wants to change password
+                 user.updatePassword(_ths.state.password).then(function(user) {
+                     console.log("success change password");
+                     errorFields = false;
+                 }).catch(function(error) {
+                    console.log(error);
+                    errorFields = true;
+                 });
+              }
+
+              //save data to user firebase
+              if(errorFields == false) {
+                        var value = {}
+                        if(_ths.state.password == "") {
+                         var value = {
+                              firstname: _ths.state.firstname,
+                              lastname: _ths.state.lastname,
+                              email: _ths.state.email,
+                              contact: _ths.state.contact
+                          }
+                          console.log(_ths.state.userKey);
+                          customerRef.child(_ths.state.userKey).update(value);
+                        } else {
+                         var value = {
+                              firstname: _ths.state.firstname,
+                              lastname: _ths.state.lastname,
+                              email: _ths.state.email,
+                              contact: _ths.state.contact,
+                              password: _ths.state.password
+                          }
+                          customerRef.child(_ths.state.userKey).update(value);
+                        }
+
+
+
+                        _ths.setState({
+                                      password: '',
+                                      isloading: false,
+                                      issuccess: true,
+                                      showPassword: false,
+                                      emailError: false,
+                                      errorFields: false
+                      });
+
+
+              }
+             });
 
         }
+
+
+
+
+
 
 
 
@@ -207,10 +270,22 @@ class NewClubOwner extends React.Component {
           _ths.setState({
               emailError: false
           })
+        } else if(this.state.invalidEmail) {
+          var _ths = this;
+          swal ( "Oops" ,  "Invalid Email address!" ,  "error" );
+          _ths.setState({
+              invalidEmail: false
+          })
+        } else if(this.state.requirelogin) {
+          var _ths = this;
+          swal ( "Oops" ,  "Error! Failed to validate user credential." ,  "error" );
+          _ths.setState({
+              requirelogin: false
+          })
         }
 
         if(this.state.issuccess == true) {
-          swal ( "Success" ,  "Club Owner successfully saved!" ,  "success" );
+          swal ( "Success" ,  "Customer successfully saved!" ,  "success" );
             var _ths = this;
             _ths.setState({
                 issuccess: false
@@ -221,7 +296,7 @@ class NewClubOwner extends React.Component {
             <div className="App">
                 <Grid container spacing={24}>
                     <Grid item xs={6}>
-                        <Link to={`/club_owner`} className='linkBtn primary'>
+                        <Link to={`/customer`} className='linkBtn primary'>
                         <span>
                             <KeyboardBackspace />
                             Back
@@ -230,10 +305,11 @@ class NewClubOwner extends React.Component {
                     </Grid>
                     <Grid item xs={6} className="pageToolbarRight">
                         <Button
+                            style={{background: '#147dc2'}}
                             className={buttonClassname}
                             disabled={this.state.isloading} raised dense color="primary"
                             onClick={() => {
-                                this.saveClubOwner()
+                                this.saveCustomer()
                             }}>
                             {
                                 this.state.isloading ? <CircularProgress size={24} className={classes.buttonProgress} /> :
@@ -241,14 +317,14 @@ class NewClubOwner extends React.Component {
                                         <Save className={classes.leftIcon} />
                             }
                             {
-                                this.state.issuccess ? `Club Owner Saved` : `Save Club Owner`
+                                this.state.issuccess ? `Customer Saved` : `Save Customer`
                             }
                         </Button>
                     </Grid>
                     <Grid item xs={7}>
                         <Paper className={classes.paper}>
                             <Typography type="title" gutterBottom>
-                                Club Owner
+                                Customers
                             </Typography>
 
                             <FormControl fullWidth className={stylesm.theFromControl}>
@@ -267,6 +343,16 @@ class NewClubOwner extends React.Component {
                                     label="Last name"
                                     value={this.state.lastname}
                                     onChange={this.handleChange('lastname')}
+                                    margin="normal"
+                                />
+                            </FormControl>
+
+                            <FormControl fullWidth className={stylesm.theFromControl}>
+                                <TextField
+                                    id="contact"
+                                    label="Contact no"
+                                    value={this.state.contact}
+                                    onChange={this.handleChange('contact')}
                                     margin="normal"
                                 />
                             </FormControl>
@@ -314,8 +400,8 @@ class NewClubOwner extends React.Component {
     }
 }
 
-NewClubOwner.propTypes = {
+UpdateCustomer.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(NewClubOwner);
+export default withStyles(styles)(UpdateCustomer);
