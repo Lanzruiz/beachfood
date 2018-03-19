@@ -436,7 +436,7 @@ class AllMenus extends React.Component {
                   transition={Transition}
                   keepMounted
                   onRequestClose={this.handleRequestClose}>
-                  <DialogTitle>Menus Information</DialogTitle>
+                  <DialogTitle>Menu Information</DialogTitle>
                   <DialogContent>
                       <Grid container>
                           <Grid container>
@@ -519,13 +519,13 @@ class AllMenus extends React.Component {
                         {/*</Button>*/}
                     </Grid>
                     <Grid item xs={6} className="pageToolbarRight">
-                        <Button onClick={() => {this.handleClickOpen()}} raised color="primary">Add Menus</Button>
+                        <Button onClick={() => {this.handleClickOpen()}} raised color="primary">Add Menu</Button>
                         <Dialog
                             open={this.state.open}
                             transition={Transition}
                             keepMounted
                             onRequestClose={this.handleRequestClose}>
-                            <DialogTitle>Add New Menus</DialogTitle>
+                            <DialogTitle>Add New Menu</DialogTitle>
                             <DialogContent>
                                 <Grid container>
                                     <Grid container>
@@ -534,7 +534,7 @@ class AllMenus extends React.Component {
                                             style={{
                                                 marginTop: 15
                                             }}>
-                                                <InputLabel htmlFor="clubName">Menus Name</InputLabel>
+                                                <InputLabel htmlFor="clubName">Menu Name</InputLabel>
                                                 <Input
                                                     id="menuName"
                                                     margin="normal"
@@ -623,7 +623,7 @@ class AllMenus extends React.Component {
                                             <FormControl fullWidth className={stylesm.theFromControl}>
                                                 <TextField
                                                     id="menuDesc"
-                                                    label="Menus Description"
+                                                    label="Menu Description"
                                                     multiline
                                                     rows="4"
                                                     value={this.state.menuDesc}
@@ -681,7 +681,7 @@ class AllMenus extends React.Component {
                                                 <Save className={classes.leftIcon} />
                                     }
                                     {
-                                        this.state.ismenuAdded ? 'Saving Menus' : 'Save Menus'
+                                        this.state.ismenuAdded ? 'Saving Menu' : 'Save Menu'
                                     }
                                 </Button>
                             </DialogActions>

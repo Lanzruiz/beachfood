@@ -37,6 +37,8 @@ import Administrator from './administrator'
 import RestaurantOwner from './restaurant_owner'
 import Customer from './customer'
 import Category from './menu_category'
+import CouponCode from './coupon_code'
+import Orders from './orders'
 
 
 import HomeIcon from 'material-ui-icons/Home';
@@ -53,6 +55,9 @@ import PagesIcon from 'material-ui-icons/Pages';
 import QuestionAnswer from 'material-ui-icons/QuestionAnswer';
 import ContactIcon from 'material-ui-icons/Contacts';
 import LockIcon from 'material-ui-icons/Lock';
+import ShoppingCart from 'material-ui-icons/ShoppingCart';
+import RestaurantMenuIcon from 'material-ui-icons/RestaurantMenu';
+import RestaurantIcon from 'material-ui-icons/Restaurant';
 import CompanyLogo from './images/logo.png';
 import MenuItemImage from './images/btn_inactive.png';
 import MenuItemImageActive from './images/btn_active.png';
@@ -106,7 +111,7 @@ const routes = reactLocalStorage.get('type') == "admin" ? [
     {
         path: '/restaurant',
         menuName: 'Restaurant',
-        menuIcon: <Weekend />,
+        menuIcon: <RestaurantIcon />,
         sidebar: () => <div>Restaurant</div>,
         main: () => <Restaurant/>
     },
@@ -119,9 +124,9 @@ const routes = reactLocalStorage.get('type') == "admin" ? [
     },
     {
         path: '/restaurant_menu',
-        menuName: 'Menus',
-        menuIcon: <LocalBar />,
-        sidebar: () => <div>Menus</div>,
+        menuName: 'Menu',
+        menuIcon: <RestaurantMenuIcon />,
+        sidebar: () => <div>Menu</div>,
         main: () => <RestaurantMenu/>
     },
     {
@@ -132,11 +137,18 @@ const routes = reactLocalStorage.get('type') == "admin" ? [
         main: () => <Customer/>
     },
     {
+        path: '/coupon_code',
+        menuName: 'Coupon Code',
+        menuIcon: <LocationCity />,
+        sidebar: () => <div>Coupon Code</div>,
+        main: () => <CouponCode />
+    },
+    {
         path: '/orders',
         menuName: 'Orders',
-        menuIcon: <LocationCity />,
+        menuIcon: <ShoppingCart />,
         sidebar: () => <div>Orders</div>,
-        main: () => <Cities />
+        main: () => <Orders />
     },
     /*
     {

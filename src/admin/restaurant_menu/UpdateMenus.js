@@ -279,7 +279,7 @@ class UpdateMenus extends React.Component {
         var _ths = this;
         swal({
             title: "Are you sure?",
-            text: "Once deleted, you will not be able to recover this menus!",
+            text: "Once deleted, you will not be able to recover this menu!",
             icon: "warning",
             buttons: true,
             dangerMode: true,
@@ -372,7 +372,7 @@ class UpdateMenus extends React.Component {
                                         <Save className={classes.leftIcon} />
                             }
                             {
-                                this.state.isdrinksAdded ? 'Saving Menus' : 'Save Menus'
+                                this.state.isdrinksAdded ? 'Saving Menu' : 'Save Menu'
                             }
                         </Button>
                     </Grid>
@@ -385,7 +385,7 @@ class UpdateMenus extends React.Component {
                                          style={{
                                              marginTop: 15
                                          }}>
-                                        <InputLabel htmlFor="clubName">Menus Name</InputLabel>
+                                        <InputLabel htmlFor="clubName">Menu Name</InputLabel>
                                         <Input
                                             id="menuName"
                                             margin="normal"
@@ -399,7 +399,7 @@ class UpdateMenus extends React.Component {
                                                  style={{
                                                      marginTop: 15
                                                  }}>
-                                        <InputLabel htmlFor="menuPrice">Menus Price</InputLabel>
+                                        <InputLabel htmlFor="menuPrice">Menu Price</InputLabel>
                                         <Input
                                             id="menuPrice"
                                             margin="normal"
@@ -472,7 +472,7 @@ class UpdateMenus extends React.Component {
                                     <FormControl fullWidth className={stylesm.theFromControl}>
                                         <TextField
                                             id="menuDesc"
-                                            label="Menus Description"
+                                            label="Menu Description"
                                             multiline
                                             rows="4"
                                             value={this.state.menuDesc}
